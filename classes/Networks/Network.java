@@ -1,3 +1,3 @@
-public class Network {
+public class Network extends AbstractNetwork {
 
 }
