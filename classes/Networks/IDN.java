@@ -1,3 +1,3 @@
-public class IDN{
+public class IDN extends AbstractNetwork {
 
 }
