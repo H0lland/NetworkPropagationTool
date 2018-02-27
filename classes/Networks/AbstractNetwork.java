@@ -4,15 +4,15 @@
  */
 abstract class AbstractNetwork {
 
-    private HashMap<Node> nodes;
-    private HashMap<E> features;
+    // private HashMap<Node> nodes;
+    // private HashMap<E> features;
     private int id;
 
     abstract void addNode();
     abstract void deleteNode();
     abstract void addEdge(long i, long j);
     abstract void deleteEdge(long i, long j);
-    abstract short[][] getMatrix();
+    // abstract short[][] getMatrix();
 
     /**
      * The following methods are to be implemented in future iterations of the
@@ -20,6 +20,7 @@ abstract class AbstractNetwork {
      * of CentralityMetric and Phenomena become more prevalent in terms of
      * development process.
      */
-    // abstract ArrayList<Node> getCentralNodes();
+    // abstract SimpleMatrix getCentralNodes(int n);
     // protected abstract AbstractNetwork propogate();
+    // abstract SimpleMatrix calculateCentrality(Centrality centrality);
 }
