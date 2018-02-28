@@ -1,0 +1,21 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'catworks.Main'
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile group: 'org.ejml', name: 'ejml-all', version: '0.33'
+    testCompile "junit:junit:4.12"
+}
+
+jar {
+    baseName = 'gs-gradle'
+    version = '0.1.0'
+}
