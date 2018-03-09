@@ -18,6 +18,10 @@ public class Main {
 		SimpleMatrix P = new SimpleMatrix(data2);
 		SimpleMatrix S = H.mult(P).mult(H.transpose());
 		System.out.println(S);
+
+        // Test the ThreeTuple class.
+        InterEdge edge = new InterEdge(1, 4, 6);
+        System.out.println(edge);
     }
 
 }
