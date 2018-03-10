@@ -13,9 +13,9 @@ abstract class AbstractNetwork {
     private int id;
 
     abstract void addNode();
-    abstract void deleteNode();
-    abstract void addEdge(long i, long j);
-    abstract void deleteEdge(long i, long j);
+    abstract void deleteNode(int nodeID);
+    abstract void addEdge(long source, long dest);
+    abstract void deleteEdge(long source, long dest);
     // abstract short[][] getMatrix();
 
     /**
