@@ -1,31 +1,89 @@
 package catworks;
 
+import java.util.ArrayList;
+
+/**
+  * Note: I changed the indices from longs to ints to work with ArrayLists, whose
+  * specifications do not allow long-based indexing.  I will make this change
+  * in other classes as well
+  */
 public class Network extends AbstractNetwork {
 
     private static int count;
     private int networkID;
+    private ArrayList<ArrayList<Integer>> matrix;
 
     public Network() {
         networkID = count++;
+        matrix = new ArrayList<ArrayList<Integer>>();
     }
 
+    public Network(int [] [] adjacencyMatrix){
+        networkID = count++;
+        matrix = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> inner;
+        for(int i=0; i < adjacencyMatrix.length; i+=1){
+          inner = new ArrayList<Integer>();
+          for(int j = 0; j< adjacencyMatrix[i].length; j+=1){
+            inner.add(adjacencyMatrix[i][j]);
+          }
+          matrix.add(inner);
+        }
+    }
+
+    public Network(ArrayList<ArrayList<Integer>> adjacencyMatrix){
+      matrix = adjacencyMatrix;
+      networkID = count++;
+    }
+
+    /**
+    * [addNode description]
+    */
     public void addNode() {
-        return; // TODO: Implement.
-    }
+        ArrayList<Integer> newLine = new ArrayList<Integer>();
+        for(int i=0; i < matrix.size(); i+=1){
+          matrix.get(i).add(0);
+          newLine.add(0);
+        }
+        newLine.add(0);
+        matrix.add(newLine);
 
+        return;
+    }
+    /**
+    * [deleteNode description]
+    * @param int nodeId [description]
+    */
     public void deleteNode(int nodeID) {
-        return; // TODO: Implement method.
+        for(int i=0; i < matrix.size(); i+=1){
+          matrix.get(i).remove(nodeID); //remove from each other node's adjacency
+        }
+        matrix.remove(nodeID); //remove the node itself
+        return;
     }
 
-    public void addEdge(long source, long dest) {
-        return; // TODO: Implement method.
+    /**
+    * [addEdge description]
+    * @param int source [description]
+    * @param int dest [description]
+    */
+    public void addEdge(int source, int dest) {
+      matrix.get(source).set(dest,1);
+      return;
     }
 
-    public void deleteEdge(long source, long dest) {
-        return; // TODO: Implement method.
+    /**
+    * [deleteEdge description]
+    * @param int source [description]
+    * @param int dest [description]
+    */
+    public void deleteEdge(int source, int dest) {
+      matrix.get(source).set(dest,0);
+      return;
     }
 
     // Accessor and mutator methods.
     public int getID() { return networkID; }
     public int getCount() { return count; }
+    public ArrayList<ArrayList<Integer>> getMatrix() {return matrix; }
 }
