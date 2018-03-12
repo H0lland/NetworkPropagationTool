@@ -15,10 +15,24 @@ public class Network extends AbstractNetwork {
 
     public Network() {
         networkID = count++;
+        matrix = new ArrayList<ArrayList<Integer>>();
+    }
+
+    public Network(int [] [] adjacencyMatrix){
+        networkID = count++;
+        matrix = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> inner;
+        for(int i=0; i < adjacencyMatrix.length; i+=1){
+          inner = new ArrayList<Integer>();
+          for(int j = 0; j< adjacencyMatrix[i].length; j+=1){
+            inner.add(adjacencyMatrix[i][j]);
+          }
+          matrix.add(inner);
+        }
     }
 
     public Network(ArrayList<ArrayList<Integer>> adjacencyMatrix){
-      matrix = new ArrayList<ArrayList<Integer>>(adjacencyMatrix);
+      matrix = adjacencyMatrix;
       networkID = count++;
     }
 
