@@ -1,49 +1,75 @@
 package catworks;
 
+import java.util.ArrayList;
+
+/**
+  * Note: I changed the indices from longs to ints to work with ArrayLists, whose
+  * specifications do not allow long-based indexing.  I will make this change
+  * in other classes as well
+  */
 public class Network extends AbstractNetwork {
 
     private static int count;
     private int networkID;
-    ArrayList<ArrayList<int>> matix;
+    private ArrayList<ArrayList<Integer>> matrix;
 
     public Network() {
         networkID = count++;
+    }
+
+    public Network(ArrayList<ArrayList<Integer>> adjacencyMatrix){
+      matrix = new ArrayList<ArrayList<Integer>>(adjacencyMatrix);
+      networkID = count++;
     }
 
     /**
     * [addNode description]
     */
     public void addNode() {
-        return; // TODO: Implement.
+        ArrayList<Integer> newLine = new ArrayList<Integer>();
+        for(int i=0; i < matrix.size(); i+=1){
+          matrix.get(i).add(0);
+          newLine.add(0);
+        }
+        newLine.add(0);
+        matrix.add(newLine);
+
+        return;
     }
     /**
     * [deleteNode description]
-    * @param long nodeId [description]
+    * @param int nodeId [description]
     */
-    public void deleteNode(long nodeID) {
-        return; // TODO: Implement method.
+    public void deleteNode(int nodeID) {
+        for(int i=0; i < matrix.size(); i+=1){
+          matrix.get(i).remove(nodeID); //remove from each other node's adjacency
+        }
+        matrix.remove(nodeID); //remove the node itself
+        return;
     }
 
     /**
     * [addEdge description]
-    * @param long source [description]
-    * @param long dest [description]
+    * @param int source [description]
+    * @param int dest [description]
     */
-    public void addEdge(long source, long dest) {
-        return; // TODO: Implement method.
+    public void addEdge(int source, int dest) {
+      matrix.get(source).set(dest,1);
+      return;
     }
 
     /**
     * [deleteEdge description]
-    * @param long source [description]
-    * @param long dest [description]
+    * @param int source [description]
+    * @param int dest [description]
     */
-    public void deleteEdge(long source, long dest) {
-        return; // TODO: Implement method.
+    public void deleteEdge(int source, int dest) {
+      matrix.get(source).set(dest,0);
+      return;
     }
 
     // Accessor and mutator methods.
     public int getID() { return networkID; }
     public int getCount() { return count; }
-    public ArrayList<ArrayList<int>> getMatrix() {return matrix; }
+    public ArrayList<ArrayList<Integer>> getMatrix() {return matrix; }
 }
