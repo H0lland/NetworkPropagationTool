@@ -50,7 +50,7 @@ public class IDN {
      * @param long src       [description]
      * @param long dest      [description]
      */
-    public void addEdge(int networkID, long src, long dest) {
+    public void addEdge(int networkID, int src, int dest) {
         for (Network network : networks) {
             if (network.getID() == networkID)
                 network.addEdge(src, dest);
@@ -63,7 +63,7 @@ public class IDN {
      * @param long src  [description]
      * @param long dest [description]
      */
-    public void deleteEdge(int networkID, long src, long dest) {
+    public void deleteEdge(int networkID, int src, int dest) {
         for (Network network : networks) {
             if (network.getID() == networkID)
                 network.deleteEdge(src, dest);

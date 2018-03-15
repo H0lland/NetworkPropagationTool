@@ -2,6 +2,7 @@ package catworks;
 
 import org.ejml.simple.SimpleMatrix;
 
+
 /**
  * The following abstract class will serve as the development guideline for the
  * Network and IDN (Interdependent Network) classes.
@@ -14,8 +15,8 @@ abstract class AbstractNetwork {
 
     abstract void addNode();
     abstract void deleteNode(int nodeID);
-    abstract void addEdge(long source, long dest);
-    abstract void deleteEdge(long source, long dest);
+    abstract void addEdge(int source, int dest);
+    abstract void deleteEdge(int source, int dest);
     // abstract short[][] getMatrix();
 
     /**
