@@ -20,8 +20,32 @@ public class Main {
 		System.out.println(S);
 
         // Test the ThreeTuple class.
-        InterEdge edge = new InterEdge(1, 4, 6);
+        InterEdge edge = new InterEdge(1, 4, 2, 6);
         System.out.println(edge);
+
+        // Test the Network class, the DegreeCentrality class, and centrality methods.
+        Integer[][] matrix = {
+			{0, 0, 1, 1, 0},
+			{0, 0, 1, 1, 0},
+			{1, 1, 0, 1, 0},
+			{1, 0, 1, 0, 0},
+			{1, 1, 1, 1, 0},
+		};
+        Network network = new Network(matrix);
+        Centrality D = new DegreeCentrality();
+        System.out.println("Adjacency Matrix for network:\n" + network);
+
+        System.out.print("Centrality of each node:\n");
+        for (Integer centrality : network.getCentralities(D))
+            System.out.print(centrality + "  ");
+
+        System.out.print("\n\n3 Most Central Node Indices:\n");
+        for (Integer index : network.mostCentralNodes(D, 3))
+            System.out.print(index + "  ");
+
+        System.out.print("\n\n3 Least Central Node Indices:\n");
+        for (Integer index : network.leastCentralNodes(D, 3))
+            System.out.print(index + "  ");
     }
 
 }
