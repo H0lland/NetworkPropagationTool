@@ -24,7 +24,7 @@ public class Network extends AbstractNetwork {
 
 
     /**
-     * One-arg Network constructor.
+     * One-arg Network constructor, given an int[][].
      * @param adjacencyMatrix Two-dimensional array, an adjacency matrix, of ints
      *                        to be used to build a Network instance.
      */
@@ -43,7 +43,7 @@ public class Network extends AbstractNetwork {
 
 
     /**
-     * One-arg Network constructor.
+     * One-arg Network constructor, given an Integer[][].
      * @param adjacencyMatrix Two-dimensional array, an adjacency matrix, of Integers
      *                        to be used to build a Network instance.
      */
@@ -62,12 +62,37 @@ public class Network extends AbstractNetwork {
 
 
     /**
-     * One-arg Network constructor.
+     * One-arg Network constructor, given an ArrayList<ArrayList<Integer>>.
      * @param adjacencyMatrix Parameter will be used to represent Network.
      */
     public Network(ArrayList<ArrayList<Integer>> matrix){
         this.matrix = matrix;
         networkID = count++;
+    }
+
+
+    /**
+     * Erdos-Renyi (ER) random network constructor.
+     * @param n Number of nodes to be in the network.
+     * @param p Probability that a node has an edge to another node.
+     */
+    public Network(int n, double p) {
+        // Check if `p` is valid; 0 <= p <= 1.
+        if (p < 0 || 1 < p) {
+            throw new IllegalArgumentException("Value `p` must be in the range [0, 1].");
+        }
+
+        boolean addEdge;
+        matrix = new ArrayList<ArrayList<Integer>>();
+        for (int i = 0; i < n; i++) {
+            ArrayList<Integer> row = new ArrayList();
+            for (int j = 0; j < n; j++) {
+                addEdge = Math.random() < p;
+                if (addEdge) row.add(1);
+                else         row.add(0);
+            }
+            matrix.add(row);
+        }
     }
 
 
@@ -79,7 +104,7 @@ public class Network extends AbstractNetwork {
      * @return        Array of Integers with each i-th element being the centrality
      *                of the i-th node in the Network.
      */
-    public Integer[] getCentralities(Centrality metric) {
+    public <E extends Number> E[] getCentralities(Centrality metric) {
         Integer[][] arrayMatrix = getArrayMatrix();
         return metric.getCentralities(arrayMatrix);
     }
@@ -95,14 +120,14 @@ public class Network extends AbstractNetwork {
      *                as they are sorted by most central nodes to least central nodes.
      */
     public Integer[] mostCentralNodes(Centrality metric, int n) {
-        ArrayList<Integer> centralities = new ArrayList(Arrays.asList(getCentralities(metric)));
+        ArrayList<Number> centralities = new ArrayList(Arrays.asList((Number[]) getCentralities(metric)));
         Integer[] mostCentral = new Integer[n];
 
         for (int i = 0; i < n; i++) {
             // Set the current minimum value, at first, to the maximum Integer
             // value. This guarantees that the first element will be selected to
             // maintain simple logic. Then initialize the current index to -1.
-            Integer currentMax = Integer.MIN_VALUE;
+            Number currentMax = Integer.MIN_VALUE;
             int currentIndex = -1;
 
             // Iterate through each centrality in `centralities`. Each iteration
@@ -110,7 +135,7 @@ public class Network extends AbstractNetwork {
             // Upon completion of the loop, the value of the smallest value will
             // be changed such that it is not redundantly selected.
             for (int j = 0; j < centralities.size(); j++) {
-                if (centralities.get(j) > currentMax) {
+                if (centralities.get(j).doubleValue() > currentMax.doubleValue()) {
                     currentIndex = j;
                     currentMax = centralities.get(j);
                 }
@@ -136,7 +161,7 @@ public class Network extends AbstractNetwork {
      *                as they are sorted by least central nodes to most central nodes.
      */
     public Integer[] leastCentralNodes(Centrality metric, int n) {
-        ArrayList<Integer> centralities = new ArrayList(Arrays.asList(getCentralities(metric)));
+        ArrayList<Number> centralities = new ArrayList(Arrays.asList((Number[]) getCentralities(metric)));
         Integer[] leastCentral = new Integer[n];
 
         // Find the i-th most central node for each iteration.
@@ -144,7 +169,7 @@ public class Network extends AbstractNetwork {
             // Set the current minimum value, at first, to the maximum Integer
             // value. This guarantees that the first element will be selected to
             // maintain simple logic. Then initialize the current index to -1.
-            Integer currentMin = Integer.MAX_VALUE;
+            Number currentMin = Integer.MAX_VALUE;
             int currentIndex = -1;
 
             // Iterate through each centrality in `centralities`. Each iteration
@@ -152,7 +177,7 @@ public class Network extends AbstractNetwork {
             // Upon completion of the loop, the value of the smallest value will
             // be changed such that it is not redundantly selected.
             for (int j = 0; j < centralities.size(); j++) {
-                if (centralities.get(j) < currentMin) {
+                if (centralities.get(j).doubleValue() < currentMin.doubleValue()) {
                     currentIndex = j;
                     currentMin = centralities.get(j);
                 }
