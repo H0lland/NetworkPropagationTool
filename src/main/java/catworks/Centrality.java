@@ -2,6 +2,6 @@ package catworks;
 
 public interface Centrality {
 
-    Integer[] getCentralities(Integer[][] matrix);
+    <E extends Number> E[] getCentralities(Integer[][] matrix);
 
 }
