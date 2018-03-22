@@ -8,7 +8,10 @@ public class BetweennessCentrality implements Centrality {
      * @return             [description]
      */
     public Integer[] getCentralities(Integer[][] matrix) {
-        Integer[] centralities = {0};
+        Integer[] centralities = {0, 1, 2, 3, 4};
+        int n = matrix.length;
+
+
 
         // for node in net:
         //     for other_nodes in net:

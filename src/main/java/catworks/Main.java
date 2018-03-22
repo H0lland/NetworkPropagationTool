@@ -32,7 +32,7 @@ public class Main {
 			{1, 1, 1, 1, 0},
 		};
         Network network = new Network(matrix);
-        Centrality D = new DegreeCentrality();
+        Centrality D = new BetweennessCentrality();
         System.out.println("Adjacency Matrix for network:\n" + network);
 
         System.out.print("Centrality of each node:\n");
