@@ -1,6 +1,7 @@
 package catworks;
 
 import org.ejml.simple.SimpleMatrix;
+import org.jblas.*;
 
 public class Main {
 
@@ -31,12 +32,17 @@ public class Main {
 			{1, 0, 1, 0, 0},
 			{1, 1, 1, 1, 0},
 		};
+<<<<<<< HEAD
         Network network = new Network(matrix);
         Centrality D = new BetweennessCentrality();
+=======
+        Network network = new Network(25, .05);// Network(matrix);
+        Centrality D = new DegreeCentrality();
+>>>>>>> 5a2a0ad996478a4d600c49357e3537a9332be3d9
         System.out.println("Adjacency Matrix for network:\n" + network);
 
         System.out.print("Centrality of each node:\n");
-        for (Integer centrality : network.getCentralities(D))
+        for (Number centrality : network.getCentralities(D))
             System.out.print(centrality + "  ");
 
         System.out.print("\n\n3 Most Central Node Indices:\n");
@@ -46,6 +52,10 @@ public class Main {
         System.out.print("\n\n3 Least Central Node Indices:\n");
         for (Integer index : network.leastCentralNodes(D, 3))
             System.out.print(index + "  ");
+
+        // Attempt to use JBLAS library.
+        DoubleMatrix dm = new DoubleMatrix(4, 5);
+        System.out.println("\n\nJBLAS Library Sample:\n" + dm);
     }
 
 }
