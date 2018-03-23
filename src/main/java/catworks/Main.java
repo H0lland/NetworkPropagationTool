@@ -32,17 +32,15 @@ public class Main {
 			{1, 0, 1, 0, 0},
 			{1, 1, 1, 1, 0},
 		};
-<<<<<<< HEAD
-        Network network = new Network(matrix);
-        Centrality D = new BetweennessCentrality();
-=======
-        Network network = new Network(25, .05);// Network(matrix);
+        Network network = new Network(5, .5);// Network(matrix);
         Centrality D = new DegreeCentrality();
->>>>>>> 5a2a0ad996478a4d600c49357e3537a9332be3d9
+        Centrality B = new BetweennessCentrality();
+        Centrality E = new EigenvectorCentrality();
+
         System.out.println("Adjacency Matrix for network:\n" + network);
 
         System.out.print("Centrality of each node:\n");
-        for (Number centrality : network.getCentralities(D))
+        for (Number centrality : network.getCentralities(B))
             System.out.print(centrality + "  ");
 
         System.out.print("\n\n3 Most Central Node Indices:\n");
