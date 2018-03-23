@@ -262,6 +262,17 @@ public class Network extends AbstractNetwork {
         return array;
     }
 
+    public int[][] getIntArrayMatrix(){
+      int size = this.getNumOfNodes();
+      int [] [] rtn = new int [size][size];
+      for(int i = 0; i < size; i += 1){
+        for(int j = 0; j < size; j += 1){
+          rtn[i][j] = this.matrix.get(i).get(j);
+        }
+      }
+      return rtn;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
