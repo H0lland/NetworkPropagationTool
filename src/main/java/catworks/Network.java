@@ -12,6 +12,7 @@ public class Network extends AbstractNetwork {
 
     private static int count;
     private int networkID;
+    private int flag;
     private ArrayList<ArrayList<Integer>> matrix;
 
     /**
@@ -108,6 +109,13 @@ public class Network extends AbstractNetwork {
         Integer[][] arrayMatrix = getArrayMatrix();
         return metric.getCentralities(arrayMatrix);
     }
+
+    /**
+     * [getNetworkType description]
+     * @param  Centrality metric        [description]
+     * @return            [description]
+     */
+
 
 
     /**
