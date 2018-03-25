@@ -64,7 +64,7 @@ case "`uname`" in
     ;;
 esac
 
-CLASSPATH=$APP_HOME/lib/gs-gradle-0.1.0.jar:$APP_HOME/lib/ejml-all-0.33.jar:$APP_HOME/lib/ejml-simple-0.33.jar:$APP_HOME/lib/ejml-fdense-0.33.jar:$APP_HOME/lib/ejml-dsparse-0.33.jar:$APP_HOME/lib/ejml-ddense-0.33.jar:$APP_HOME/lib/ejml-cdense-0.33.jar:$APP_HOME/lib/ejml-zdense-0.33.jar:$APP_HOME/lib/ejml-core-0.33.jar
+CLASSPATH=$APP_HOME/lib/gs-gradle-0.1.0.jar:$APP_HOME/lib/ejml-all-0.33.jar:$APP_HOME/lib/jblas-1.2.4.jar:$APP_HOME/lib/ejml-simple-0.33.jar:$APP_HOME/lib/ejml-fdense-0.33.jar:$APP_HOME/lib/ejml-dsparse-0.33.jar:$APP_HOME/lib/ejml-ddense-0.33.jar:$APP_HOME/lib/ejml-cdense-0.33.jar:$APP_HOME/lib/ejml-zdense-0.33.jar:$APP_HOME/lib/ejml-core-0.33.jar
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
