@@ -65,8 +65,11 @@ public class Main {
         InterEdge inter = new InterEdge(0,1,1,0);
         myIDN.addInterEdge(inter);
         Network net3 = myIDN.bridge();
-        System.out.print(Arrays.toString(net3.getMatrix().toArray()));
+        System.out.println(Arrays.toString(net3.getMatrix().toArray()));
 
+        EpidemicPhenomena eps = new EpidemicPhenomena();
+        int [] start = {0,1,0};
+        System.out.println(Arrays.toString(eps.propagate(net3.getArrayMatrix(),start)));
     }
 
 }
