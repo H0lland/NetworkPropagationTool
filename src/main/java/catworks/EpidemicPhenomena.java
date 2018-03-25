@@ -1,9 +1,10 @@
 package catworks;
 
-import java.util.System.*;
+import java.lang.System.*;
 
 public class EpidemicPhenomena implements Phenomena{
 
+  public EpidemicPhenomena(){}
   /**
     * [propagate]
     * @param matrix Adjacency matrix representation of the Network
