@@ -33,4 +33,9 @@ public class BetweennessCentrality implements Centrality {
         return centralities;
     }
 
+    @Override
+    public String toString() {
+        return "betweenness";
+    }
+
 }

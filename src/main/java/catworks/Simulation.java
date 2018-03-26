@@ -1,15 +1,11 @@
 package catworks;
 
+import java.io.File;
+
 /**
  *
  */
 public class Simulation {
-
-    // Constant values that will be used in the main simulation to generate
-    // simulation permutations.
-    private static final int[] TIMES = { 100, 500, 1000 };
-    private static final int[] SIZES = { 50, 100, 200, 500 };
-    private static final Centrality[] CENTRALITIES = { new DegreeCentrality() };
 
     // Instance variables for simulations.
     private int time;

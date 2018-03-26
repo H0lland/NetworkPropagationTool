@@ -22,4 +22,9 @@ public class DegreeCentrality implements Centrality {
 		return centralities;
     }
 
+    @Override
+    public String toString() {
+        return "degree";
+    }
+
 }
