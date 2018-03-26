@@ -1,6 +1,7 @@
 package catworks;
 
 import java.util.ArrayList;
+import java.lang.System.*;
 
 /**
  * Note: I removed the requirement that IDN extends AbstractNetwork. We need to
@@ -18,6 +19,10 @@ public class IDN {
         networks = new ArrayList<Network>();
     }
 
+    public IDN(ArrayList<Network> nets){
+      networks = nets;
+      interEdges = new ArrayList<InterEdge>();
+    }
 
     /**
      * [addNode description]
@@ -70,4 +75,41 @@ public class IDN {
         }
     }
 
+    /**
+      * [addInterEdge]
+      * @param InterEdge connection [description]
+    **/
+    public void addInterEdge(InterEdge connection){
+      interEdges.add(connection);
+    }
+
+    /**
+      * [bridge description]
+    */
+    public Network bridge(){
+      int offset = 0;
+      int size = 0;
+      int [] sizesUp = new int[networks.size()];
+      for(int h = 0; h < networks.size(); h += 1){ // get total size for simplicity sake
+        sizesUp[h] = size;
+        size += networks.get(h).getMatrix().size();
+      }
+      int [] [] rtn = new int [size] [size];  //create a size by size array for the return Value
+      for(int i = 0; i < networks.size(); i += 1){
+        int [] [] matrix = networks.get(i).getIntArrayMatrix();
+        int len = matrix.length;
+        for(int j = 0; j < len; j += 1){
+          System.arraycopy(matrix[j],0,rtn[offset+j],offset,len);
+        }
+        offset += len;
+      }
+      for(int k = 0; k < interEdges.size(); k += 1){
+        InterEdge curr = interEdges.get(k);
+        int sourceOff = sizesUp[curr.networkID];
+        int destOff = sizesUp[curr.destNetworkID];
+        rtn[sourceOff + curr.sourceNodeID][destOff + curr.destNodeID] = 1;
+      }
+      Network bridged = new Network(rtn);
+      return bridged;
+    }
 }

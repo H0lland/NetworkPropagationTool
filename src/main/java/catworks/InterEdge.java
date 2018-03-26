@@ -6,7 +6,7 @@ public class InterEdge {
     int destNetworkID;
     int destNodeID;
 
-    public InterEdge(int networkID, int nodeID, int destNetworkID, int destNodeID) {
+    public InterEdge(int networkID, int sourceNodeID, int destNetworkID, int destNodeID) {
         this.networkID = networkID;
         this.sourceNodeID = sourceNodeID;
         this.destNetworkID = destNetworkID;
