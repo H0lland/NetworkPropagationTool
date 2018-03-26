@@ -16,10 +16,10 @@ public class EpidemicPhenomena implements Phenomena{
       int[] rtn = new int[len];
       System.arraycopy(start,0,rtn,0,len);
       for(int i = 0; i < len; i += 1){
-        if(start[i]==1){ //if node i is afflicted
+        if(start[i]==AFFLICTED){ //if node i is afflicted
           for(int j = 0; j < len; j+= 1){ //afflict its neighbors
             if(matrix[i][j]==1){//if node i neighbors node j
-              rtn[j]=1; //affect the neighbor
+              rtn[j]=AFFLICTED; //affect the neighbor
             }
           }
         }
