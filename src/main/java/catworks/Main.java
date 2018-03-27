@@ -72,7 +72,7 @@ public class Main {
         ArrayList<Network> networks = new ArrayList();
         for (int size : SIZES) {
             for (double probability : PROBAB) {
-                networks.add(new Network(size, probability));
+                networks.add(new ERNetwork(size, probability));
             }
         }
 
