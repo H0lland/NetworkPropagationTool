@@ -22,7 +22,7 @@ public class Main {
     private static final double[] INFECT = { 0.01, 0.02, 0.03 };
 
     private static final Phenomena[]  PHENOMENA = { new EpidemicPhenomena(), new ThresholdPhenomena() };
-    private static final Centrality[] CENTRALITIES = { new BetweennessCentrality(), new DegreeCentrality(), new EigenvectorCentrality() };
+    private static final Centrality[] CENTRALITIES = { new BetweennessCentrality(), new ClosenessCentrality(), new DegreeCentrality(), new EigenvectorCentrality() };
 
     /**
      * For now, this method only demos the SimpleMatrix class in action from EJML.
