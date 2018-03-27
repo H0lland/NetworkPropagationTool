@@ -32,4 +32,13 @@ public class EpidemicPhenomena implements Phenomena{
     public String toString() {
         return "epidemic";
     }
+
+    public String getType() {
+        return "epidemic";
+    }
+
+    public void setThreshold(double threshold) {
+        return;
+    }
+
 }

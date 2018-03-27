@@ -5,6 +5,10 @@ import java.lang.System;
 public class ThresholdPhenomena implements Phenomena{
   private static double threshold;
 
+  public ThresholdPhenomena() {
+      threshold = -1;
+  }
+
   public ThresholdPhenomena(float thresh){
     threshold = thresh;
   }
@@ -15,6 +19,9 @@ public class ThresholdPhenomena implements Phenomena{
     *              an entry for each node in the array.
     */
     public int[] propagate(Integer[][] matrix, int[] start){
+      if (threshold == -1) {
+          throw new IllegalArgumentException("`threshold` has never been specified.");
+      }
       int len = start.length;
       int[] rtn = new int[len];
       System.arraycopy(start, 0, rtn, 0, len);
@@ -34,9 +41,20 @@ public class ThresholdPhenomena implements Phenomena{
       return rtn;
     }
 
+    public void setThreshold(double threshold) {
+        if (threshold <= 0.0 || threshold >= 1.0) {
+            throw new IllegalArgumentException("`threshold` must be within the range (0,1).");
+        }
+        this.threshold = threshold;
+    }
+
     @Override
     public String toString() {
         return "threshold";
+    }
+
+    public String getType() {
+        return "theshold";
     }
 
 }
