@@ -73,31 +73,6 @@ public class Network extends AbstractNetwork {
 
 
     /**
-     * Erdos-Renyi (ER) random network constructor.
-     * @param n Number of nodes to be in the network.
-     * @param p Probability that a node has an edge to another node.
-     */
-    public Network(int n, double p) {
-        // Check if `p` is valid; 0 <= p <= 1.
-        if (p < 0 || 1 < p) {
-            throw new IllegalArgumentException("Value `p` must be in the range [0, 1].");
-        }
-
-        boolean addEdge;
-        matrix = new ArrayList<ArrayList<Integer>>();
-        for (int i = 0; i < n; i++) {
-            ArrayList<Integer> row = new ArrayList();
-            for (int j = 0; j < n; j++) {
-                addEdge = Math.random() < p;
-                if (addEdge) row.add(1);
-                else         row.add(0);
-            }
-            matrix.add(row);
-        }
-    }
-
-
-    /**
      * Calculate the centralities of each node in a Network and return these values
      * as an array of Integers. Order of this array matters. The element at the
      * 0th index is the centrality of the 0th node and so on.

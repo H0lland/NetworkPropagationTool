@@ -1,7 +1,7 @@
 package catworks;
 
-import java.util.ArrayList;
 import java.lang.System.*;
+import java.util.ArrayList;
 
 /**
  * Note: I removed the requirement that IDN extends AbstractNetwork. We need to
@@ -94,8 +94,8 @@ public class IDN {
         sizesUp[h] = size;
         size += networks.get(h).getMatrix().size();
       }
-      int [] [] rtn = new int [size] [size];  //create a size by size array for the return Value
-      for(int i = 0; i < networks.size(); i += 1){
+      int[][] rtn = new int[size][size];  //create a size by size array for the return Value
+      for(int i = 0; i < networks.size(); i++){
         int [] [] matrix = networks.get(i).getIntArrayMatrix();
         int len = matrix.length;
         for(int j = 0; j < len; j += 1){
@@ -103,7 +103,7 @@ public class IDN {
         }
         offset += len;
       }
-      for(int k = 0; k < interEdges.size(); k += 1){
+      for(int k = 0; k < interEdges.size(); k++){
         InterEdge curr = interEdges.get(k);
         int sourceOff = sizesUp[curr.networkID];
         int destOff = sizesUp[curr.destNetworkID];
