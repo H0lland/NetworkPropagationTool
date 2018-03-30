@@ -1,7 +1,6 @@
-package catworks;
+package catworks.networks;
 
-import org.ejml.simple.SimpleMatrix;
-
+import catworks.networks.metrics.*;
 
 /**
  * The following abstract class will serve as the development guideline for the

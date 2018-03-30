@@ -1,4 +1,6 @@
-package catworks;
+package catworks.networks;
+
+import java.util.ArrayList;
 
 public class ERNetwork extends Network {
 

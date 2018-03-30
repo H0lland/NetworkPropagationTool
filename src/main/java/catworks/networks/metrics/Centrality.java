@@ -1,4 +1,4 @@
-package catworks;
+package catworks.networks.metrics;
 
 public interface Centrality {
 

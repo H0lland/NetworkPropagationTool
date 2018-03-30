@@ -1,4 +1,6 @@
-package catworks;
+package catworks.networks;
+
+import catworks.networks.metrics.*;
 
 import java.lang.System.*;
 import java.util.ArrayList;

@@ -1,5 +1,11 @@
 package catworks;
 
+// Project import statements.
+import catworks.networks.*;
+import catworks.networks.metrics.*;
+import catworks.phenomena.*;
+
+// Additional import statements.
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -29,7 +35,41 @@ public class Main {
      * @param String[] args N/A
      */
     public static void main(String[] args) throws IOException {
-        parameterizedSimulations();
+
+        // (1) Initialize and declare the random network to be used for simulation.
+        String  networkInput = "ER"; // TODO: Dummy line with fixed data. Change this later.
+        Network network;
+        switch (networkInput) {
+            case "ER": network = ERNetwork(numNodes, p); break;
+            case "SF": network = SFNetwork(...);         break;
+            case "SW": network = SWNetwork(...);         break;
+            default:
+                throw new IllegalArgumentException("No declaration for random network type.");
+                break;
+        }
+
+        // (2) Initialize and declare the phenomena to be used for simulation.
+        String    phenomInput = "epidemic"; // TODO: Dummy line with fixed data. Change this later.
+        Phenomena phenomena;
+        switch (phenomInput) {
+            case "epidemic":  phenomena = EpidemicPhenomena();           break;
+            case "threshold": phenomena = ThresholdPhenomena(threshold); break;
+            default:
+                throw new IllegalArgumentException("No declaration for phenomena type.");
+                break;
+        }
+
+        // (3, 4, 5) Initialize and declare the number of timesteps, immunity fraction, and infection fraction in a simulation.
+        int timeSteps;
+        double immunityFraction, infectionFraction;
+
+        // (6) Initialize and declare the directory/filename of the output .csv file.
+        String filename;
+
+
+
+        Simulation simulation = new Simulation(network, phenomena, timeSteps, immunityFraction, infectionFraction, filename);
+        simulation.runMultipleTimes(N); // Run the simulation N times and then save the average of data.
     }
 
 

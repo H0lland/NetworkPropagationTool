@@ -1,4 +1,4 @@
-package catworks;
+package catworks.phenomena;
 
 public interface Phenomena {
 

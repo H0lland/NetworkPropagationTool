@@ -1,6 +1,6 @@
-package catworks;
+package catworks.networks.metrics;
 
-public class ClosenessCentrality implements Centrality {
+public class EigenvectorCentrality implements Centrality {
 
     /*
      * Gets the centrality specifically for finding the Eigenvectors of the matrix
@@ -22,7 +22,7 @@ public class ClosenessCentrality implements Centrality {
             }
         }
 
-        org.graphstream.algorithm.measure.ClosenessCentrality centrality = new org.graphstream.algorithm.measure.ClosenessCentrality("centrality", org.graphstream.algorithm.measure.AbstractCentrality.NormalizationMode.SUM_IS_1);
+        org.graphstream.algorithm.measure.EigenvectorCentrality centrality = new org.graphstream.algorithm.measure.EigenvectorCentrality("centrality", org.graphstream.algorithm.measure.AbstractCentrality.NormalizationMode.SUM_IS_1);
         centrality.init(graph);
         centrality.compute();
 
@@ -36,7 +36,7 @@ public class ClosenessCentrality implements Centrality {
 
     @Override
     public String toString() {
-        return "closeness";
+        return "eigenvector";
     }
 
 }
