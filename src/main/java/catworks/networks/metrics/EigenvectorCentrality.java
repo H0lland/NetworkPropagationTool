@@ -34,6 +34,14 @@ public class EigenvectorCentrality implements Centrality {
         return centralities;
     }
 
+    /**
+     * [type description]
+     * @return [description]
+     */
+    public int type() {
+        return Centrality.EIGENVECTOR;
+    }
+
     @Override
     public String toString() {
         return "eigenvector";

@@ -22,6 +22,14 @@ public class DegreeCentrality implements Centrality {
 		return centralities;
     }
 
+    /**
+     * [type description]
+     * @return [description]
+     */
+    public int type() {
+        return Centrality.DEGREE;
+    }
+
     @Override
     public String toString() {
         return "degree";

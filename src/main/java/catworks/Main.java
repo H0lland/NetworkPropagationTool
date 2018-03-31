@@ -18,24 +18,25 @@ import javax.swing.JFileChooser;
 
 public class Main {
 
-    // Constant values that will be used in the main simulation to generate
-    // simulation permutations.
-    private static final int[] SIZES = { 500, 1000 };
-    private static final double[] PROBAB = { 0.1 };
-
-    private static final int[] TIMES = { 100 };
-    private static final double[] IMMUNE_RATES = { .01, .02, .03, .04, .05, .06, .07, .08, .09, .10, .11, .12, .13, .14, .15 };
-    private static final double[] INFECT = { 0.01, 0.02, 0.03 };
-
-    private static final Phenomena[]  PHENOMENA = { new EpidemicPhenomena(), new ThresholdPhenomena() };
-    private static final Centrality[] CENTRALITIES = { new BetweennessCentrality(), new ClosenessCentrality(), new DegreeCentrality(), new EigenvectorCentrality() };
-
     /**
      * For now, this method only demos the SimpleMatrix class in action from EJML.
      * @param String[] args N/A
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception, IOException {
+        Network net = new ERNetwork(1000, 0.5);
+        Phenomena phe = new ThresholdPhenomena(0.3f);
 
+        Simulation simulation = new Simulation(net, phe, 100, 0.05, 0.10);
+        Object[][] data = simulation.run(1000);
+
+        // Output the data to a .CSV file.
+        String filename = "/Users/Nathaniel/Desktop/Network_Output/ER_1000_single.csv";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        for (Object[] row : data)
+            outputCSVRow(writer, row);
+        writer.close();
+
+/*
         // (1) Initialize and declare the random network to be used for simulation.
         String  networkInput = "ER"; // TODO: Dummy line with fixed data. Change this later.
         Network network;
@@ -70,6 +71,7 @@ public class Main {
 
         Simulation simulation = new Simulation(network, phenomena, timeSteps, immunityFraction, infectionFraction, filename);
         simulation.runMultipleTimes(N); // Run the simulation N times and then save the average of data.
+*/
     }
 
 
@@ -94,109 +96,25 @@ public class Main {
             return chooser.getSelectedFile();
         }
         else {
-            log("No directory selected.");
             return null;
         }
     }
 
 
     /**
-     * [parameterizedSimulations description]
+     * [outputCSVRow description]
+     * @param writer [description]
+     * @param row    [description]
      */
-    public static void parameterizedSimulations() throws IOException {
-
-        File outputDir = getOutputDirectory();
-
-        // Generate the random networks that will be used for simulation of phenomena
-        // propagation.
-        ArrayList<Network> networks = new ArrayList();
-        for (int size : SIZES) {
-            for (double probability : PROBAB) {
-                networks.add(new ERNetwork(size, probability));
-            }
-        }
-
-        // Simulation
-        int simulationID = 0;
-        for (int time : TIMES) {
-            for (Centrality metric : CENTRALITIES) {
-                for (double immuneRate : IMMUNE_RATES) {
-                    for (Network network : networks) {
-                        int immuneNum = (int) (network.getNumOfNodes() * immuneRate);
-                        Integer[] immuneNodeIndices = network.mostCentralNodes(metric, immuneNum);
-
-                        // Initialize the initial nodes and then mark the most
-                        // central nodes, as per the current centrality metric,
-                        // as immune.
-                        int[] immuneState = new int[network.getNumOfNodes()];
-                        for (int i : immuneNodeIndices)
-                            immuneState[i] = Phenomena.IMMUNE;
-
-                        for (double infectionRate : INFECT) {
-                            int[] firstState = Arrays.copyOf(immuneState, immuneState.length);
-                            infect(firstState, infectionRate);
-
-                            for (Phenomena phenomena : PHENOMENA) {
-                                double start = 1.0, end = 1.0, delta = 1.0;
-                                if (phenomena.getType().equals("theshold")) {
-                                    start = 0.3; end = 0.7; delta = 0.2;
-                                }
-
-                                // Run the phenomena with the given
-                                for (double threshold = start; start <= end; start += delta) {
-                                    Simulation simulation = new Simulation();
-                                    simulation.setNetwork(network);
-                                    simulation.setPhenomena(phenomena);
-                                    simulation.setCentrality(metric);
-                                    simulation.setTime(time);
-                                    simulation.setFirstState(firstState);
-                                    simulation.setImmuneNum(immuneNum);
-                                    simulation.setThreshold(threshold);
-                                    simulation.setDirectory(outputDir.toString());
-                                    simulation.run();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    /**
-     * [log description]
-     * @param string [description]
-     */
-    public static void log(String string) {
-        System.out.println("[" + new java.util.Date() + "] $ " + string);
-    }
-
-
-    /**
-     * [infect description]
-     * @param nodeStates [description]
-     * @param rate       [description]
-     */
-    public static void infect(int[] nodeStates, double rate) {
-        for (int i = 0; i < nodeStates.length; i++)
-            if (Math.random() <= rate)
-                if (nodeStates[i] != Phenomena.IMMUNE)
-                    nodeStates[i] =  Phenomena.AFFLICTED;
-    }
-
-
-    /**
-     * [getNumInfected description]
-     * @param  state [description]
-     * @return       [description]
-     */
-    public static int getNumInfected(int[] state) {
-        int total = 0;
-        for (int node : state) {
-            if (node == Phenomena.AFFLICTED) total++;
-        }
-        return total;
+    public static void outputCSVRow(BufferedWriter writer, Object[] row) throws IOException {
+        StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < row.length; i++) {
+			if (i < row.length-1)
+				sb.append(row[i] + ", ");
+			else
+				sb.append(row[i] + "\n");
+		}
+		writer.write(sb.toString());
     }
 
 }

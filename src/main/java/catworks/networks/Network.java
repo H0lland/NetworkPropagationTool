@@ -233,6 +233,10 @@ public class Network extends AbstractNetwork {
         return matrix.size();
     }
 
+    public void regenerate() {
+        return;
+    }
+
     /**
      * Gets the 2D array representation of Network.
      * @return Primitive two-dimensional array of Integer values that represent

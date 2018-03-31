@@ -10,7 +10,7 @@ public class ThresholdPhenomena implements Phenomena {
     }
 
     public ThresholdPhenomena(float threshold) {
-        threshold = threshold;
+        this.threshold = threshold;
     }
 
     /**
@@ -19,7 +19,7 @@ public class ThresholdPhenomena implements Phenomena {
      * @param start Array of 1's and 0's representing node affliction, there is
      *              an entry for each node in the array.
      */
-    public int[] propagate(Integer[][] matrix, int[] start){
+    public int[] propagate(Integer[][] matrix, int[] start) {
         if (threshold == -1) {
             throw new IllegalArgumentException("`threshold` has never been specified.");
         }

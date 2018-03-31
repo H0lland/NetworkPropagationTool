@@ -34,6 +34,14 @@ public class ClosenessCentrality implements Centrality {
         return centralities;
     }
 
+    /**
+     * [type description]
+     * @return [description]
+     */
+    public int type() {
+        return Centrality.CLOSENESS;
+    }
+
     @Override
     public String toString() {
         return "closeness";

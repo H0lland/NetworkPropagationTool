@@ -33,6 +33,14 @@ public class BetweennessCentrality implements Centrality {
         return centralities;
     }
 
+    /**
+     * [type description]
+     * @return [description]
+     */
+    public int type() {
+        return Centrality.BETWEENNESS;
+    }
+
     @Override
     public String toString() {
         return "betweenness";
