@@ -4,6 +4,7 @@ package catworks;
 import catworks.networks.*;
 import catworks.networks.metrics.*;
 import catworks.phenomena.*;
+import catworks.simulations.*;
 
 // Additional import statements.
 import java.util.Arrays;
@@ -23,15 +24,27 @@ public class Main {
      * @param String[] args N/A
      */
     public static void main(String[] args) throws Exception, IOException {
-        Network net = new ERNetwork(1000, 0.5);
-        Phenomena phe = new ThresholdPhenomena(0.3f);
+        IDN idn = fooRandomIDN(300, 0.5, 0.1);
+        Phenomena phe = new ThresholdPhenomena(0.15f);
 
-        Simulation simulation = new Simulation(net, phe, 100, 0.05, 0.10);
-        Object[][] data = simulation.run(1000);
+        // SIMULATION 1: Immunize most central nodes in each topology.
+        Simulation simulation = new IDNSimulation(idn, phe, 100, 0.05, 0.10, true);
+        Object[][] data = simulation.run(5);
 
         // Output the data to a .CSV file.
-        String filename = "/Users/Nathaniel/Desktop/Network_Output/ER_1000_single.csv";
+        String filename = "/Users/Nathaniel/Desktop/Network_Output/IDN_300_separate.csv";
         BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        for (Object[] row : data)
+            outputCSVRow(writer, row);
+        writer.close();
+
+        // SIMULATION 2: Same network topology, but bridging occurs before immunization.
+        simulation = new IDNSimulation(idn, phe, 100, 0.05, 0.10, false);
+        data = simulation.run(5);
+
+        // Output the data to a .CSV file.
+        filename = "/Users/Nathaniel/Desktop/Network_Output/IDN_300_bridged.csv";
+        writer = new BufferedWriter(new FileWriter(filename));
         for (Object[] row : data)
             outputCSVRow(writer, row);
         writer.close();
@@ -74,6 +87,64 @@ public class Main {
 */
     }
 
+
+    public static IDN fooRandomIDN(int n, double p, double IDN_p) {
+        ERNetwork net1 = new ERNetwork(n, p);
+        ERNetwork net2 = new ERNetwork(n, p);
+
+        ArrayList<Network> networks = new ArrayList();
+        networks.add(net1); networks.add(net2);
+        IDN idn = new IDN(networks);
+        fooRandomInterEdges(idn, net1, net2, IDN_p);
+
+        return idn;
+    }
+
+    /**
+     * This method adds random BIDIRECTIONAL inter-edges between two networks in
+     * an IDN.
+     * @param idn   [description]
+     * @param net1  [description]
+     * @param net2  [description]
+     * @param IDN_p [description]
+     */
+    public static void fooRandomInterEdges(IDN idn, Network net1, Network net2, double IDN_p) {
+        final int N1 = net1.getNumOfNodes(); int net1ID = 0;
+        final int N2 = net2.getNumOfNodes(); int net2ID = 1;
+
+        ArrayList<InterEdge> interEdges = new ArrayList();
+        for (int i = 0; i < N1; i++) {
+            for (int j = 0; j < N2; j++) {
+                if (Math.random() < IDN_p) {
+                    interEdges.add(new InterEdge(net1ID, i, net2ID, j));
+                    interEdges.add(new InterEdge(net2ID, j, net1ID, i));
+                }
+            }
+        }
+
+        for (InterEdge interEdge : interEdges) {
+            idn.addInterEdge(interEdge);
+        }
+    }
+
+
+    /**
+     * Sample simulation run. To be used for future simulation generation and testing.
+     */
+    public static void simulation1() throws Exception, IOException {
+        Network net = new ERNetwork(300, 0.5);
+        Phenomena phe = new ThresholdPhenomena(0.3f);
+
+        Simulation simulation = new NetworkSimulation(net, phe, 100, 0.05, 0.10);
+        Object[][] data = simulation.run(100);
+
+        // Output the data to a .CSV file.
+        String filename = "/Users/Nathaniel/Desktop/Network_Output/sample.csv";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        for (Object[] row : data)
+            outputCSVRow(writer, row);
+        writer.close();
+    }
 
     /**
      * [getOutputDirectory description]

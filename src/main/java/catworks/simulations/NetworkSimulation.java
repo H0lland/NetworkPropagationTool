@@ -1,4 +1,4 @@
-package catworks;
+package catworks.simulations;
 
 // Project import statements.
 import catworks.networks.*;
@@ -15,38 +15,18 @@ import java.io.BufferedWriter;
 /**
  *
  */
-public class Simulation {
+public class NetworkSimulation extends Simulation {
 
-    private int COLUMNS = 7;
-    private String[] HEADER = { "Time Step", "Number of Nodes", "Number of Immune", "Infected - Betweenness", "Infected - Closeness", "Infected - Degree", "Infected - Eigenvector" };
-    private static final Centrality[] CENTRALITIES = { new BetweennessCentrality(), new ClosenessCentrality(), new DegreeCentrality(), new EigenvectorCentrality() };
+    private Network network;
 
-    private int TIMESTAMP_COL    = 0;
-    private int NODE_COUNT_COL   = 1;
-    private int IMMUNE_COUNT_COL = 2;
-    private int BETWEENNESS_COL  = 3;
-    private int CLOSENESS_COL    = 4;
-    private int DEGREE_COL       = 5;
-    private int EIGENVECTOR_COL  = 6;
-
-    // Instance variables for simulations.
-    private Network    network;
-    private Phenomena  phenomena;
-    private int        timeSteps;
-    private double     immuneFraction;
-    private double     infectFraction;
-    private int        immuneCount;
-    private static int simulationID = 0;
-
-    private int runID = 0;
-
-    public Simulation(Network network, Phenomena phenomena, int timeSteps, double immuneFraction, double infectFraction) {
+    public NetworkSimulation(Network network, Phenomena phenomena, int timeSteps, double immuneFraction, double infectFraction) {
         this.network = network;
         this.phenomena = phenomena;
         this.timeSteps = timeSteps;
         this.immuneFraction = immuneFraction;
         this.infectFraction = infectFraction;
 
+        runID = 0;
         immuneCount = (int) (network.getNumOfNodes() * immuneFraction);
         simulationID++;
     }
@@ -111,7 +91,7 @@ public class Simulation {
      * @throws Exception     [description]
      * @throws IOException   [description]
      */
-    private double[][] run() throws Exception, IOException {
+    protected double[][] run() throws Exception, IOException {
         // Get the adjacency matrix of the network and declare `N` to be the number
         // of nodes in the network.
         network.regenerate();
@@ -160,24 +140,10 @@ public class Simulation {
 
 
     /**
-     * [sumData description]
-     * @param data  [description]
-     * @param data2 [description]
-     */
-    private void sumData(double[][] data, double[][] data2) {
-        for (int i = 0; i < timeSteps; i++) {
-            for (int j = 0; j < COLUMNS; j++) {
-                data[i][j] =  data[i][j] + data2[i][j];
-            }
-        }
-    }
-
-
-    /**
      * [initializeData description]
      * @return [description]
      */
-    private double[][] initializeData() {
+    protected double[][] initializeData() {
         double[][] _data = new double[timeSteps][COLUMNS];
 
 
@@ -216,7 +182,7 @@ public class Simulation {
      * @param network [description]
      * @param metric  [description]
      */
-    public void immunize(int[] state, Network network, Centrality metric) {
+    private void immunize(int[] state, Network network, Centrality metric) {
         Integer[] immuneIndices = network.mostCentralNodes(metric, immuneCount);
         for (Integer immuneIndex : immuneIndices) {
             state[immuneIndex] = Phenomena.IMMUNE;
@@ -240,24 +206,5 @@ public class Simulation {
             }
         }
     }
-
-
-
-
-    // public void setNetwork(Network network)       { this.network = network; }
-    // public void setPhenomena(Phenomena phenomena) { this.phenomena = phenomena; }
-    // public void setCentrality(Centrality metric)  { this.metric = metric; }
-    // public void setTimeSteps(int timeSteps)       { this.timeSteps = timeSteps; }
-    // public void setThreshold(double threshold)    { this.threshold = threshold; }
-    // public void setDirectory(String directory)    { this.dir = directory; }
-    // public void setImmuneNum(int immuneNum)       { this.immuneNum = immuneNum; }
-    // public void setFirstState(int[] firstState)   { this.firstState = firstState; }
-    // public void setID(int id)                     { this.simulationID = id; }
-
-    public void log(String string) {
-        System.out.println("[" + new java.util.Date() + "]$ " + string);
-    }
-
-
 
 }

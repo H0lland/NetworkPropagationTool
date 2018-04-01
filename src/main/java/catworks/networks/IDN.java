@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * etc. is inherently different because IDN needs to consider network IDs, whereas
  * a singular Network need not consider such a specification.
  */
-public class IDN {
+public class IDN extends AbstractNetwork {
 
     ArrayList<InterEdge> interEdges;
     ArrayList<Network>   networks;
@@ -77,6 +77,7 @@ public class IDN {
         }
     }
 
+
     /**
       * [addInterEdge]
       * @param InterEdge connection [description]
@@ -85,33 +86,60 @@ public class IDN {
       interEdges.add(connection);
     }
 
+
     /**
       * [bridge description]
     */
-    public Network bridge(){
-      int offset = 0;
-      int size = 0;
-      int [] sizesUp = new int[networks.size()];
-      for(int h = 0; h < networks.size(); h += 1){ // get total size for simplicity sake
-        sizesUp[h] = size;
-        size += networks.get(h).getMatrix().size();
-      }
-      int[][] rtn = new int[size][size];  //create a size by size array for the return Value
-      for(int i = 0; i < networks.size(); i++){
-        int [] [] matrix = networks.get(i).getIntArrayMatrix();
-        int len = matrix.length;
-        for(int j = 0; j < len; j += 1){
-          System.arraycopy(matrix[j],0,rtn[offset+j],offset,len);
+    public Network bridge() {
+        int offset = 0;
+        int size = 0;
+        int [] sizesUp = new int[networks.size()];
+        for (int h = 0; h < networks.size(); h += 1){ // get total size for simplicity sake
+            sizesUp[h] = size;
+            size += networks.get(h).getMatrix().size();
         }
-        offset += len;
-      }
-      for(int k = 0; k < interEdges.size(); k++){
-        InterEdge curr = interEdges.get(k);
-        int sourceOff = sizesUp[curr.networkID];
-        int destOff = sizesUp[curr.destNetworkID];
-        rtn[sourceOff + curr.sourceNodeID][destOff + curr.destNodeID] = 1;
-      }
-      Network bridged = new Network(rtn);
-      return bridged;
+        int[][] rtn = new int[size][size];  //create a size by size array for the return Value
+        for (int i = 0; i < networks.size(); i++){
+            int[][] matrix = networks.get(i).getIntArrayMatrix();
+            int len = matrix.length;
+            for (int j = 0; j < len; j += 1){
+                System.arraycopy(matrix[j],0,rtn[offset+j],offset,len);
+            }
+            offset += len;
+        }
+        for (int k = 0; k < interEdges.size(); k++){
+            InterEdge curr = interEdges.get(k);
+            int sourceOff = sizesUp[curr.networkID];
+            int destOff = sizesUp[curr.destNetworkID];
+            rtn[sourceOff + curr.sourceNodeID][destOff + curr.destNodeID] = 1;
+        }
+        Network bridged = new Network(rtn);
+        return bridged;
+    }
+
+
+    public Network getNetwork(int i) {
+        return networks.get(i);
+    }
+
+
+    public int getNumOfNetworks() {
+        return networks.size();
+    }
+
+
+    public int getNumOfNodes() {
+        int total = 0;
+        for (Network network : networks) {
+            total += network.getNumOfNodes();
+        }
+        return total;
+    }
+
+
+    public void regenerate() {
+        for (Network network : networks) {
+            network.regenerate();
+        }
     }
 }

@@ -6,17 +6,20 @@ import catworks.networks.metrics.*;
  * The following abstract class will serve as the development guideline for the
  * Network and IDN (Interdependent Network) classes.
  */
-abstract class AbstractNetwork {
+public abstract class AbstractNetwork {
 
     // private HashMap<Node> nodes;
     // private HashMap<E> features;
-    private int id;
-
-    abstract void addNode();
-    abstract void deleteNode(int nodeID);
-    abstract void addEdge(int source, int dest);
-    abstract void deleteEdge(int source, int dest);
+    // private int id;
+    //
+    // abstract void addNode();
+    // abstract void deleteNode(int nodeID);
+    // abstract void addEdge(int source, int dest);
+    // abstract void deleteEdge(int source, int dest);
     // abstract short[][] getMatrix();
+
+    abstract int  getNumOfNodes();
+    abstract void regenerate();
 
     /**
      * The following methods are to be implemented in future iterations of the
