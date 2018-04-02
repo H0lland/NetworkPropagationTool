@@ -1,4 +1,4 @@
-package catworks;
+package catworks.networks;
 
 public class InterEdge {
     int networkID;

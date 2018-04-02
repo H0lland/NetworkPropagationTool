@@ -1,4 +1,6 @@
-package catworks;
+package catworks.networks;
+
+import catworks.networks.metrics.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +15,7 @@ public class Network extends AbstractNetwork {
     private static int count;
     private int networkID;
     private int flag;
-    private ArrayList<ArrayList<Integer>> matrix;
+    protected ArrayList<ArrayList<Integer>> matrix;
 
     /**
      * No-arg constructor that creates an empty Network.
@@ -229,6 +231,10 @@ public class Network extends AbstractNetwork {
     }
     public int getNumOfNodes() {
         return matrix.size();
+    }
+
+    public void regenerate() {
+        return;
     }
 
     /**

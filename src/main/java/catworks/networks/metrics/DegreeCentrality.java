@@ -1,4 +1,4 @@
-package catworks;
+package catworks.networks.metrics;
 
 public class DegreeCentrality implements Centrality {
 
@@ -20,6 +20,14 @@ public class DegreeCentrality implements Centrality {
 			centralities[i] = degree;
 		}
 		return centralities;
+    }
+
+    /**
+     * [type description]
+     * @return [description]
+     */
+    public int type() {
+        return Centrality.DEGREE;
     }
 
     @Override
