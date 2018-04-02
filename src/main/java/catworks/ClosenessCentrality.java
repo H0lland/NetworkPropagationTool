@@ -1,11 +1,11 @@
 package catworks;
 
-public class BetweennessCentrality implements Centrality {
+public class ClosenessCentrality implements Centrality {
 
-    /**
-     * Gets the centrality specifically for finding the Betweenness of the nodes in the matrix
-     * @param  Integer[][] matrix        [description]
-     * @return             [description]
+    /*
+     * Gets the centrality specifically for finding the Eigenvectors of the matrix
+     * @param  Integer[][] matrix        original matrix
+     * @return             eigenvector values
      */
     public Double[] getCentralities(Integer[][] matrix) {
         final int N = matrix.length;
@@ -22,20 +22,21 @@ public class BetweennessCentrality implements Centrality {
             }
         }
 
-        org.graphstream.algorithm.BetweennessCentrality centrality = new org.graphstream.algorithm.BetweennessCentrality();
-        centrality.computeEdgeCentrality(false);
-        centrality.betweennessCentrality(graph);
+        org.graphstream.algorithm.measure.ClosenessCentrality centrality = new org.graphstream.algorithm.measure.ClosenessCentrality("centrality", org.graphstream.algorithm.measure.AbstractCentrality.NormalizationMode.SUM_IS_1);
+        centrality.init(graph);
+        centrality.compute();
 
         Double[] centralities = new Double[N];
         for (int node = 0; node < N; node++) {
-            centralities[node] = graph.getNode(node + "").getAttribute("Cb");
+            centralities[node] = graph.getNode(node + "").getAttribute("centrality");
         }
+
         return centralities;
     }
 
     @Override
     public String toString() {
-        return "betweenness";
+        return "closeness";
     }
 
 }
