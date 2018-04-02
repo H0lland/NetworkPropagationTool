@@ -1,4 +1,4 @@
-package catworks;
+package catworks.networks.metrics;
 
 public class BetweennessCentrality implements Centrality {
 
@@ -31,6 +31,14 @@ public class BetweennessCentrality implements Centrality {
             centralities[node] = graph.getNode(node + "").getAttribute("Cb");
         }
         return centralities;
+    }
+
+    /**
+     * [type description]
+     * @return [description]
+     */
+    public int type() {
+        return Centrality.BETWEENNESS;
     }
 
     @Override

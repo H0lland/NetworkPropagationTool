@@ -1,4 +1,4 @@
-package catworks;
+package catworks.networks.metrics;
 
 public class EigenvectorCentrality implements Centrality {
 
@@ -32,6 +32,14 @@ public class EigenvectorCentrality implements Centrality {
         }
 
         return centralities;
+    }
+
+    /**
+     * [type description]
+     * @return [description]
+     */
+    public int type() {
+        return Centrality.EIGENVECTOR;
     }
 
     @Override
