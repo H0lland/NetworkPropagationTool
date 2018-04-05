@@ -275,6 +275,7 @@ public class Network extends AbstractNetwork {
       return rtn;
     }
 
+
     public void rewire(){
       int [][] mat = this.getIntArrayMatrix(); //make a new int matrix
       int nodes = this.getNumOfNodes();
