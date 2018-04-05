@@ -20,6 +20,7 @@ public abstract class AbstractNetwork {
 
     abstract int  getNumOfNodes();
     abstract void regenerate();
+    abstract void rewire();
 
     /**
      * The following methods are to be implemented in future iterations of the

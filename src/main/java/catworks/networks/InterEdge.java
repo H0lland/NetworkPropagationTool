@@ -13,6 +13,14 @@ public class InterEdge {
         this.destNodeID = destNodeID;
     }
 
+    /*
+     * [changeDestNode]
+     * @param destID new destination node id
+     */
+    public void changeDestNode(int destID){
+      this.destNodeID = destID;
+    }
+
     @Override public String toString() {
         return "(" + networkID + ":" + sourceNodeID + " -> " + destNetworkID + ":" + destNodeID + ")";
     }
