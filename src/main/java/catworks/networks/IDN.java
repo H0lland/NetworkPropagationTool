@@ -124,9 +124,9 @@ public class IDN extends AbstractNetwork {
       }
       for(int k = 0; k < interEdges.size(); k += 1){ // rewire the dest node of each interedge
         int dest = interEdges.get(k).destNetworkID;
-        int size = networks.get(dest).getNumOfNodes();
-        int newNeigh = new Random().nextInt(size + 1);
-        interEdges.get(k).changeDestNode(newNeigh);
+        int size = networks.get(dest).getNumOfNodes(); // get the size of target network
+        int newNeigh = new Random().nextInt(size + 1); // get random node in target network
+        interEdges.get(k).changeDestNode(newNeigh); // change target node
       }
     }
 

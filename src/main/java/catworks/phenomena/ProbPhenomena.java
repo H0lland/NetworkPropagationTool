@@ -19,7 +19,7 @@ public class ProbPhenomena implements Phenomena {
   public int[] propagate(Integer[][] matrix, int[] start){
       int len = start.length;
       int[] rtn = new int[len];
-      float [] sizes = this.probMat.getSizes();
+      float [] sizes = this.probMat.getSizes();  //get the sizes of all networks in idn
       System.arraycopy(start,0,rtn,0,len);
       for (int i = 0; i < len; i++){
         if (start[i] == Phenomena.UNAFFLICTED) { //if node i is UNAFFLICTED
@@ -27,7 +27,7 @@ public class ProbPhenomena implements Phenomena {
                 if (matrix[i][j] != 0){ //node i is adjacent to node j
                   int xCoor = 0;
                   int yCoor = 0;
-                  for(int k = 0; k < sizes.length; k++){
+                  for(int k = 0; k < sizes.length; k++){ //try to bound which networks i and j are in to know the correct probability
                     if(sizes[k] <= i && sizes[k] >= i){ //found bound for xCoor
                       xCoor = k;
                     }
@@ -36,8 +36,8 @@ public class ProbPhenomena implements Phenomena {
                     }
                   }
                   float p = new Random().nextFloat();
-                  if(p>this.probMat.getProbs()[xCoor][yCoor]){
-                    rtn[i] = Phenomena.AFFLICTED;
+                  if(p < this.probMat.getProbs()[xCoor][yCoor]){ // if the generated number less than the "infectiousness" of that region
+                    rtn[i] = Phenomena.AFFLICTED; // infect node i
                   }
                 }
               }

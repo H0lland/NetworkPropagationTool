@@ -276,17 +276,17 @@ public class Network extends AbstractNetwork {
     }
 
     public void rewire(){
-      int [][] mat = this.getIntArrayMatrix();
+      int [][] mat = this.getIntArrayMatrix(); //make a new int matrix
       int nodes = this.getNumOfNodes();
-      int [] blank = new int[nodes];
+      int [] blank = new int[nodes]; //make a blank array
       for(int i = 0; i < nodes; i++){
-        int neighs = this.neighbors(i);
-        System.arraycopy(blank,0,mat[i],0,nodes); //make the adjacency line for node i 0s
+        int neighs = this.neighbors(i); // get the number of neighbors for node i
+        System.arraycopy(blank,0,mat[i],0,nodes); // make the adjacency line for node i 0s
         while(neighs>0){
-          int dest = new Random().nextInt(nodes+1); //find new endpoint for new edge
-          if(mat[i][dest] == 0 && i != dest){ //check that there are no self-loops and only links to another node once
-            mat[i][dest] = 1;
-            neighs--;
+          int dest = new Random().nextInt(nodes+1); // find new endpoint for new edge
+          if(mat[i][dest] == 0 && i != dest){ // check that there are no self-loops and that i only links to another node once
+            mat[i][dest] = 1; // connect to node dest
+            neighs--; //reduce number of neighbors to connect to
           }
         }
       }
