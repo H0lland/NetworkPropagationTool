@@ -43,6 +43,11 @@ public class Main {
         Simulation simulation = new IDNSimulation(idn, phe, TIMES, IMMUNE, INFECT, true);
         Object[][] data = simulation.run(SIMULATIONS);
         String filename = "<insert filename here>";
+        Simulation simulation = new IDNSimulation(idn, phe, TIME, IMMUNE, INFECT, true);
+        Object[][] data = simulation.run(SIMULATIONS);
+
+        // Output the data to a .CSV file.
+        String filename = "/Users/Nathaniel/Desktop/Network_Output/IDN_500_separate_2.csv";
         BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
         for (Object[] row : data)
             outputCSVRow(writer, row);
@@ -52,6 +57,11 @@ public class Main {
         simulation = new IDNSimulation(idn, phe, TIMES, IMMUNE, INFECT, false);
         data = simulation.run(SIMULATIONS);
         filename = "<insert filename here>";
+        simulation = new IDNSimulation(idn, phe, TIME, IMMUNE, INFECT, false);
+        data = simulation.run(SIMULATIONS);
+
+        // Output the data to a .CSV file.
+        filename = "/Users/Nathaniel/Desktop/Network_Output/IDN_500_bridged_2.csv";
         writer = new BufferedWriter(new FileWriter(filename));
         for (Object[] row : data)
             outputCSVRow(writer, row);
