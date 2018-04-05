@@ -10,4 +10,12 @@ public class ProbabilityMatrix {
     this.sizes = sizes;
     this.probs = probs;
   }
+
+  public float [] getSizes(){
+    return sizes;
+  }
+
+  public float [][] getProbs(){
+    return probs;
+  }
 }

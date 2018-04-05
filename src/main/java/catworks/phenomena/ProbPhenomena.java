@@ -3,10 +3,10 @@ package catworks.phenomena;
 import java.lang.System;
 import java.util.Random;
 
-public class ProbThresholdPhenomena implements Phenomena {
+public class ProbPhenomena implements Phenomena {
   private static ProbabilityMatrix probMat;
 
-  public ProbThresholdPhenomena(ProbabilityMatrix probMat){
+  public ProbPhenomena(ProbabilityMatrix probMat){
     this.probMat = probMat;
   }
 
@@ -19,19 +19,43 @@ public class ProbThresholdPhenomena implements Phenomena {
   public int[] propagate(Integer[][] matrix, int[] start){
       int len = start.length;
       int[] rtn = new int[len];
+      float [] sizes = this.probMat.getSizes();
       System.arraycopy(start,0,rtn,0,len);
       for (int i = 0; i < len; i++){
         if (start[i] == Phenomena.UNAFFLICTED) { //if node i is UNAFFLICTED
-          for (int j = 0; j < len; j++) { //check if it's beyond the threshold
-
-          }
-        }
-            if ((threshSum/neighbors) > threshold && start[i] != Phenomena.IMMUNE) { //if above threshold
-              float p = new Random().nextFloat();
               for(int j = 0; j < len; j++){
-
+                if (matrix[i][j] != 0){ //node i is adjacent to node j
+                  int xCoor = 0;
+                  int yCoor = 0;
+                  for(int k = 0; k < sizes.length; k++){
+                    if(sizes[k] <= i && sizes[k] >= i){ //found bound for xCoor
+                      xCoor = k;
+                    }
+                    if(sizes[k] <=   j && sizes[k] >= j){ //found bound for yCoor
+                      yCoor = k;
+                    }
+                  }
+                  float p = new Random().nextFloat();
+                  if(p>this.probMat.getProbs()[xCoor][yCoor]){
+                    rtn[i] = Phenomena.AFFLICTED;
+                  }
+                }
               }
           }
       }
+      return rtn;
+  }
+
+  @Override
+  public String toString(){
+    return "probabilistic";
+  }
+
+  public String getType(){
+    return "probabilistic";
+  }
+
+  public void setThreshold(double threshold){
+    return;
   }
 }
