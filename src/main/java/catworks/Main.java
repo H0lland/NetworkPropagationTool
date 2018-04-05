@@ -19,17 +19,16 @@ import javax.swing.JFileChooser;
 
 public class Main {
 
-    private final int N = 300;
-    private final double INTRA_P = 0.02;
-    private final double INTER_P = 0.10;
-
-    private final float THRESH = 0.03f;
-
-    private final int TIMES = 100;
-    private final double IMMUNE = 0.05;
-    private final double INFECT = 0.02;
-
-    private final int SIMULATIONS = 50;
+    // TEMPORARY constant values to be used to run simulations. TODO: Create XML
+    // parser for a more streamlined approach in lieu of this for future iterations.
+    private static final int    N           = 300;
+    private static final double INTRA_P     = 0.02;
+    private static final double INTER_P     = 0.10;
+    private static final float  THRESH      = 0.03f;
+    private static final int    TIMES       = 100;
+    private static final double IMMUNE      = 0.05;
+    private static final double INFECT      = 0.02;
+    private static final int    SIMULATIONS = 50;
 
     /**
      * For now, this method only demos the SimpleMatrix class in action from EJML.
