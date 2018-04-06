@@ -22,50 +22,41 @@ public class Main {
     // TEMPORARY constant values to be used to run simulations. TODO: Create XML
     // parser for a more streamlined approach in lieu of this for future iterations.
     private static final int    N           = 300;
-    private static final double INTRA_P     = 0.02;
+    private static final double INTRA_P     = 0.25;//0.02;
     private static final double INTER_P     = 0.10;
     private static final float  THRESH      = 0.03f;
-    private static final int    TIMES       = 100;
+    private static final int    TIME        = 100;
     private static final double IMMUNE      = 0.05;
     private static final double INFECT      = 0.02;
-    private static final int    SIMULATIONS = 50;
+    private static final int    SIMULATIONS = 3;
 
     /**
      * For now, this method only demos the SimpleMatrix class in action from EJML.
      * @param String[] args N/A
      */
     public static void main(String[] args) throws Exception, IOException {
+        // Declare variable types for simulation(s).
+        IDN idn;
+        Simulation simulation;
+        Phenomena phe;
+        Object[][] data;
+        String filename;
+
         // Initialize IDN and Phenomena.
-        IDN idn = fooRandomIDN(N, INTRA_P, INTER_P);
-        Phenomena phe = new ThresholdPhenomena(THRESH);
+        idn = fooRandomIDN(N, INTRA_P, INTER_P);
+        phe = new ThresholdPhenomena(THRESH);
 
         // SIMULATION 1: Immunize most central nodes in each topology.
-        Simulation simulation = new IDNSimulation(idn, phe, TIMES, IMMUNE, INFECT, true);
-        Object[][] data = simulation.run(SIMULATIONS);
-        String filename = "<insert filename here>";
-        Simulation simulation = new IDNSimulation(idn, phe, TIME, IMMUNE, INFECT, true);
-        Object[][] data = simulation.run(SIMULATIONS);
-
-        // Output the data to a .CSV file.
-        String filename = "/Users/Nathaniel/Desktop/Network_Output/IDN_500_separate_2.csv";
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
-        for (Object[] row : data)
-            outputCSVRow(writer, row);
-        writer.close();
+        filename = "/Users/Nathaniel/Desktop/Network_Output/demo_separate.csv";
+        simulation = new IDNSimulation(idn, phe, TIME, IMMUNE, INFECT, true);
+        data = simulation.run(SIMULATIONS);
+        outputData(data, filename);
 
         // SIMULATION 2: Same network topology, but bridging occurs before immunization.
-        simulation = new IDNSimulation(idn, phe, TIMES, IMMUNE, INFECT, false);
-        data = simulation.run(SIMULATIONS);
-        filename = "<insert filename here>";
+        filename = "/Users/Nathaniel/Desktop/Network_Output/demo_bridged.csv";
         simulation = new IDNSimulation(idn, phe, TIME, IMMUNE, INFECT, false);
         data = simulation.run(SIMULATIONS);
-
-        // Output the data to a .CSV file.
-        filename = "/Users/Nathaniel/Desktop/Network_Output/IDN_500_bridged_2.csv";
-        writer = new BufferedWriter(new FileWriter(filename));
-        for (Object[] row : data)
-            outputCSVRow(writer, row);
-        writer.close();
+        outputData(data, filename);
 
         /*
         // (1) Initialize and declare the random network to be used for simulation.
@@ -107,8 +98,8 @@ public class Main {
 
 
     public static IDN fooRandomIDN(int n, double p, double IDN_p) {
-        ERNetwork net1 = new ERNetwork(n, p);
-        ERNetwork net2 = new ERNetwork(n, p);
+        Network net1 = new ERNetwork(n, p);//, 4);
+        Network net2 = new ERNetwork(n, p);//, 4);
 
         ArrayList<Network> networks = new ArrayList();
         networks.add(net1); networks.add(net2);
@@ -127,8 +118,8 @@ public class Main {
      * @param IDN_p [description]
      */
     public static void fooRandomInterEdges(IDN idn, Network net1, Network net2, double IDN_p) {
-        private final int N1 = net1.getNumOfNodes(); int net1ID = 0;
-        private final int N2 = net2.getNumOfNodes(); int net2ID = 1;
+        final int N1 = net1.getNumOfNodes(); int net1ID = 0;
+        final int N2 = net2.getNumOfNodes(); int net2ID = 1;
 
         ArrayList<InterEdge> interEdges = new ArrayList();
         for (int i = 0; i < N1; i++) {
@@ -150,11 +141,11 @@ public class Main {
      * Sample simulation run. To be used for future simulation generation and testing.
      */
     public static void simulation1() throws Exception, IOException {
-        Network net = new ERNetwork(300, 0.5);
-        Phenomena phe = new ThresholdPhenomena(0.3f);
+        Network net = new ERNetwork(300, 0.25);
+        Phenomena phe = new ThresholdPhenomena(0.03f);
 
         Simulation simulation = new NetworkSimulation(net, phe, 100, 0.05, 0.10);
-        Object[][] data = simulation.run(100);
+        Object[][] data = simulation.run(10);
 
         // Output the data to a .CSV file.
         String filename = "/Users/Nathaniel/Desktop/Network_Output/sample.csv";
@@ -187,6 +178,19 @@ public class Main {
         else {
             return null;
         }
+    }
+
+
+    /**
+     * [outputData description]
+     * @param data     [description]
+     * @param filename [description]
+     */
+    public static void outputData(Object[][] data, String filename) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        for (Object[] row : data)
+            outputCSVRow(writer, row);
+        writer.close();
     }
 
 
