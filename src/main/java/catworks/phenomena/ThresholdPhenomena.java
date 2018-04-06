@@ -9,7 +9,7 @@ public class ThresholdPhenomena implements Phenomena {
         threshold = -1;
     }
 
-    public ThresholdPhenomena(float threshold) {
+    public ThresholdPhenomena(double threshold) {
         this.threshold = threshold;
     }
 

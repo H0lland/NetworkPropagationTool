@@ -4,6 +4,7 @@ import catworks.networks.metrics.*;
 
 import java.lang.System.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Note: I removed the requirement that IDN extends AbstractNetwork. We need to
@@ -115,6 +116,18 @@ public class IDN extends AbstractNetwork {
         }
         Network bridged = new Network(rtn);
         return bridged;
+    }
+
+    public void rewire(){
+      for(int h = 0; h < networks.size(); h += 1){ // rewire all networks in the IDN
+        networks.get(h).rewire();
+      }
+      for(int k = 0; k < interEdges.size(); k += 1){ // rewire the dest node of each interedge
+        int dest = interEdges.get(k).destNetworkID;
+        int size = networks.get(dest).getNumOfNodes(); // get the size of target network
+        int newNeigh = new Random().nextInt(size + 1); // get random node in target network
+        interEdges.get(k).changeDestNode(newNeigh); // change target node
+      }
     }
 
 

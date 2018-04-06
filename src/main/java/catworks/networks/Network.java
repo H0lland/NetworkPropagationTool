@@ -4,6 +4,7 @@ import catworks.networks.metrics.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
   * Note: I changed the indices from longs to ints to work with ArrayLists, whose
@@ -237,6 +238,18 @@ public class Network extends AbstractNetwork {
         return;
     }
 
+    public int neighbors(int nodeID){
+      int sum = 0;
+      int nodes = this.getNumOfNodes();
+      int[][] mat = this.getIntArrayMatrix();
+      for(int j = 0; j <= nodes; j++){
+        if(mat[nodeID][j]!=0){
+          sum++;
+        }
+      }
+      return sum;
+    }
+
     /**
      * Gets the 2D array representation of Network.
      * @return Primitive two-dimensional array of Integer values that represent
@@ -261,6 +274,34 @@ public class Network extends AbstractNetwork {
       }
       return rtn;
     }
+
+
+    public void rewire(){
+      int [][] mat = this.getIntArrayMatrix(); //make a new int matrix
+      int nodes = this.getNumOfNodes();
+      int [] blank = new int[nodes]; //make a blank array
+      for(int i = 0; i < nodes; i++){
+        int neighs = this.neighbors(i); // get the number of neighbors for node i
+        System.arraycopy(blank,0,mat[i],0,nodes); // make the adjacency line for node i 0s
+        while(neighs>0){
+          int dest = new Random().nextInt(nodes+1); // find new endpoint for new edge
+          if(mat[i][dest] == 0 && i != dest){ // check that there are no self-loops and that i only links to another node once
+            mat[i][dest] = 1; // connect to node dest
+            neighs--; //reduce number of neighbors to connect to
+          }
+        }
+      }
+      matrix = new ArrayList<ArrayList<Integer>>();
+      ArrayList<Integer> inner;
+      for(int i = 0; i < mat.length; i++){
+          inner = new ArrayList<Integer>();
+          for(int j = 0; j< mat[i].length; j++){
+              inner.add(mat[i][j]);
+          }
+          matrix.add(inner);
+      }
+      this.matrix = matrix;
+}
 
     @Override
     public String toString() {
