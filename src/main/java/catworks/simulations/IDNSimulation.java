@@ -21,6 +21,8 @@ public class IDNSimulation extends Simulation {
     private Network bridgedNetwork;
     private boolean separateCentralities;
 
+    private double[][] minimumAndMaximum;
+
     public IDNSimulation(IDN networks, Phenomena phenomena, int timeSteps, double immuneFraction, double infectFraction, boolean separateCentralities) {
         this.networks = networks;
         this.phenomena = phenomena;
@@ -51,6 +53,7 @@ public class IDNSimulation extends Simulation {
         // (1) Initialize `data` such that the rows are of type Integer,
         //     initialized to value 0.
         double[][] data = new double[timeSteps][COLUMNS];
+        initMinimumAndMaximum();
         for (int i = 0; i < timeSteps; i++) {
             for (int j = 0; j < COLUMNS; j++) {
                 data[i][j] = new Integer(0);
@@ -68,22 +71,46 @@ public class IDNSimulation extends Simulation {
         //     by `n` to calculate the average.
         for (int i = 0; i < timeSteps; i++) {
             for (int j = 0; j < COLUMNS; j++) {
-                data[i][j] = data[i][j] / (double) n;
+                switch (j) {
+                    case BETWEENNESS_MIN_COL: break;
+                    case BETWEENNESS_MAX_COL: break;
+                    case CLOSENESS_MIN_COL:   break;
+                    case CLOSENESS_MAX_COL:   break;
+                    case DEGREE_MIN_COL:      break;
+                    case DEGREE_MAX_COL:      break;
+                    case EIGENVECTOR_MIN_COL: break;
+                    case EIGENVECTOR_MAX_COL: break;
+                    default:
+                        data[i][j] = data[i][j] / (double) n;
+                        break;
+                }
             }
         }
 
         // (4) Prepare the final dataset, `finalData`, which will include the header
-        // row.
+        // row. TODO: Figure out how to do minimum and maximum...
         Object[][] finalData = new Object[timeSteps+1][COLUMNS];
         for (int i = 0; i < COLUMNS;     i++) finalData[0][i] = HEADER[i];
         for (int i = 1; i < timeSteps+1; i++) {
             finalData[i][TIMESTAMP_COL]    = (Integer) ((int) data[i-1][TIMESTAMP_COL]);
             finalData[i][NODE_COUNT_COL]   = (Integer) ((int) data[i-1][NODE_COUNT_COL]);
             finalData[i][IMMUNE_COUNT_COL] = (Integer) ((int) data[i-1][IMMUNE_COUNT_COL]);
-            finalData[i][BETWEENNESS_COL]  = (Double)  data[i-1][BETWEENNESS_COL];
-            finalData[i][CLOSENESS_COL]    = (Double)  data[i-1][CLOSENESS_COL];
-            finalData[i][DEGREE_COL]       = (Double)  data[i-1][DEGREE_COL];
-            finalData[i][EIGENVECTOR_COL]  = (Double)  data[i-1][EIGENVECTOR_COL];
+
+            finalData[i][BETWEENNESS_AVG_COL]  = (Double) data[i-1][BETWEENNESS_AVG_COL];
+            finalData[i][BETWEENNESS_MIN_COL]  = (Double) minimumAndMaximum[i-1][BETWEENNESS_MIN_COL];
+            finalData[i][BETWEENNESS_MAX_COL]  = (Double) minimumAndMaximum[i-1][BETWEENNESS_MAX_COL];
+
+            finalData[i][CLOSENESS_AVG_COL] = (Double) data[i-1][CLOSENESS_AVG_COL];
+            finalData[i][CLOSENESS_MIN_COL] = (Double) minimumAndMaximum[i-1][CLOSENESS_MIN_COL];
+            finalData[i][CLOSENESS_MAX_COL] = (Double) minimumAndMaximum[i-1][CLOSENESS_MAX_COL];
+
+            finalData[i][DEGREE_AVG_COL] = (Double) data[i-1][DEGREE_AVG_COL];
+            finalData[i][DEGREE_MIN_COL] = (Double) minimumAndMaximum[i-1][DEGREE_MIN_COL];
+            finalData[i][DEGREE_MAX_COL] = (Double) minimumAndMaximum[i-1][DEGREE_MAX_COL];
+
+            finalData[i][EIGENVECTOR_AVG_COL] = (Double) data[i-1][EIGENVECTOR_AVG_COL];
+            finalData[i][EIGENVECTOR_MIN_COL] = (Double) minimumAndMaximum[i-1][EIGENVECTOR_MIN_COL];
+            finalData[i][EIGENVECTOR_MAX_COL] = (Double) minimumAndMaximum[i-1][EIGENVECTOR_MAX_COL];
         }
         return finalData;
     }
@@ -108,6 +135,36 @@ public class IDNSimulation extends Simulation {
         double[][] data = initializeData();
 
         for (Centrality metric : CENTRALITIES) {
+            // Declare index variables to be used to store values in `data`.
+            int avgIndex, minIndex, maxIndex;
+
+            // Determine which columns (average, minimum, and maximum) to modify
+            // with respect to centrality.
+            switch (metric.type()) {
+                case Centrality.BETWEENNESS:
+                    avgIndex = BETWEENNESS_AVG_COL;
+                    minIndex = BETWEENNESS_MIN_COL;
+                    maxIndex = BETWEENNESS_MAX_COL;
+                    break;
+                case Centrality.CLOSENESS:
+                    avgIndex = CLOSENESS_AVG_COL;
+                    minIndex = CLOSENESS_MIN_COL;
+                    maxIndex = CLOSENESS_MAX_COL;
+                    break;
+                case Centrality.DEGREE:
+                    avgIndex = DEGREE_AVG_COL;
+                    minIndex = DEGREE_MIN_COL;
+                    maxIndex = DEGREE_MAX_COL;
+                    break;
+                case Centrality.EIGENVECTOR:
+                    avgIndex = EIGENVECTOR_AVG_COL;
+                    minIndex = EIGENVECTOR_MIN_COL;
+                    maxIndex = EIGENVECTOR_MAX_COL;
+                    break;
+                default:
+                    throw new Exception("Invalid Centrality metric type.");
+            }
+
             // Log the start of the simulation to the user.
             log("Starting Simulation " + runID + " -- " + metric);
             int[] initialState  = new int[N];
@@ -128,7 +185,7 @@ public class IDNSimulation extends Simulation {
                     Network temp = networks.getNetwork(i);
                     immunize(initialState, temp, metric, offset);
                     infect(initialState, offset);
-                    offset += temp.getNumOfNodes(); // Increment offset so that
+                    offset += temp.getNumOfNodes(); // Increment offset by number of nodes.
                 }
                 immuneCount = backupImmuneCount;
             }
@@ -145,19 +202,23 @@ public class IDNSimulation extends Simulation {
             // the end of each time step.
             int[] currentState = Arrays.copyOf(initialState, N);
             for (int t = 0; t < timeSteps; t++) {
-                int index;
-                switch (metric.type()) {
-                    case Centrality.BETWEENNESS: index = BETWEENNESS_COL; break;
-                    case Centrality.CLOSENESS:   index = CLOSENESS_COL;   break;
-                    case Centrality.DEGREE:      index = DEGREE_COL;      break;
-                    case Centrality.EIGENVECTOR: index = EIGENVECTOR_COL; break;
-                    default: throw new Exception("Invalid Centrality metric type.");
-                }
-
                 // Store the number of infected nodes in `data` and then iterate
                 // to the next state in the propagation process.
                 data[t][IMMUNE_COUNT_COL] = immuneCount;
-                data[t][index] = numberOfInfectedNodes(currentState);
+
+                // Store the number of infected nodes for the average column.
+                int numOfInfected = numberOfInfectedNodes(currentState);
+                data[t][avgIndex] = numOfInfected;
+
+                // Store the minimum number of infected nodes for the min column.
+                if (minimumAndMaximum[t][minIndex] > numOfInfected)
+                    minimumAndMaximum[t][minIndex] = numOfInfected;
+
+                // Store the maximum number of infected nodes for the max column.
+                if (minimumAndMaximum[t][maxIndex] < numOfInfected)
+                    minimumAndMaximum[t][maxIndex] = numOfInfected;
+
+                // Store the next state of phenomena propagation.
                 currentState = phenomena.propagate(matrix, currentState);
             }
             log("Ending Simulation " + runID + " -- " + metric);
@@ -173,18 +234,38 @@ public class IDNSimulation extends Simulation {
     protected double[][] initializeData() {
         double[][] _data = new double[timeSteps][COLUMNS];
 
-
-        // 1) Fill the 0th column with the appropriate timestamp.
         for (int t = 0; t < timeSteps; t++) {
+            // Set the timestamp and node count columns.
             _data[t][TIMESTAMP_COL] = t;
-        }
-
-        // 2) Fill the 1th column with the number of nodes in the current network.
-        for (int t = 0; t < timeSteps; t++) {
             _data[t][NODE_COUNT_COL] = networks.getNumOfNodes();
         }
 
+
+
         return _data;
+    }
+
+
+    /**
+     * [initMinimumAndMaximum description]
+     */
+    public void initMinimumAndMaximum() {
+        // Initialize the 2D array to keep track of minimum and maximum values;
+        minimumAndMaximum = new double[timeSteps][COLUMNS];
+
+        for (int t = 0; t < timeSteps; t++) {
+            // Set all the minimum columns to negative infinity.
+            minimumAndMaximum[t][BETWEENNESS_MIN_COL] = Double.POSITIVE_INFINITY;
+            minimumAndMaximum[t][CLOSENESS_MIN_COL]   = Double.POSITIVE_INFINITY;
+            minimumAndMaximum[t][DEGREE_MIN_COL]      = Double.POSITIVE_INFINITY;
+            minimumAndMaximum[t][EIGENVECTOR_MIN_COL] = Double.POSITIVE_INFINITY;
+
+            // Set all the minimum columns to negative infinity.
+            minimumAndMaximum[t][BETWEENNESS_MAX_COL] = Double.NEGATIVE_INFINITY;
+            minimumAndMaximum[t][CLOSENESS_MAX_COL]   = Double.NEGATIVE_INFINITY;
+            minimumAndMaximum[t][DEGREE_MAX_COL]      = Double.NEGATIVE_INFINITY;
+            minimumAndMaximum[t][EIGENVECTOR_MAX_COL] = Double.NEGATIVE_INFINITY;
+        }
     }
 
 
