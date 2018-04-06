@@ -4,7 +4,7 @@ import java.lang.System;
 import java.util.Random;
 
 public class ProbThreshPhenomena implements Phenomena{
-  private static ProbabilityMatrix probMat;
+  private static ProbabilityMatrix probMat; //all the probabilities in this are the respective P_max values
   private static double [][] threshMat;
 
   public ProbThreshPhenomena(ProbabilityMatrix probMat, double [][] threshMat){
@@ -18,7 +18,7 @@ public class ProbThreshPhenomena implements Phenomena{
    * @param start Array of 1's and 0's representing node affliction, there is
    *                an entry for each node in the array
    */
-   public int[] propagate(int [][] matrix, int[] start){
+   public int[] propagate(Integer [][] matrix, int[] start){
      int len = start.length;
      int[] rtn = new int[len];
      int [] sizes = this.probMat.getSizes();
@@ -54,14 +54,17 @@ public class ProbThreshPhenomena implements Phenomena{
               }
             }
           }
-          float p = new Random().nextFloat();
-          if(p < this.probMat.getProbs()[xCoor][h]){
-            rtn[i] = Phenomena.AFFLICTED;
-          }
+          if((threshSum/neighbors) > this.threshMat[xCoor][h]){ //above the threshhold
+            float p = new Random().nextFloat();
+            if(p < this.probMat.getProbs()[xCoor][h]*(threshSum/neighbors)){ //if random number above below current probability
+              rtn[i] = Phenomena.AFFLICTED; // afflict i
+            }
         }
        }
      }
    }
+   return rtn;
+ }
 
    @Override
    public String toString(){
