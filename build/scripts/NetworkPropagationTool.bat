@@ -63,7 +63,7 @@ set CMD_LINE_ARGS=%*
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\gs-gradle-0.1.0.jar;%APP_HOME%\lib\ejml-all-0.33.jar;%APP_HOME%\lib\jblas-1.2.4.jar;%APP_HOME%\lib\ejml-simple-0.33.jar;%APP_HOME%\lib\ejml-fdense-0.33.jar;%APP_HOME%\lib\ejml-dsparse-0.33.jar;%APP_HOME%\lib\ejml-ddense-0.33.jar;%APP_HOME%\lib\ejml-cdense-0.33.jar;%APP_HOME%\lib\ejml-zdense-0.33.jar;%APP_HOME%\lib\ejml-core-0.33.jar
+set CLASSPATH=%APP_HOME%\lib\gs-gradle-0.1.0.jar;%APP_HOME%\lib\ejml-all-0.33.jar;%APP_HOME%\lib\jblas-1.2.4.jar;%APP_HOME%\lib\gs-algo-1.3.jar;%APP_HOME%\lib\gs-core-1.3.jar;%APP_HOME%\lib\ejml-simple-0.33.jar;%APP_HOME%\lib\ejml-fdense-0.33.jar;%APP_HOME%\lib\ejml-dsparse-0.33.jar;%APP_HOME%\lib\ejml-ddense-0.33.jar;%APP_HOME%\lib\ejml-cdense-0.33.jar;%APP_HOME%\lib\ejml-zdense-0.33.jar;%APP_HOME%\lib\ejml-core-0.33.jar;%APP_HOME%\lib\junit-4.12.jar;%APP_HOME%\lib\pherd-1.0.jar;%APP_HOME%\lib\mbox2-1.0.jar;%APP_HOME%\lib\commons-math-2.1.jar;%APP_HOME%\lib\commons-math3-3.4.1.jar;%APP_HOME%\lib\jfreechart-1.0.14.jar;%APP_HOME%\lib\hamcrest-core-1.3.jar;%APP_HOME%\lib\jcommon-1.0.17.jar;%APP_HOME%\lib\xml-apis-1.3.04.jar;%APP_HOME%\lib\itext-2.1.5.jar;%APP_HOME%\lib\bcmail-jdk14-138.jar;%APP_HOME%\lib\bcprov-jdk14-138.jar
 
 @rem Execute NetworkPropagationTool
 "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %NETWORK_PROPAGATION_TOOL_OPTS%  -classpath "%CLASSPATH%" catworks.Main %CMD_LINE_ARGS%
