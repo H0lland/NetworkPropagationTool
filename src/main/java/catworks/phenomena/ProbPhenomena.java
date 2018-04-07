@@ -12,14 +12,14 @@ public class ProbPhenomena implements Phenomena {
 
   /**
     * [propagate]
-    * @param matrix Adjacency matrix represetnation of the Network_Output
+    * @param matrix Adjacency matrix representation of the Network
     * @param start Array of 1's and 0's representing node affliction, there is
     *               an entry for each node in the array.
     */
   public int[] propagate(Integer[][] matrix, int[] start){
       int len = start.length;
       int[] rtn = new int[len];
-      float [] sizes = this.probMat.getSizes();  //get the sizes of all networks in idn
+      int [] sizes = this.probMat.getSizes();  //get the sizes of all networks in idn
       System.arraycopy(start,0,rtn,0,len);
       for (int i = 0; i < len; i++){
         if (start[i] == Phenomena.UNAFFLICTED) { //if node i is UNAFFLICTED
@@ -27,11 +27,11 @@ public class ProbPhenomena implements Phenomena {
                 if (matrix[i][j] != 0){ //node i is adjacent to node j
                   int xCoor = 0;
                   int yCoor = 0;
-                  for(int k = 0; k < sizes.length; k++){ //try to bound which networks i and j are in to know the correct probability
-                    if(sizes[k] <= i && sizes[k] >= i){ //found bound for xCoor
+                  for(int k = 0; k < sizes.length-1; k++){ //try to bound which networks i and j are in to know the correct probability
+                    if(sizes[k] <= i && sizes[k+1] >= i){ //found bound for xCoor
                       xCoor = k;
                     }
-                    if(sizes[k] <=   j && sizes[k] >= j){ //found bound for yCoor
+                    if(sizes[k] <= j && sizes[k+1] >= j){ //found bound for yCoor
                       yCoor = k;
                     }
                   }
