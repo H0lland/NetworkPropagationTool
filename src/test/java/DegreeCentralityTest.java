@@ -1,5 +1,12 @@
 package catworks;
 
+// Project import statements.
+import catworks.networks.*;
+import catworks.networks.metrics.*;
+import catworks.phenomena.*;
+import catworks.simulations.*;
+
+// Additional import statements.
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;

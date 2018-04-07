@@ -59,7 +59,7 @@ public abstract class Simulation {
      * @throws IOException              [description]
      * @throws IllegalArgumentException [description]
      */
-    public    abstract Object[][] run(int n) throws Exception, IOException, IllegalArgumentException;
+    public abstract Object[][] run(int n) throws Exception, IOException, IllegalArgumentException;
 
 
     /**
