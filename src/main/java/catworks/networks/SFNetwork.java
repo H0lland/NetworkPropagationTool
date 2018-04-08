@@ -66,7 +66,12 @@ public class SFNetwork extends Network {
         // STEP 3: Connect new nodes to every pre-existing node_i with probability
         // p_i. The formal definition for p_i = k_i / sum(k_j).
         for (int newNode = m0; newNode < n; newNode++) {
-            for (int node_i = 0; node_i < newNode; node_i++) {
+            int newNodeEdgeCounter = 0;
+
+            // Loop through the pre-existing nodes and make edges with a probability
+            // with respect to the degrees of pre-existing nodes. However, the number
+            // of new edges for `newNode` (m) must be < m0. If m >= m0, terminate loop.
+            for (int node_i = 0; node_i < newNode && newNodeEdgeCounter < m0; node_i++) {
                 double k_i = degree(graph, node_i);
                 int    denominator = 0;
                 for (int node_j = 0; node_j < newNode; node_j++) {
@@ -80,6 +85,7 @@ public class SFNetwork extends Network {
                 if (Math.random() <= p_i) {
                     graph[newNode][node_i] = 1;
                     graph[node_i][newNode] = 1;
+                    newNodeEdgeCounter++;
                 }
             }
         }
