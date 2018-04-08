@@ -13,9 +13,9 @@ import java.util.Random;
   */
 public class Network extends AbstractNetwork {
 
-    private static int count;
-    private int networkID;
-    private int flag;
+    private static int     count;
+    protected      int     networkID;
+    protected      boolean directed;
     protected ArrayList<ArrayList<Integer>> matrix;
 
     /**
@@ -32,13 +32,13 @@ public class Network extends AbstractNetwork {
      * @param adjacencyMatrix Two-dimensional array, an adjacency matrix, of ints
      *                        to be used to build a Network instance.
      */
-    public Network(int[][] adjacencyMatrix){
+    public Network(int[][] adjacencyMatrix) {
         networkID = count++;
         matrix = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> inner;
-        for(int i = 0; i < adjacencyMatrix.length; i++){
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
             inner = new ArrayList<Integer>();
-            for(int j = 0; j< adjacencyMatrix[i].length; j++){
+            for (int j = 0; j< adjacencyMatrix[i].length; j++) {
                 inner.add(adjacencyMatrix[i][j]);
             }
             matrix.add(inner);
@@ -51,13 +51,13 @@ public class Network extends AbstractNetwork {
      * @param adjacencyMatrix Two-dimensional array, an adjacency matrix, of Integers
      *                        to be used to build a Network instance.
      */
-    public Network(Integer[][] adjacencyMatrix){
+    public Network(Integer[][] adjacencyMatrix) {
         networkID = count++;
         matrix = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> inner;
-        for(int i = 0; i < adjacencyMatrix.length; i++){
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
             inner = new ArrayList<Integer>();
-            for(int j = 0; j< adjacencyMatrix[i].length; j++){
+            for (int j = 0; j< adjacencyMatrix[i].length; j++) {
                 inner.add(adjacencyMatrix[i][j]);
             }
             matrix.add(inner);
@@ -69,7 +69,7 @@ public class Network extends AbstractNetwork {
      * One-arg Network constructor, given an ArrayList<ArrayList<Integer>>.
      * @param adjacencyMatrix Parameter will be used to represent Network.
      */
-    public Network(ArrayList<ArrayList<Integer>> matrix){
+    public Network(ArrayList<ArrayList<Integer>> matrix) {
         this.matrix = matrix;
         networkID = count++;
     }
@@ -184,7 +184,7 @@ public class Network extends AbstractNetwork {
     */
     public void addNode() {
         ArrayList<Integer> newLine = new ArrayList<Integer>();
-        for(int i = 0; i < matrix.size(); i++){
+        for (int i = 0; i < matrix.size(); i++) {
             matrix.get(i).add(0);
             newLine.add(0);
         }
@@ -196,7 +196,7 @@ public class Network extends AbstractNetwork {
     * @param int nodeId [description]
     */
     public void deleteNode(int nodeID) {
-        for(int i = 0; i < matrix.size(); i++){
+        for (int i = 0; i < matrix.size(); i++) {
             matrix.get(i).remove(nodeID); //remove from each other node's adjacency
         }
         matrix.remove(nodeID); //remove the node itself
@@ -238,16 +238,22 @@ public class Network extends AbstractNetwork {
         return;
     }
 
-    public int neighbors(int nodeID){
-      int sum = 0;
-      int nodes = this.getNumOfNodes();
-      int[][] mat = this.getIntArrayMatrix();
-      for(int j = 0; j <= nodes; j++){
-        if(mat[nodeID][j]!=0){
-          sum++;
+
+    /**
+     * [neighbors description]
+     * @param  nodeID [description]
+     * @return        [description]
+     */
+    public int neighbors(int nodeID) {
+        int sum = 0;
+        int nodes = this.getNumOfNodes();
+        int[][] mat = this.getIntArrayMatrix();
+        for (int j = 0; j <= nodes; j++) {
+            if(mat[nodeID][j]!=0) {
+                sum++;
+            }
         }
-      }
-      return sum;
+        return sum;
     }
 
     /**
@@ -264,44 +270,58 @@ public class Network extends AbstractNetwork {
         return array;
     }
 
-    public int[][] getIntArrayMatrix(){
-      int size = this.getNumOfNodes();
-      int [] [] rtn = new int [size][size];
-      for(int i = 0; i < size; i += 1){
-        for(int j = 0; j < size; j += 1){
-          rtn[i][j] = this.matrix.get(i).get(j);
+
+    /**
+     * [getIntArrayMatrix description]
+     * @return [description]
+     */
+    public int[][] getIntArrayMatrix() {
+        int size = this.getNumOfNodes();
+        int [] [] rtn = new int [size][size];
+        for (int i = 0; i < size; i += 1) {
+            for (int j = 0; j < size; j += 1) {
+                rtn[i][j] = this.matrix.get(i).get(j);
+            }
         }
-      }
-      return rtn;
+        return rtn;
     }
 
 
-    public void rewire(){
-      int [][] mat = this.getIntArrayMatrix(); //make a new int matrix
-      int nodes = this.getNumOfNodes();
-      int [] blank = new int[nodes]; //make a blank array
-      for(int i = 0; i < nodes; i++){
-        int neighs = this.neighbors(i); // get the number of neighbors for node i
-        System.arraycopy(blank,0,mat[i],0,nodes); // make the adjacency line for node i 0s
-        while(neighs>0){
-          int dest = new Random().nextInt(nodes+1); // find new endpoint for new edge
-          if(mat[i][dest] == 0 && i != dest){ // check that there are no self-loops and that i only links to another node once
-            mat[i][dest] = 1; // connect to node dest
-            neighs--; //reduce number of neighbors to connect to
-          }
+    /**
+     * [setIntArrayMatrix description]
+     * @param graph [description]
+     */
+    public void setIntArrayMatrix(int[][] graph) {
+        matrix = new ArrayList<ArrayList<Integer>>();
+        for (int i = 0; i < graph.length; i++) {
+            ArrayList<Integer> node = new ArrayList();
+            for (int j = 0; j < graph[i].length; j++) {
+                node.add(graph[i][j]);
+            }
+            matrix.add(node);
         }
-      }
-      matrix = new ArrayList<ArrayList<Integer>>();
-      ArrayList<Integer> inner;
-      for(int i = 0; i < mat.length; i++){
-          inner = new ArrayList<Integer>();
-          for(int j = 0; j< mat[i].length; j++){
-              inner.add(mat[i][j]);
-          }
-          matrix.add(inner);
-      }
-      this.matrix = matrix;
-}
+    }
+
+    /**
+     * [rewire description]
+     */
+    public void rewire() {
+        int[][] graph = getIntArrayMatrix(); //make a new int matrix
+        int nodes = getNumOfNodes();
+        int[] blank = new int[nodes]; //make a blank array
+        for (int i = 0; i < nodes; i++) {
+            int neighs = neighbors(i); // get the number of neighbors for node i
+            System.arraycopy(blank, 0, graph[i], 0, nodes); // make the adjacency line for node i 0s
+            while (neighs > 0) {
+                int dest = new Random().nextInt(nodes + 1); // find new endpoint for new edge
+                if(graph[i][dest] == 0 && i != dest) { // check that there are no self-loops and that i only links to another node once
+                    graph[i][dest] = 1; // connect to node dest
+                    neighs--; //reduce number of neighbors to connect to
+                }
+            }
+        }
+        setIntArrayMatrix(graph);
+    }
 
     @Override
     public String toString() {

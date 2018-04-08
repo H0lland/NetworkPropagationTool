@@ -1,7 +1,5 @@
 package catworks.networks;
 
-import java.util.ArrayList;
-
 public class ERNetwork extends Network {
 
     private int    n;
@@ -24,6 +22,21 @@ public class ERNetwork extends Network {
     public ERNetwork(int n, double p) {
         this.n = n;
         this.p = p;
+        this.directed = DIRECTED;
+        init(n, p);
+    }
+
+
+    /**
+     * Erdos-Renyi (ER) random network constructor.
+     * @param n Number of nodes to be in the network.
+     * @param p Probability that a node has an edge to another node.
+     * @param d Boolean argument that determines if graph is directed (true) or undirected (false).
+     */
+    public ERNetwork(int n, double p, boolean directed) {
+        this.n = n;
+        this.p = p;
+        this.directed = directed;
         init(n, p);
     }
 
@@ -32,7 +45,8 @@ public class ERNetwork extends Network {
      * constructed. This will allows simulations to recreate networks to have a
      * more varied sample for calculations.
      */
-    @Override public void regenerate() {
+    @Override
+    public void regenerate() {
         init(n, p);
     }
 
@@ -47,17 +61,16 @@ public class ERNetwork extends Network {
             throw new IllegalArgumentException("Value `p` must be in the range [0, 1].");
         }
 
-        boolean addEdge;
-        matrix = new ArrayList<ArrayList<Integer>>();
+        int[][] graph = new int[n][n];
         for (int i = 0; i < n; i++) {
-            ArrayList<Integer> row = new ArrayList();
             for (int j = 0; j < n; j++) {
-                addEdge = Math.random() < p;
-                if (addEdge) row.add(1);
-                else         row.add(0);
+                if (Math.random() <= p) {
+                    graph[i][j] = 1;
+                    if (!directed) graph[j][i] = 1;
+                }
             }
-            matrix.add(row);
         }
+        setIntArrayMatrix(graph);
     }
 
 }

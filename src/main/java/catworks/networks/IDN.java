@@ -14,17 +14,49 @@ import java.util.Random;
  */
 public class IDN extends AbstractNetwork {
 
-    ArrayList<InterEdge> interEdges;
-    ArrayList<Network>   networks;
+    private ArrayList<InterEdge> interEdges;
+    private ArrayList<Network>   networks;
 
     public IDN() {
         interEdges = new ArrayList<InterEdge>();
         networks = new ArrayList<Network>();
     }
 
+    public IDN(Network... nets) {
+        networks = new ArrayList<Network>();
+        interEdges = new ArrayList<InterEdge>();
+        for (Network net : nets) {
+            networks.add(net);
+        }
+    }
+
     public IDN(ArrayList<Network> nets){
-      networks = nets;
-      interEdges = new ArrayList<InterEdge>();
+        networks = nets;
+        interEdges = new ArrayList<InterEdge>();
+    }
+
+
+    /**
+     * Initialize new set of inter-edges between networks in IDN. The number of
+     * inter-edges will be `fraction * numOfNodes`.
+     * @param fraction [description]
+     */
+    public void randomInterEdges(double fraction) {
+        int n = (int) (fraction * getNumOfNodes() + 0.5);
+        for (int i = 0; i < n; i++) {
+            // Make a random inter-edge by first selecting the source network and
+            // the dest network.
+            int srcNet  = (int) (Math.random() * getNumOfNetworks());
+            int destNet = (int) (Math.random() * getNumOfNetworks());
+            while (srcNet == destNet) destNet = (int) (Math.random() * getNumOfNetworks());
+
+            // Next, select random nodes in each network.
+            int srcNode  = (int) (Math.random() * networks.get(srcNet).getNumOfNodes());
+            int destNode = (int) (Math.random() * networks.get(destNet).getNumOfNodes());
+
+            // Create new inter-edge and add to array of inter-edges.
+            interEdges.add(new InterEdge(srcNet, srcNode, destNet, destNode));
+        }
     }
 
     /**
@@ -119,15 +151,15 @@ public class IDN extends AbstractNetwork {
     }
 
     public void rewire(){
-      for(int h = 0; h < networks.size(); h += 1){ // rewire all networks in the IDN
-        networks.get(h).rewire();
-      }
-      for(int k = 0; k < interEdges.size(); k += 1){ // rewire the dest node of each interedge
-        int dest = interEdges.get(k).destNetworkID;
-        int size = networks.get(dest).getNumOfNodes(); // get the size of target network
-        int newNeigh = new Random().nextInt(size + 1); // get random node in target network
-        interEdges.get(k).changeDestNode(newNeigh); // change target node
-      }
+        for (int h = 0; h < networks.size(); h += 1) { // rewire all networks in the IDN
+            networks.get(h).rewire();
+        }
+        for (int k = 0; k < interEdges.size(); k += 1) { // rewire the dest node of each interedge
+            int dest = interEdges.get(k).destNetworkID;
+            int size = networks.get(dest).getNumOfNodes(); // get the size of target network
+            int newNeigh = new Random().nextInt(size + 1); // get random node in target network
+            interEdges.get(k).changeDestNode(newNeigh); // change target node
+        }
     }
 
 

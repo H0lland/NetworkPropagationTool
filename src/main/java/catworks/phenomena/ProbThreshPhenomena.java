@@ -3,7 +3,7 @@ package catworks.phenomena;
 import java.lang.System;
 import java.util.Random;
 
-public class ProbThreshPhenomena implements Phenomena{
+public class ProbThreshPhenomena implements Phenomena {
   private static ProbabilityMatrix probMat; //all the probabilities in this are the respective P_max values
   private static double [][] threshMat;
 
@@ -68,11 +68,11 @@ public class ProbThreshPhenomena implements Phenomena{
 
    @Override
    public String toString(){
-     return "probabilistic threshold";
+     return "probabilistic_threshold";
    }
 
-   public String getType(){
-     return "probabilistic threshold";
+   public String getType() {
+     return "probabilistic_threshold";
    }
 
    public void setThreshold(double threshold){

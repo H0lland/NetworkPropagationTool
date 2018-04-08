@@ -180,7 +180,7 @@ public class IDNSimulation extends Simulation {
             if (separateCentralities) {
                 int offset = 0;
                 int backupImmuneCount = immuneCount;
-                immuneCount /= 2;
+                immuneCount /= networks.getNumOfNetworks();
                 for (int i = 0; i < networks.getNumOfNetworks(); i++) {
                     Network temp = networks.getNetwork(i);
                     immunize(initialState, temp, metric, offset);
