@@ -1,5 +1,8 @@
 package catworks.networks;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class SFNetwork extends Network {
 
     private int n;
@@ -52,34 +55,34 @@ public class SFNetwork extends Network {
         int[][] graph = new int[n][n];
 
         // STEP 2: Network begins with an initial connected network of m0 nodes.
-        for (int node_i = 0; node_i < m0; node_i++) {
-            // Select a random node in the range 0, 1, ..., m0. Prevent self-loops.
-            int node_j = (int) (Math.random() * m0);
-            while (node_j == node_i)
-                node_j = (int) (Math.random() * m0);
-
-            // Add a bidirectioanl edge between `node_i` and `node_j`.
-            graph[node_i][node_j] = 1;
-            graph[node_j][node_i] = 1;
-        }
+        connectedSubGraph(graph);
 
         // STEP 3: Connect new nodes to every pre-existing node_i with probability
         // p_i. The formal definition for p_i = k_i / sum(k_j).
         for (int newNode = m0; newNode < n; newNode++) {
-            for (int node_i = 0; node_i < newNode; node_i++) {
-                double k_i = degree(graph, node_i);
-                int    denominator = 0;
-                for (int node_j = 0; node_j < newNode; node_j++) {
-                    if (node_i == node_j) continue;
-                    denominator += degree(graph, node_j);
-                }
+            int newNodeEdgeCounter = 0;
 
-                // Calculate the probabilty and then make an undirected edge between
-                //  `newNode` and `node_i` w.r.t. to this probability.
-                double p_i = k_i / denominator;
-                if (Math.random() <= p_i) {
-                    graph[newNode][node_i] = 1;
-                    graph[node_i][newNode] = 1;
+            // Continue this process until at least one edge has been added.
+            while (newNodeEdgeCounter == 0) {
+                // Loop through the pre-existing nodes and make edges with a probability
+                // with respect to the degrees of pre-existing nodes. However, the number
+                // of new edges for `newNode` (m) must be < m0. If m >= m0, terminate loop.
+                for (int node_i = 0; node_i < newNode && newNodeEdgeCounter < m0; node_i++) {
+                    double k_i = degree(graph, node_i);
+                    int    denominator = 0;
+                    for (int node_j = 0; node_j < newNode; node_j++) {
+                        if (node_i == node_j) continue;
+                        denominator += degree(graph, node_j);
+                    }
+
+                    // Calculate the probabilty and then make an undirected edge between
+                    //  `newNode` and `node_i` w.r.t. to this probability.
+                    double p_i = k_i / denominator;
+                    if (Math.random() <= p_i) {
+                        graph[newNode][node_i] = 1;
+                        graph[node_i][newNode] = 1;
+                        newNodeEdgeCounter++;
+                    }
                 }
             }
         }
@@ -105,5 +108,32 @@ public class SFNetwork extends Network {
         }
         return degree;
     }
+
+
+    /**
+     * Given an empty graph of size MxM, make connections between the edges of
+     * the subgraph comprised of the first `n` nodes such that that subgraph is
+     * connected -- meaning any pair of nodes (v1, v2), there exists a path from
+     * v1 to v2.
+     * @param graph The adjacency matrix representing the entire network topology.
+     * @param n     The dimension to designate the first nodes the subgraph belongs to.
+     */
+    private void connectedSubGraph(int[][] graph, int n) {
+		ArrayList<Integer> links = new ArrayList<Integer>();
+		for (int i = 0; i < n; i++) links.add(i);
+		Collections.shuffle(links);
+
+		int i = 0;
+		int edges = 0;
+		while (edges < n) {
+			Integer j = links.get((int) (Math.random() * links.size()));
+			if (graph[i][j] == 0 && i != j) {
+				graph[i][j] = 1;
+				graph[j][i] = 1;
+				i = links.remove(0);
+				edges++;
+			}
+		}
+	}
 
 }
