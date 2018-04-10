@@ -35,7 +35,7 @@ public class Main {
      * @param String[] args N/A
      */
     public static void main(String[] args) throws Exception, IOException {
-        Runner runner = new Runner();
+        new SimulationRunner();
     }
 
     /**

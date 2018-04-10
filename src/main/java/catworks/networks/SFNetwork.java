@@ -55,41 +55,45 @@ public class SFNetwork extends Network {
         int[][] graph = new int[n][n];
 
         // STEP 2: Network begins with an initial connected network of m0 nodes.
-        connectedSubGraph(graph);
+        connectedSubGraph(graph, m0);
+
+        // NOTE: There's an error in this code that allows for an infinite loop.
 
         // STEP 3: Connect new nodes to every pre-existing node_i with probability
         // p_i. The formal definition for p_i = k_i / sum(k_j).
         for (int newNode = m0; newNode < n; newNode++) {
             int newNodeEdgeCounter = 0;
 
-            // Continue this process until at least one edge has been added.
-            while (newNodeEdgeCounter == 0) {
-                // Loop through the pre-existing nodes and make edges with a probability
-                // with respect to the degrees of pre-existing nodes. However, the number
-                // of new edges for `newNode` (m) must be < m0. If m >= m0, terminate loop.
-                for (int node_i = 0; node_i < newNode && newNodeEdgeCounter < m0; node_i++) {
-                    double k_i = degree(graph, node_i);
-                    int    denominator = 0;
-                    for (int node_j = 0; node_j < newNode; node_j++) {
-                        if (node_i == node_j) continue;
-                        denominator += degree(graph, node_j);
-                    }
-
-                    // Calculate the probabilty and then make an undirected edge between
-                    //  `newNode` and `node_i` w.r.t. to this probability.
-                    double p_i = k_i / denominator;
-                    if (Math.random() <= p_i) {
-                        graph[newNode][node_i] = 1;
-                        graph[node_i][newNode] = 1;
-                        newNodeEdgeCounter++;
-                    }
+            // Loop through the pre-existing nodes and make edges with a probability
+            // with respect to the degrees of pre-existing nodes. However, the number
+            // of new edges for `newNode` (m) must be < m0. If m >= m0, terminate loop.
+            for (int node_i = 0; node_i < newNode && newNodeEdgeCounter < m0; node_i++) {
+                double k_i = degree(graph, node_i);
+                int    k_j = 0;
+                for (int node_j = 0; node_j < newNode; node_j++) {
+                    k_j += degree(graph, node_j);
                 }
+
+                // Calculate the probabilty and then make an undirected edge between
+                //  `newNode` and `node_i` w.r.t. to this probability.
+                double p_i = k_i / k_j;
+                if (Math.random() <= p_i) {
+                    graph[newNode][node_i] = 1;
+                    graph[node_i][newNode] = 1;
+                    newNodeEdgeCounter++;
+                }
+            }
+
+            // If no connection has been made, then add one at random.
+            if (newNodeEdgeCounter == 0) {
+                int j = (int) (Math.random() * newNode);
+                graph[newNode][j] = 1;
+                graph[j][newNode] = 1;
             }
         }
 
         // STEP 4: Initialize network using the scale-free adjacency matrix.
         setIntArrayMatrix(graph);
-
     }
 
 
@@ -102,9 +106,7 @@ public class SFNetwork extends Network {
     private int degree(int[][] graph, int node) {
         int degree = 0;
         for (int i = 0; i < graph.length; i++) {
-            for (int j = 0; j < graph.length; j++) {
-                degree += (graph[i][j] + graph[j][i]);
-            }
+            degree += (graph[node][i] + graph[i][node]);
         }
         return degree;
     }
@@ -123,11 +125,12 @@ public class SFNetwork extends Network {
 		for (int i = 0; i < n; i++) links.add(i);
 		Collections.shuffle(links);
 
-		int i = 0;
+        int i, j;
 		int edges = 0;
 		while (edges < n) {
-			Integer j = links.get((int) (Math.random() * links.size()));
-			if (graph[i][j] == 0 && i != j) {
+            i = links.get(0);
+			j = links.get((int) (Math.random() * links.size()));
+			if (edges == n-1 || (graph[i][j] == 0 && i != j)) {
 				graph[i][j] = 1;
 				graph[j][i] = 1;
 				i = links.remove(0);

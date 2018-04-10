@@ -325,16 +325,18 @@ public class Network extends AbstractNetwork {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("{");
         for (ArrayList<Integer> node : matrix) {
+            sb.append("{");
             for (Integer edge : node) {
-                sb.append(edge + " ");
+                sb.append(edge + ",");
             }
-            sb.append("\n");
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append("},\n");
         }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append("}");
         return sb.toString();
     }
-
-    // TODO: Add methods that provide support for our class and the EJML class,
-    // such as a getEJMLMatrix method.
 }

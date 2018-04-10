@@ -1,8 +1,8 @@
 <simulation id="0">
 	<!-- Step One -->
 	<network type="ER">
-		<numberOfNodes>500</numberOfNodes>
-		<probability>0.5</probability>
+		<n>500</n>
+		<p>0.5</p>
 	</network>
 
 	<!-- Step One -->
@@ -29,8 +29,8 @@
 
 <simulation id="1" runs="1000">
 	<network type="ER">
-		<numberOfNodes>500</numberOfNodes>
-		<probability>0.5</probability>
+		<n>500</n>
+		<p>0.5</p>
 	</network>
 	<phenomena type="epidemic"></phenomena>
 	<centrality>degree</centrality>

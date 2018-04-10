@@ -22,7 +22,7 @@ public class ERNetwork extends Network {
     public ERNetwork(int n, double p) {
         this.n = n;
         this.p = p;
-        this.directed = DIRECTED;
+        this.directed = UNDIRECTED;
         init(n, p);
     }
 

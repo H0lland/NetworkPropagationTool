@@ -184,9 +184,10 @@ public class IDNSimulation extends Simulation {
                 for (int i = 0; i < networks.getNumOfNetworks(); i++) {
                     Network temp = networks.getNetwork(i);
                     immunize(initialState, temp, metric, offset);
-                    infect(initialState, offset);
+                    // infect(initialState, offset); TODO: Change this later.
                     offset += temp.getNumOfNodes(); // Increment offset by number of nodes.
                 }
+                infectFirstNetworks(initialState, 0, 1); // Initiate inital failure in just the FIRST network.
                 immuneCount = backupImmuneCount;
             }
             // OPTION 2: Immunize most central nodes of the bridged network.
@@ -194,7 +195,8 @@ public class IDNSimulation extends Simulation {
                 // In this case, we simply immunize and infect once and hard-code
                 // `offset` to be 0.
                 immunize(initialState, bridgedNetwork, metric, 0);
-                infect(initialState, 0);
+                // infect(initialState, 0); TODO: Change this later.
+                infectFirstNetworks(initialState, 0, 1);
             }
 
 
@@ -239,8 +241,6 @@ public class IDNSimulation extends Simulation {
             _data[t][TIMESTAMP_COL] = t;
             _data[t][NODE_COUNT_COL] = networks.getNumOfNodes();
         }
-
-
 
         return _data;
     }
@@ -307,6 +307,34 @@ public class IDNSimulation extends Simulation {
         int i = 0, upperBound = state.length / denom, randomIndex;
         int infectCount = (int) (state.length * infectFraction + 0.5);
         if (separateCentralities) infectCount /= denom;
+
+        while (i < infectCount) {
+            randomIndex = (int) (Math.random() * upperBound);
+            if (state[randomIndex + offset] == Phenomena.UNAFFLICTED) {
+                state[randomIndex + offset] =  Phenomena.AFFLICTED;
+                i++;
+            }
+        }
+    }
+
+    /**
+     * [infect description]
+     * @param state  [description]
+     * @param offset [description]
+     * @param n      Select the first `n` networks in the IDN to infect.
+     */
+    private void infectFirstNetworks(int[] state, int offset, int n) {
+        if (n > networks.getNumOfNetworks()) {
+            throw new IllegalArgumentException("`n` must be <= number of networks in IDN (" + networks.getNumOfNetworks() + ")");
+        }
+        int length = 0;
+        for (int i = 0; i < n; i++) {
+            length += networks.getNetwork(i).getNumOfNodes();
+        }
+
+        int i = 0, upperBound = length, randomIndex;
+        int infectCount = (int) (state.length * infectFraction + 0.5);
+        // if (separateCentralities) infectCount /= denom;
 
         while (i < infectCount) {
             randomIndex = (int) (Math.random() * upperBound);

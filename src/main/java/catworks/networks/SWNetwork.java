@@ -24,6 +24,7 @@ public class SWNetwork extends Network {
         this.n = n;
         this.p = p;
         this.K = K;
+        this.directed = UNDIRECTED;
         init(n, p, K);
     }
 
