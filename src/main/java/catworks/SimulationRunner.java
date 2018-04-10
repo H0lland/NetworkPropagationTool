@@ -9,13 +9,10 @@ import catworks.simulations.*;
 // Additional import statements.
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
-
-import javax.swing.JFileChooser;
 
 public class SimulationRunner {
 

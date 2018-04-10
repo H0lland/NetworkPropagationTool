@@ -6,7 +6,6 @@ import catworks.networks.metrics.*;
 import catworks.phenomena.*;
 
 // Additional import statements.
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.io.File;
@@ -41,10 +40,7 @@ public class NetworkSimulation extends Simulation {
      * @throws IOException [description]
      */
     public Object[][] run(int n) throws Exception, IOException, IllegalArgumentException {
-        ArrayList<Network> networks = new ArrayList();
-        networks.add(network);
-
-        IDN idn = new IDN(networks);
+        IDN idn = new IDN(network);
         IDNSimulation sim = new IDNSimulation(idn, phenomena, timeSteps, immuneFraction, infectFraction, false);
         return sim.run(n);
     }

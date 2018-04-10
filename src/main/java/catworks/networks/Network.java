@@ -294,7 +294,7 @@ public class Network extends AbstractNetwork {
     public void setIntArrayMatrix(int[][] graph) {
         matrix = new ArrayList<ArrayList<Integer>>();
         for (int i = 0; i < graph.length; i++) {
-            ArrayList<Integer> node = new ArrayList();
+            ArrayList<Integer> node = new ArrayList<Integer>();
             for (int j = 0; j < graph[i].length; j++) {
                 node.add(graph[i][j]);
             }

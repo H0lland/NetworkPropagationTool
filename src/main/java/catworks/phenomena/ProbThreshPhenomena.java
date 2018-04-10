@@ -63,12 +63,12 @@ public class ProbThreshPhenomena implements Phenomena {
                     // Check to make sure the threshold is met, if so, roll a die with
                     // a probability to fail it. If srcNode has no neighbors, then don't
                     // roll die to fail it.
-                    boolean cond = threshSum / neighbors > threshMat[currSection][yCoor];
+                    boolean cond = (threshSum/neighbors) > threshMat[currSection][yCoor];
                     if (cond && neighbors != 0) { //above the threshhold
                         double p = Math.random();
                         double q = probMat.getProbs()[currSection][yCoor] * (threshSum/neighbors);
-                        if (p <= q) { //if random number above below current probability
-                            rtn[destNode] = Phenomena.AFFLICTED; // afflict destNode
+                        if (p <= q) {
+                            rtn[destNode] = Phenomena.AFFLICTED;
                         }
                     }
                 }
