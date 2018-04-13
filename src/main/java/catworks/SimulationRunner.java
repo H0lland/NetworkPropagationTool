@@ -54,6 +54,30 @@ public class SimulationRunner {
         simulation18();
     }
 
+    public SimulationRunner(int n) throws Exception {
+        simID = n;
+        switch (n) {
+            case 1:  simulation1();  break;
+            case 2:  simulation2();  break;
+            case 3:  simulation3();  break;
+            case 4:  simulation4();  break;
+            case 5:  simulation5();  break;
+            case 6:  simulation6();  break;
+            case 7:  simulation7();  break;
+            case 8:  simulation8();  break;
+            case 9:  simulation9();  break;
+            case 10: simulation10(); break;
+            case 11: simulation11(); break;
+            case 12: simulation12(); break;
+            case 13: simulation13(); break;
+            case 14: simulation14(); break;
+            case 15: simulation15(); break;
+            case 16: simulation16(); break;
+            case 17: simulation17(); break;
+            case 18: simulation18(); break;
+        }
+    }
+
 
     /**
      * Simulation 1.

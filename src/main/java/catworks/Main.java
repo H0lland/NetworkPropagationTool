@@ -16,7 +16,10 @@ public class Main {
      * @param String[] args N/A
      */
     public static void main(String[] args) throws Exception, IOException {
-        new SimulationRunner();
+        java.util.Scanner input = new java.util.Scanner(System.in);
+        System.out.print("Enter simulation number to run (1-18), real-world (-1): ");
+        int n = input.nextInt();
+        new SimulationRunner(n);
     }
 
 }

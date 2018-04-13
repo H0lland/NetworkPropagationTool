@@ -20,6 +20,10 @@ dependencies {
     testCompile "junit:junit:4.12"
 }
 
+run {
+    standardInput = System.in
+}
+
 jar {
     baseName = 'gs-gradle'
     version = '0.1.0'
