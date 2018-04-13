@@ -313,7 +313,7 @@ public class Network extends AbstractNetwork {
             int neighs = neighbors(i); // get the number of neighbors for node i
             System.arraycopy(blank, 0, graph[i], 0, nodes); // make the adjacency line for node i 0s
             while (neighs > 0) {
-                int dest = new Random().nextInt(nodes + 1); // find new endpoint for new edge
+                int dest = (int) (Math.random() * nodes); // find new endpoint for new edge
                 if(graph[i][dest] == 0 && i != dest) { // check that there are no self-loops and that i only links to another node once
                     graph[i][dest] = 1; // connect to node dest
                     neighs--; //reduce number of neighbors to connect to

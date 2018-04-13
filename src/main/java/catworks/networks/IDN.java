@@ -16,6 +16,7 @@ public class IDN extends AbstractNetwork {
 
     private ArrayList<InterEdge> interEdges;
     private ArrayList<Network>   networks;
+    private double               fraction;
 
     public IDN() {
         interEdges = new ArrayList<InterEdge>();
@@ -186,5 +187,7 @@ public class IDN extends AbstractNetwork {
         for (Network network : networks) {
             network.regenerate();
         }
+        interEdges = new ArrayList<InterEdge>();
+        randomInterEdges(0.05);
     }
 }
