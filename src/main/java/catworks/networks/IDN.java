@@ -18,6 +18,8 @@ public class IDN extends AbstractNetwork {
     private ArrayList<Network>   networks;
     private double               fraction;
 
+    private static final double INTER_EDGE_P = 0.05;
+
     public IDN() {
         interEdges = new ArrayList<InterEdge>();
         networks = new ArrayList<Network>();
@@ -188,6 +190,6 @@ public class IDN extends AbstractNetwork {
             network.regenerate();
         }
         interEdges = new ArrayList<InterEdge>();
-        randomInterEdges(0.05);
+        randomInterEdges(INTER_EDGE_P);
     }
 }

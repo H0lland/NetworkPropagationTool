@@ -125,11 +125,13 @@ public class IDNSimulation extends Simulation {
     protected double[][] run() throws Exception, IOException {
         // Get the adjacency matrix of the network and declare `N` to be the number
         // of nodes in the network.
-        if (!(networks.getNetwork(0) instanceof (ERNetwork)) && !(networks.getNetwork(0) instanceof (SFNetwork)) && !(networks.getNetwork(0) instanceof (ERNetwork))) {
-            networks.getNetwork(1).rewire(); // TODO: Complete this so that it works for an arbitrary number of networks.
+        if ((networks.getNetwork(0) instanceof ERNetwork) || (networks.getNetwork(0) instanceof SFNetwork) || (networks.getNetwork(0) instanceof ERNetwork)) {
+            log("networks.regenerate();");
+            networks.regenerate();
         }
         else {
-            networks.regenerate();
+            log("networks.getNetwork(1).rewire();");
+            networks.getNetwork(1).rewire(); // TODO: Complete this so that it works for an arbitrary number of networks.
         }
         Network bridgedNetwork = networks.bridge();
         Integer[][] matrix = bridgedNetwork.getArrayMatrix();
