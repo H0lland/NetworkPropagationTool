@@ -68,10 +68,13 @@ public class ERNetwork extends Network {
             throw new IllegalArgumentException("Value `p` must be in the range [0, 1].");
         }
 
+        double rand;
+
         int[][] graph = new int[n][n];
         for (int i = 0; i < n; i++) {
             int connections = 0;
             for (int j = 0; j < n; j++) {
+                rand = (directed) ? p : (2 * p);
                 if (Math.random() <= p) {
                     graph[i][j] = 1;
                     if (!directed) graph[j][i] = 1;

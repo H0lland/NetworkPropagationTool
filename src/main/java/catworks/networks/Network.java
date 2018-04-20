@@ -18,7 +18,7 @@ public class Network extends AbstractNetwork {
     protected      boolean directed;
     protected ArrayList<ArrayList<Integer>> matrix;
 
-    private static final double REWIRING_P = 0.25;
+    private static final double REWIRING_P = 0.05;
 
     /**
      * No-arg constructor that creates an empty Network.
@@ -45,6 +45,7 @@ public class Network extends AbstractNetwork {
             }
             matrix.add(inner);
         }
+        directed = UNDIRECTED;
     }
 
 
@@ -313,20 +314,22 @@ public class Network extends AbstractNetwork {
         int n = getNumOfNodes();
         for (int j = 0; j < n; j++) {
 			for (int i = 0; i < j; i++) {
-				if (Math.random() <= beta && graph[i][j] == 1) {
-					int k = (int) (Math.random() * n);
-					while (k == i)
-                        k = (int) (Math.random() * n);
+                if (graph[i][j] == 1) {
+    				if (Math.random() <= beta) {
+    					int k = (int) (Math.random() * n);
+    					while (k == i || graph[i][k] == 1)
+                            k = (int) (Math.random() * n);
 
-                    // Rewire the edges.
-                    graph[i][j] = 0;
-                    graph[i][k] = 1;
-                    if (!directed) {
-                        graph[j][i] = 0;
-                        graph[k][i] = 1;
-                    }
-				}
-			}
+                        // Rewire the edges.
+                        graph[i][j] = 0;
+                        graph[i][k] = 1;
+                        if (!directed) {
+                            graph[j][i] = 0;
+                            graph[k][i] = 1;
+                        }
+    				}
+    			}
+            }
 		}
         setIntArrayMatrix(graph);
     }
