@@ -16,17 +16,15 @@ public class Main {
      * @param String[] args N/A
      */
     public static void main(String[] args) throws Exception, IOException {
-        // java.util.Scanner input = new java.util.Scanner(System.in);
-        // System.out.print("Enter simulation number to run (1-18), real-world (-1): ");
-        // int n = input.nextInt();
-        new SimulationRunner();
+        java.util.Scanner input = new java.util.Scanner(System.in);
+        System.out.print("Enter simulation number to run (1-18), real-world (-1): ");
+        int n = input.nextInt();
+        input.close();
+        new SimulationRunner(n);
 
-        // Network network = new Network(RealWorld.IEEE300());
-        // System.out.println("IEEE-300 Average Degree:      " + averageDegree(network));
-        // System.out.println(network + "\n\n");
-        // network.rewire(); network.rewire();
-        // System.out.println("Cyber Network Average Degree: " + averageDegree(network));
-        // System.out.println(network);
+        // IDN idn = new IDN(new ERNetwork(300, 0.02), new ERNetwork(300, 0.02));
+        // idn.randomInterEdges(10.0/600);
+        // System.out.println(idn.numberOfInterEdges());
     }
 
     public static double averageDegree(Network network) {

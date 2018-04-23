@@ -173,32 +173,4 @@ public class SFNetwork extends Network {
         return degree;
     }
 
-
-    /**
-     * Given an empty graph of size MxM, make connections between the edges of
-     * the subgraph comprised of the first `n` nodes such that that subgraph is
-     * connected -- meaning any pair of nodes (v1, v2), there exists a path from
-     * v1 to v2.
-     * @param graph The adjacency matrix representing the entire network topology.
-     * @param n     The dimension to designate the first nodes the subgraph belongs to.
-     */
-    private void connectedSubGraph(int[][] graph, int n) {
-		ArrayList<Integer> links = new ArrayList<Integer>();
-		for (int i = 0; i < n; i++) links.add(i);
-		Collections.shuffle(links);
-
-        int i, j;
-		int edges = 0;
-		while (edges < n) {
-            i = links.get(0);
-			j = links.get((int) (Math.random() * links.size()));
-			if (edges == n-1 || (graph[i][j] == 0 && i != j)) {
-				graph[i][j] = 1;
-				graph[j][i] = 1;
-				i = links.remove(0);
-				edges++;
-			}
-		}
-	}
-
 }

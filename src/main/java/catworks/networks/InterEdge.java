@@ -24,4 +24,12 @@ public class InterEdge {
     @Override public String toString() {
         return "(" + networkID + ":" + sourceNodeID + " -> " + destNetworkID + ":" + destNodeID + ")";
     }
+
+    @Override public boolean equals(Object other) {
+        if (other == this) return true;
+        if (other instanceof InterEdge) {
+            return this.toString().equals(other.toString());
+        }
+        return false;
+    }
 }

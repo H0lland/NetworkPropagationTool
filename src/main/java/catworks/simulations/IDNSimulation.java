@@ -23,6 +23,18 @@ public class IDNSimulation extends Simulation {
 
     private double[][] minimumAndMaximum;
 
+    public IDNSimulation(IDN networks, Phenomena phenomena, int timeSteps, int immuneCount, double infectFraction, boolean separateCentralities) {
+        this.networks = networks;
+        this.phenomena = phenomena;
+        this.timeSteps = timeSteps;
+        this.immuneCount = immuneCount;
+        this.infectFraction = infectFraction;
+        this.separateCentralities = separateCentralities;
+
+        runID = 0;
+        simulationID++;
+    }
+
     public IDNSimulation(IDN networks, Phenomena phenomena, int timeSteps, double immuneFraction, double infectFraction, boolean separateCentralities) {
         this.networks = networks;
         this.phenomena = phenomena;

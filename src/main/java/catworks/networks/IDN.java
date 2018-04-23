@@ -17,8 +17,9 @@ public class IDN extends AbstractNetwork {
     private ArrayList<InterEdge> interEdges;
     private ArrayList<Network>   networks;
     private double               fraction;
+    private double               interP;
 
-    private static final double INTER_EDGE_P = 0.05;
+    private static final double INTER_EDGE_P = 10.0/600;
 
     public IDN() {
         interEdges = new ArrayList<InterEdge>();
@@ -44,9 +45,12 @@ public class IDN extends AbstractNetwork {
      * inter-edges will be `fraction * numOfNodes`.
      * @param fraction [description]
      */
-    public void randomInterEdges(double fraction) {
-        int n = (int) (fraction * getNumOfNodes() + 0.5);
-        for (int i = 0; i < n; i++) {
+    public void randomInterEdges(double interP) {
+        this.interP = interP;
+        InterEdge newEdge;
+        int n = (int) (interP * getNumOfNodes() + 0.5);
+        int i = 0;
+        while (i < n) {
             // Make a random inter-edge by first selecting the source network and
             // the dest network.
             int srcNet  = (int) (Math.random() * getNumOfNetworks());
@@ -58,9 +62,19 @@ public class IDN extends AbstractNetwork {
             int destNode = (int) (Math.random() * networks.get(destNet).getNumOfNodes());
 
             // Create new inter-edge and add to array of inter-edges.
-            interEdges.add(new InterEdge(srcNet, srcNode, destNet, destNode));
+            newEdge = new InterEdge(srcNet, srcNode, destNet, destNode);
+            if (interEdges.contains(newEdge) == false)  {
+                interEdges.add(newEdge);
+                i++;
+            }
         }
     }
+
+
+    public int numberOfInterEdges() {
+        return interEdges.size();
+    }
+
 
     /**
      * [addNode description]

@@ -4,8 +4,8 @@ import java.lang.System;
 import java.util.Random;
 
 public class ProbThreshPhenomena implements Phenomena {
-    private static ProbabilityMatrix probMat; //all the probabilities in this are the respective P_max values
-    private static double [][] threshMat;
+    private ProbabilityMatrix probMat; //all the probabilities in this are the respective P_max values
+    private double [][] threshMat;
 
     public ProbThreshPhenomena(ProbabilityMatrix probMat, double [][] threshMat) {
         this.probMat = probMat;
@@ -21,14 +21,14 @@ public class ProbThreshPhenomena implements Phenomena {
    public int[] propagate(Integer [][] matrix, int[] start) {
        int len = start.length;
        int[] rtn = new int[len];
-       int [] sizes = this.probMat.getSizes();
-       System.arraycopy(start,0,rtn,0,len);
+       int[] sizes = probMat.getSizes();
+       System.arraycopy(start, 0, rtn, 0, len);
 
        // Loop through each node.
        for (int destNode = 0; destNode < len; destNode++) {
            int yCoor = 0;
            for (int k = 0; k < sizes.length-1; k++) { //find the section "destNode" is in
-                if (sizes [k] <= destNode && sizes[k+1] >= destNode) { //found bound for yCoor
+                if (sizes[k] <= destNode && sizes[k+1] >= destNode) { //found bound for yCoor
                     yCoor = k;
                 }
             }
