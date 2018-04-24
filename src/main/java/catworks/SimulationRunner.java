@@ -18,7 +18,7 @@ public class SimulationRunner {
 
     // Class-wide constants.
     private static final String slash = File.separator;
-    private static final int    TIME = 200;
+    private static final int    TIME = 300;
     private static final int    NUM_OF_SIMULATIONS = 100;
 
     // Network simulation variables to be modified.
@@ -34,7 +34,7 @@ public class SimulationRunner {
     private Simulation simulation;   private Phenomena  phe;
     private ProbabilityMatrix probMatrix;
     private Network cyber, physical; private IDN idn;
-    private static final String baseFilename = "out" + slash + "simulations" + slash + "lowered_thresh" + slash + "targeted_sample" + slash;
+    private static final String baseFilename = "out" + slash + "simulations" + slash + "normal_thresh" + slash + "targeted" + slash;
 
     private static final boolean[] IS_BRIDGED = { true, false };
 
@@ -44,7 +44,7 @@ public class SimulationRunner {
     public SimulationRunner() throws Exception {
         simID = 1;
         probs = new double[][] {{0.8, 0.8}, {0.8, 0.8}};
-        threshMatrix = LOWER_THRESH;
+        threshMatrix = NORMAL_THRESH;
         sizes = new int[] {0, nodes};
         simulation1();
         simulation2();

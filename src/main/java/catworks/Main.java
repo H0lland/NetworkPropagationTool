@@ -2,9 +2,6 @@ package catworks;
 
 // Project import statements.
 import catworks.networks.*;
-import catworks.networks.metrics.*;
-import catworks.phenomena.*;
-import catworks.simulations.*;
 
 // Additional import statement(s).
 import java.io.IOException;

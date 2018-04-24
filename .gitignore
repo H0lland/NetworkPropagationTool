@@ -43,5 +43,3 @@ gradle-app.setting
 *.lock
 *.bin
 *.class
-
-*.csv
