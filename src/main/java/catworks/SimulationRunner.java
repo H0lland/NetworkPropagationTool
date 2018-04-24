@@ -23,7 +23,7 @@ public class SimulationRunner {
 
     // Network simulation variables to be modified.
     private static int nodes = 300, m0 = 6, k = 6, immune = 10;
-    private static double infect = 0.025, INTER_P = 10.0/600;
+    private static double infect = 5.0/600, INTER_P = 3.0/600;
     private static double p = 0.02, beta = 0.05;
 
     // Declare variables that will be used in simulation methods.
@@ -34,14 +34,17 @@ public class SimulationRunner {
     private Simulation simulation;   private Phenomena  phe;
     private ProbabilityMatrix probMatrix;
     private Network cyber, physical; private IDN idn;
-    private static final String baseFilename = "out" + slash + "simulations" + slash + "lowered_thresh" + slash + "immuneCount=10" + slash;
+    private static final String baseFilename = "out" + slash + "simulations" + slash + "lowered_thresh" + slash + "targeted_sample" + slash;
 
     private static final boolean[] IS_BRIDGED = { true, false };
+
+    private static final double[][] LOWER_THRESH  = {{0.15, 0.10}, {0.35, 0.25}};
+    private static final double[][] NORMAL_THRESH = {{0.20, 0.15}, {0.40, 0.30}};
 
     public SimulationRunner() throws Exception {
         simID = 1;
         probs = new double[][] {{0.8, 0.8}, {0.8, 0.8}};
-        threshMatrix = new double[][] {{0.15, 0.10}, {0.35, 0.25}}; // {{0.2, 0.15}, {0.4, 0.3}};
+        threshMatrix = LOWER_THRESH;
         sizes = new int[] {0, nodes};
         simulation1();
         simulation2();

@@ -100,7 +100,7 @@ public class IDNSimulation extends Simulation {
         }
 
         // (4) Prepare the final dataset, `finalData`, which will include the header
-        // row. TODO: Figure out how to do minimum and maximum...
+        // row.
         Object[][] finalData = new Object[timeSteps+1][COLUMNS];
         for (int i = 0; i < COLUMNS;     i++) finalData[0][i] = HEADER[i];
         for (int i = 1; i < timeSteps+1; i++) {
@@ -206,7 +206,8 @@ public class IDNSimulation extends Simulation {
                     // infect(initialState, offset); TODO: Change this later.
                     offset += temp.getNumOfNodes(); // Increment offset by number of nodes.
                 }
-                infectFirstNetworks(initialState, 0, 1); // Initiate inital failure in just the FIRST network.
+                targetedInfect(initialState, networks.getNetwork(0), 0);
+                // infectFirstNetworks(initialState, 0, 1); // Initiate inital failure in just the FIRST network.
                 immuneCount = backupImmuneCount;
             }
             // OPTION 2: Immunize most central nodes of the bridged network.
@@ -215,7 +216,8 @@ public class IDNSimulation extends Simulation {
                 // `offset` to be 0.
                 immunize(initialState, bridgedNetwork, metric, 0);
                 // infect(initialState, 0); TODO: Change this later.
-                infectFirstNetworks(initialState, 0, 1);
+                // infectFirstNetworks(initialState, 0, 1);
+                targetedInfect(initialState, networks.getNetwork(0), 0);
             }
 
 
@@ -353,7 +355,6 @@ public class IDNSimulation extends Simulation {
 
         int i = 0, upperBound = length, randomIndex;
         int infectCount = (int) (state.length * infectFraction + 0.5);
-        // if (separateCentralities) infectCount /= denom;
 
         while (i < infectCount) {
             randomIndex = (int) (Math.random() * upperBound);
@@ -361,6 +362,29 @@ public class IDNSimulation extends Simulation {
                 state[randomIndex + offset] =  Phenomena.AFFLICTED;
                 i++;
             }
+        }
+    }
+
+
+    /**
+     * Infect the designated fraction of infected nodes from the selected network.
+     * Nodes will be infected based on centrality.
+     * @param state   [description]
+     * @param network [description]
+     * @param offset  [description]
+     */
+    private void targetedInfect(int[] state, Network network, int offset) {
+        int i = 0, index = 0, infectCount = (int) (state.length * infectFraction + 0.5);
+        int num = immuneCount + infectCount;
+        Integer[] centralIndicies = network.mostCentralNodes(new DegreeCentrality(), num);
+
+        while (i < infectCount) {
+            // System.out.printf("%d < %d\n", i, infectCount);
+            if (state[centralIndicies[index]] == Phenomena.UNAFFLICTED) {
+                state[centralIndicies[index]] = Phenomena.AFFLICTED;
+                i += 1;
+            }
+            index += 1;
         }
     }
 
