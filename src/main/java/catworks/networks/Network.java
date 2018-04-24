@@ -18,6 +18,8 @@ public class Network extends AbstractNetwork {
     protected      boolean directed;
     protected ArrayList<ArrayList<Integer>> matrix;
 
+    private static final double REWIRING_P = 0.05;
+
     /**
      * No-arg constructor that creates an empty Network.
      */
@@ -43,6 +45,7 @@ public class Network extends AbstractNetwork {
             }
             matrix.add(inner);
         }
+        directed = UNDIRECTED;
     }
 
 
@@ -294,7 +297,7 @@ public class Network extends AbstractNetwork {
     public void setIntArrayMatrix(int[][] graph) {
         matrix = new ArrayList<ArrayList<Integer>>();
         for (int i = 0; i < graph.length; i++) {
-            ArrayList<Integer> node = new ArrayList();
+            ArrayList<Integer> node = new ArrayList<Integer>();
             for (int j = 0; j < graph[i].length; j++) {
                 node.add(graph[i][j]);
             }
@@ -306,35 +309,45 @@ public class Network extends AbstractNetwork {
      * [rewire description]
      */
     public void rewire() {
-        int[][] graph = getIntArrayMatrix(); //make a new int matrix
-        int nodes = getNumOfNodes();
-        int[] blank = new int[nodes]; //make a blank array
-        for (int i = 0; i < nodes; i++) {
-            int neighs = neighbors(i); // get the number of neighbors for node i
-            System.arraycopy(blank, 0, graph[i], 0, nodes); // make the adjacency line for node i 0s
-            while (neighs > 0) {
-                int dest = new Random().nextInt(nodes + 1); // find new endpoint for new edge
-                if(graph[i][dest] == 0 && i != dest) { // check that there are no self-loops and that i only links to another node once
-                    graph[i][dest] = 1; // connect to node dest
-                    neighs--; //reduce number of neighbors to connect to
-                }
+        int[][] graph = getIntArrayMatrix();
+        double beta = REWIRING_P;
+        int n = getNumOfNodes();
+        for (int j = 0; j < n; j++) {
+			for (int i = 0; i < j; i++) {
+                if (graph[i][j] == 1) {
+    				if (Math.random() <= beta) {
+    					int k = (int) (Math.random() * n);
+    					while (k == i || graph[i][k] == 1)
+                            k = (int) (Math.random() * n);
+
+                        // Rewire the edges.
+                        graph[i][j] = 0;
+                        graph[i][k] = 1;
+                        if (!directed) {
+                            graph[j][i] = 0;
+                            graph[k][i] = 1;
+                        }
+    				}
+    			}
             }
-        }
+		}
         setIntArrayMatrix(graph);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("{");
         for (ArrayList<Integer> node : matrix) {
+            sb.append("{");
             for (Integer edge : node) {
-                sb.append(edge + " ");
+                sb.append(edge + ",");
             }
-            sb.append("\n");
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append("},\n");
         }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append("}");
         return sb.toString();
     }
-
-    // TODO: Add methods that provide support for our class and the EJML class,
-    // such as a getEJMLMatrix method.
 }

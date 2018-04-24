@@ -23,6 +23,18 @@ public class IDNSimulation extends Simulation {
 
     private double[][] minimumAndMaximum;
 
+    public IDNSimulation(IDN networks, Phenomena phenomena, int timeSteps, int immuneCount, double infectFraction, boolean separateCentralities) {
+        this.networks = networks;
+        this.phenomena = phenomena;
+        this.timeSteps = timeSteps;
+        this.immuneCount = immuneCount;
+        this.infectFraction = infectFraction;
+        this.separateCentralities = separateCentralities;
+
+        runID = 0;
+        simulationID++;
+    }
+
     public IDNSimulation(IDN networks, Phenomena phenomena, int timeSteps, double immuneFraction, double infectFraction, boolean separateCentralities) {
         this.networks = networks;
         this.phenomena = phenomena;
@@ -88,7 +100,7 @@ public class IDNSimulation extends Simulation {
         }
 
         // (4) Prepare the final dataset, `finalData`, which will include the header
-        // row. TODO: Figure out how to do minimum and maximum...
+        // row.
         Object[][] finalData = new Object[timeSteps+1][COLUMNS];
         for (int i = 0; i < COLUMNS;     i++) finalData[0][i] = HEADER[i];
         for (int i = 1; i < timeSteps+1; i++) {
@@ -125,7 +137,14 @@ public class IDNSimulation extends Simulation {
     protected double[][] run() throws Exception, IOException {
         // Get the adjacency matrix of the network and declare `N` to be the number
         // of nodes in the network.
-        networks.regenerate();
+        if ((networks.getNetwork(0) instanceof ERNetwork) || (networks.getNetwork(0) instanceof SFNetwork) || (networks.getNetwork(0) instanceof ERNetwork)) {
+            log("networks.regenerate();");
+            networks.regenerate();
+        }
+        else {
+            log("networks.getNetwork(1).rewire();");
+            networks.getNetwork(1).rewire(); // TODO: Complete this so that it works for an arbitrary number of networks.
+        }
         Network bridgedNetwork = networks.bridge();
         Integer[][] matrix = bridgedNetwork.getArrayMatrix();
         final Integer N = networks.getNumOfNodes();
@@ -184,9 +203,11 @@ public class IDNSimulation extends Simulation {
                 for (int i = 0; i < networks.getNumOfNetworks(); i++) {
                     Network temp = networks.getNetwork(i);
                     immunize(initialState, temp, metric, offset);
-                    infect(initialState, offset);
+                    // infect(initialState, offset); TODO: Change this later.
                     offset += temp.getNumOfNodes(); // Increment offset by number of nodes.
                 }
+                targetedInfect(initialState, networks.getNetwork(0), 0);
+                // infectFirstNetworks(initialState, 0, 1); // Initiate inital failure in just the FIRST network.
                 immuneCount = backupImmuneCount;
             }
             // OPTION 2: Immunize most central nodes of the bridged network.
@@ -194,7 +215,9 @@ public class IDNSimulation extends Simulation {
                 // In this case, we simply immunize and infect once and hard-code
                 // `offset` to be 0.
                 immunize(initialState, bridgedNetwork, metric, 0);
-                infect(initialState, 0);
+                // infect(initialState, 0); TODO: Change this later.
+                // infectFirstNetworks(initialState, 0, 1);
+                targetedInfect(initialState, networks.getNetwork(0), 0);
             }
 
 
@@ -239,8 +262,6 @@ public class IDNSimulation extends Simulation {
             _data[t][TIMESTAMP_COL] = t;
             _data[t][NODE_COUNT_COL] = networks.getNumOfNodes();
         }
-
-
 
         return _data;
     }
@@ -314,6 +335,56 @@ public class IDNSimulation extends Simulation {
                 state[randomIndex + offset] =  Phenomena.AFFLICTED;
                 i++;
             }
+        }
+    }
+
+    /**
+     * [infect description]
+     * @param state  [description]
+     * @param offset [description]
+     * @param n      Select the first `n` networks in the IDN to infect.
+     */
+    private void infectFirstNetworks(int[] state, int offset, int n) {
+        if (n > networks.getNumOfNetworks()) {
+            throw new IllegalArgumentException("`n` must be <= number of networks in IDN (" + networks.getNumOfNetworks() + ")");
+        }
+        int length = 0;
+        for (int i = 0; i < n; i++) {
+            length += networks.getNetwork(i).getNumOfNodes();
+        }
+
+        int i = 0, upperBound = length, randomIndex;
+        int infectCount = (int) (state.length * infectFraction + 0.5);
+
+        while (i < infectCount) {
+            randomIndex = (int) (Math.random() * upperBound);
+            if (state[randomIndex + offset] == Phenomena.UNAFFLICTED) {
+                state[randomIndex + offset] =  Phenomena.AFFLICTED;
+                i++;
+            }
+        }
+    }
+
+
+    /**
+     * Infect the designated fraction of infected nodes from the selected network.
+     * Nodes will be infected based on centrality.
+     * @param state   [description]
+     * @param network [description]
+     * @param offset  [description]
+     */
+    private void targetedInfect(int[] state, Network network, int offset) {
+        int i = 0, index = 0, infectCount = (int) (state.length * infectFraction + 0.5);
+        int num = immuneCount + infectCount;
+        Integer[] centralIndicies = network.mostCentralNodes(new DegreeCentrality(), num);
+
+        while (i < infectCount) {
+            // System.out.printf("%d < %d\n", i, infectCount);
+            if (state[centralIndicies[index]] == Phenomena.UNAFFLICTED) {
+                state[centralIndicies[index]] = Phenomena.AFFLICTED;
+                i += 1;
+            }
+            index += 1;
         }
     }
 

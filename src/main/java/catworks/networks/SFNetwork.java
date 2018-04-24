@@ -7,6 +7,7 @@ public class SFNetwork extends Network {
 
     private int n;
     private int m0;
+    private int m;
 
     /**
      * No-arge constructor that makes a call to the super constructor, Network();
@@ -22,10 +23,32 @@ public class SFNetwork extends Network {
      * @param m Probability that a node has an edge to another node.
      */
     public SFNetwork(int n, int m0) {
+        // Make sure that the parameters are legal.
+        if (m0 < 1 || m0 >= n) {
+            throw new IllegalArgumentException("Barabasi-Albert network must have m0 >= 1 and m0 < n. (m0 = " + m0 + ", n = " + n + ")");
+        }
         this.n  = n;
         this.m0 = m0;
+        this.m  = m0;
         this.directed = UNDIRECTED;
-        init(n, m0);
+        init(n, m0, m);
+    }
+
+    /**
+     * Scale-Free (SF) random network constructor, using the Barabasi-Albert model.
+     * @param n Number of nodes to be in the network.
+     * @param m Probability that a node has an edge to another node.
+     */
+    public SFNetwork(int n, int m0, int m) {
+        // Make sure that the parameters are legal.
+        if (m0 < 1 || m0 >= n) {
+            throw new IllegalArgumentException("Barabasi-Albert network must have m0 >= 1 and m0 < n. (m0 = " + m0 + ", n = " + n + ")");
+        }
+        this.n  = n;
+        this.m0 = m0;
+        this.m  = m;
+        this.directed = UNDIRECTED;
+        init(n, m0, m);
     }
 
 
@@ -36,7 +59,7 @@ public class SFNetwork extends Network {
      */
     @Override
     public void regenerate() {
-        init(n, m0);
+        init(n, m0, m);
     }
 
 
@@ -45,95 +68,109 @@ public class SFNetwork extends Network {
      * @param n [description]
      * @param p [description]
      */
-    private void init(int n, int m0) {
-        // Make sure that the parameters are legal.
-        if (m0 < 1 || m0 >= n) {
-            throw new IllegalArgumentException("Barabasi-Albert network must have m0 >= 1 and m0 < n. (m0 = " + m0 + ", n = " + n + ")");
-        }
-
+    private void init(int n, int m0, int m) {
         // STEP 1: Initialize a new adjacency matrix to represent the network.
         int[][] graph = new int[n][n];
+        int edges = 0;
 
         // STEP 2: Network begins with an initial connected network of m0 nodes.
-        connectedSubGraph(graph);
-
-        // STEP 3: Connect new nodes to every pre-existing node_i with probability
-        // p_i. The formal definition for p_i = k_i / sum(k_j).
-        for (int newNode = m0; newNode < n; newNode++) {
-            int newNodeEdgeCounter = 0;
-
-            // Continue this process until at least one edge has been added.
-            while (newNodeEdgeCounter == 0) {
-                // Loop through the pre-existing nodes and make edges with a probability
-                // with respect to the degrees of pre-existing nodes. However, the number
-                // of new edges for `newNode` (m) must be < m0. If m >= m0, terminate loop.
-                for (int node_i = 0; node_i < newNode && newNodeEdgeCounter < m0; node_i++) {
-                    double k_i = degree(graph, node_i);
-                    int    denominator = 0;
-                    for (int node_j = 0; node_j < newNode; node_j++) {
-                        if (node_i == node_j) continue;
-                        denominator += degree(graph, node_j);
-                    }
-
-                    // Calculate the probabilty and then make an undirected edge between
-                    //  `newNode` and `node_i` w.r.t. to this probability.
-                    double p_i = k_i / denominator;
-                    if (Math.random() <= p_i) {
-                        graph[newNode][node_i] = 1;
-                        graph[node_i][newNode] = 1;
-                        newNodeEdgeCounter++;
-                    }
-                }
+        for (int i = 0; i < m0; i++) {
+            for (int j = i+1; j < m0; j++) {
+                graph[i][j] = 1;
+                graph[j][i] = 1;
+                edges += 2;
             }
         }
 
+        // STEP 3: Connect new nodes to every pre-existing node_i with probability
+        // with respect to preferential attachment bias.
+        for (int i = m0; i < n; i++) {
+			int currDegree = 0;
+			while (currDegree < m) {
+                // Grab the index of a node that node i has no edge to already.
+				int[] sample = getSample(graph, i);
+				int randIndex = (int)(Math.random() * sample.length);
+				int j  = sample[randIndex];
+
+                // Preferential attachment bias.
+				double beta = (double) degree(graph, j) / edges;
+				double rand = Math.random();
+				if (beta > rand) {
+                    // Make bidirectional edge.
+					graph[i][j] = 1;
+					graph[j][i] = 1;
+					edges += 2;
+				}
+				else {
+					boolean noConnection = true;
+					while (noConnection) {
+                        // Grab the index of a node that node i has no edge to already.
+						sample = getSample(graph, i);
+						randIndex = (int)(Math.random() * sample.length);
+						int h  = sample[randIndex];
+
+                        // Preferential attachment bias.
+						beta = (double) degree(graph, h) / edges;
+						rand = Math.random();
+						if (beta > rand) {
+                            // Make bidirectional edge.
+							graph[i][h] = 1;
+							graph[h][i] = 1;
+							edges += 2;
+							noConnection = false;
+						}
+					}
+				}
+				currDegree = degree(graph, i);
+			}
+		}
+
         // STEP 4: Initialize network using the scale-free adjacency matrix.
         setIntArrayMatrix(graph);
-
     }
 
 
     /**
-     * [degree description]
-     * @param  graph [description]
-     * @param  node  [description]
-     * @return       [description]
+     * A sample will contain the elements from the range [0:n) with the set of
+     * node indices that node i has an edge to removed
+     * @param  graph Adjacency matrix topology.
+     * @param  i     Node index.
+     * @return       Array of ints that represent the node indices that node i
+     *               does NOT have an edge to.
+     */
+    private int[] getSample(int[][] graph, int i) {
+		// Find the indicies of non-zero values.
+		ArrayList<Integer> nonzero = new ArrayList<Integer>();
+		for (int j = 0; j < graph[i].length; j++) {
+			if (graph[i][j] != 0 || i == j) nonzero.add(j);
+		}
+
+		// Initialize `sample` to contain integers [0:N-1], then remove all non-zero indicies.
+		ArrayList<Integer> sample = new ArrayList<Integer>();
+		for (int j = 0; j < graph[i].length; j++) sample.add(j);
+		sample.removeAll(nonzero);
+
+		// Convert `sample` to a primitive array of type int.
+		int[] ret = new int[sample.size()];
+		for (int j = 0; j < ret.length; j++) {
+			ret[j] = sample.get(j);
+		}
+		return ret;
+	}
+
+
+    /**
+     * Access the number of nodes `node` has an edge to.
+     * @param  graph Adjacency matrix topology.
+     * @param  node  Index of node whose degree is wanted.
+     * @return       The number of nodes `node` has an edge to.
      */
     private int degree(int[][] graph, int node) {
         int degree = 0;
         for (int i = 0; i < graph.length; i++) {
-            for (int j = 0; j < graph.length; j++) {
-                degree += (graph[i][j] + graph[j][i]);
-            }
+            degree += graph[node][i];
         }
         return degree;
     }
-
-
-    /**
-     * Given an empty graph of size MxM, make connections between the edges of
-     * the subgraph comprised of the first `n` nodes such that that subgraph is
-     * connected -- meaning any pair of nodes (v1, v2), there exists a path from
-     * v1 to v2.
-     * @param graph The adjacency matrix representing the entire network topology.
-     * @param n     The dimension to designate the first nodes the subgraph belongs to.
-     */
-    private void connectedSubGraph(int[][] graph, int n) {
-		ArrayList<Integer> links = new ArrayList<Integer>();
-		for (int i = 0; i < n; i++) links.add(i);
-		Collections.shuffle(links);
-
-		int i = 0;
-		int edges = 0;
-		while (edges < n) {
-			Integer j = links.get((int) (Math.random() * links.size()));
-			if (graph[i][j] == 0 && i != j) {
-				graph[i][j] = 1;
-				graph[j][i] = 1;
-				i = links.remove(0);
-				edges++;
-			}
-		}
-	}
 
 }
