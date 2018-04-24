@@ -20,7 +20,7 @@ public class SimulationRunner {
 
     // Network simulation variables to be modified.
     private static int nodes = 300, m0 = 6, k = 6, immune = 10;
-    private static double infect = 5.0/600, INTER_P = 3.0/600;
+    private static double infect = 5.0/600, INTER_P = 5.0/600;
     private static double p = 0.02, beta = 0.05;
 
     // Declare variables that will be used in simulation methods.

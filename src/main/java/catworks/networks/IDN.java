@@ -204,6 +204,6 @@ public class IDN extends AbstractNetwork {
             network.regenerate();
         }
         interEdges = new ArrayList<InterEdge>();
-        randomInterEdges(INTER_EDGE_P);
+        randomInterEdges(interP); //INTER_EDGE_P);
     }
 }
