@@ -2,13 +2,10 @@ package catworks;
 
 // Project import statements.
 import catworks.networks.*;
-import catworks.networks.metrics.*;
 import catworks.phenomena.*;
 import catworks.simulations.*;
 
 // Additional import statements.
-import java.util.Arrays;
-import java.util.ArrayList;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileWriter;
@@ -27,8 +24,6 @@ public class SimulationRunner {
     private static double p = 0.02, beta = 0.05;
 
     // Declare variables that will be used in simulation methods.
-    private int simID;
-
     private int[] sizes;             private double[][] probs, threshMatrix;
     private Object[][] data;         private String filename, path;
     private Simulation simulation;   private Phenomena  phe;
@@ -42,7 +37,6 @@ public class SimulationRunner {
     private static final double[][] NORMAL_THRESH = {{0.20, 0.15}, {0.40, 0.30}};
 
     public SimulationRunner() throws Exception {
-        simID = 1;
         probs = new double[][] {{0.8, 0.8}, {0.8, 0.8}};
         threshMatrix = NORMAL_THRESH;
         sizes = new int[] {0, nodes};
@@ -59,9 +53,8 @@ public class SimulationRunner {
     }
 
     public SimulationRunner(int n) throws Exception {
-        simID = n;
         probs = new double[][] {{0.8, 0.8}, {0.8, 0.8}};
-        threshMatrix = new double[][] {{0.2, 0.15}, {0.4, 0.3}};
+        threshMatrix = NORMAL_THRESH;
         sizes = new int[] {0, nodes};
         switch (n) {
             case 1:  simulation1();         break;
@@ -99,7 +92,7 @@ public class SimulationRunner {
             path = getPath(filename, isBridged);
             outputData(data, path);
         }
-        simID++;
+
     }
 
 
@@ -124,7 +117,7 @@ public class SimulationRunner {
     		path = getPath(filename, isBridged);
     		outputData(data, path);
     	}
-        simID++;
+
     }
 
     /**
@@ -148,7 +141,7 @@ public class SimulationRunner {
     		path = getPath(filename, isBridged);
     		outputData(data, path);
     	}
-        simID++;
+
     }
 
 
@@ -173,7 +166,7 @@ public class SimulationRunner {
     		path = getPath(filename, isBridged);
     		outputData(data, path);
     	}
-        simID++;
+
     }
 
 
@@ -198,7 +191,7 @@ public class SimulationRunner {
     		path = getPath(filename, isBridged);
     		outputData(data, path);
     	}
-        simID++;
+
     }
 
 
@@ -223,7 +216,7 @@ public class SimulationRunner {
     		path = getPath(filename, isBridged);
     		outputData(data, path);
     	}
-        simID++;
+
     }
 
 
@@ -248,7 +241,7 @@ public class SimulationRunner {
     		path = getPath(filename, isBridged);
     		outputData(data, path);
     	}
-        simID++;
+
     }
 
 
@@ -273,7 +266,7 @@ public class SimulationRunner {
     		path = getPath(filename, isBridged);
     		outputData(data, path);
     	}
-        simID++;
+
     }
 
 
@@ -298,7 +291,7 @@ public class SimulationRunner {
     		path = getPath(filename, isBridged);
     		outputData(data, path);
     	}
-        simID++;
+
     }
 
 
@@ -321,7 +314,7 @@ public class SimulationRunner {
             path = getPath(filename, isBridged);
             outputData(data, path);
         }
-        simID++;
+
     }
 
 

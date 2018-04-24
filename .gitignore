@@ -3,6 +3,7 @@
 ### Java ###
 *.class
 build/classes/java/
+out/
 
 # BlueJ files
 *.ctxt
