@@ -4,6 +4,7 @@
 *.class
 build/classes/java/
 out/
+.vscode/
 
 # BlueJ files
 *.ctxt
@@ -44,3 +45,6 @@ gradle-app.setting
 *.lock
 *.bin
 *.class
+*.prefs
+.classpath
+.classpath
