@@ -1,7 +1,5 @@
 package catworks.phenomena;
 
-import java.lang.System;
-
 public class ProbabilityMatrix {
     private int[] sizes; // this contains the sizes for each network in the IDN
     private double[][] probs; // this contains the probability of spread for each "section" of the IDN

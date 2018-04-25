@@ -75,7 +75,7 @@ public class ERNetwork extends Network {
             int connections = 0;
             for (int j = 0; j < n; j++) {
                 rand = (directed) ? p : (2 * p);
-                if (Math.random() <= p) {
+                if (Math.random() <= rand) {
                     graph[i][j] = 1;
                     if (!directed) graph[j][i] = 1;
                     connections++;

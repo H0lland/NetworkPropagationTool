@@ -4,7 +4,6 @@ import catworks.networks.metrics.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 /**
   * Note: I changed the indices from longs to ints to work with ArrayLists, whose
@@ -109,7 +108,7 @@ public class Network extends AbstractNetwork {
      *                as they are sorted by most central nodes to least central nodes.
      */
     public Integer[] mostCentralNodes(Centrality metric, int n) {
-        ArrayList<Number> centralities = new ArrayList(Arrays.asList((Number[]) getCentralities(metric)));
+        ArrayList<Number> centralities = new ArrayList<Number>(Arrays.asList((Number[]) getCentralities(metric)));
         Integer[] mostCentral = new Integer[n];
 
         for (int i = 0; i < n; i++) {
@@ -150,7 +149,7 @@ public class Network extends AbstractNetwork {
      *                as they are sorted by least central nodes to most central nodes.
      */
     public Integer[] leastCentralNodes(Centrality metric, int n) {
-        ArrayList<Number> centralities = new ArrayList(Arrays.asList((Number[]) getCentralities(metric)));
+        ArrayList<Number> centralities = new ArrayList<Number>(Arrays.asList((Number[]) getCentralities(metric)));
         Integer[] leastCentral = new Integer[n];
 
         // Find the i-th most central node for each iteration.

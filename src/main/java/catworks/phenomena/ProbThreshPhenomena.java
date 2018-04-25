@@ -1,7 +1,6 @@
 package catworks.phenomena;
 
 import java.lang.System;
-import java.util.Random;
 
 public class ProbThreshPhenomena implements Phenomena {
     private ProbabilityMatrix probMat; //all the probabilities in this are the respective P_max values

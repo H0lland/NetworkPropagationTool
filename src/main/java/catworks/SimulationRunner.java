@@ -24,7 +24,10 @@ public class SimulationRunner implements Runnable {
     private static final int    NUM_OF_SIMULATIONS = 100;
 
     // Network simulation variables to be modified.
-    private static int nodes = 300, m0 = 6, k = 6, immune = 10, failed = 10;
+    private static int nodes = 300, m0 = 6, k = 6;
+
+    private static int immune = 0, failed = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
+
     private static double infect = failed/600.0, INTER_P = 10.0/600;
     private static double p = 0.02, beta = 0.05;
 

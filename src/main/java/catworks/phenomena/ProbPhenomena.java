@@ -4,7 +4,7 @@ import java.lang.System;
 import java.util.Random;
 
 public class ProbPhenomena implements Phenomena {
-    private static ProbabilityMatrix probMat;
+    private ProbabilityMatrix probMat;
 
     public ProbPhenomena(ProbabilityMatrix probMat){
         this.probMat = probMat;
