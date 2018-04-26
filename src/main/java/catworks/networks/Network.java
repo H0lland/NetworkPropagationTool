@@ -90,12 +90,6 @@ public class Network extends AbstractNetwork {
         return metric.getCentralities(arrayMatrix);
     }
 
-    /**
-     * [getNetworkType description]
-     * @param  Centrality metric        [description]
-     * @return            [description]
-     */
-
 
 
     /**
