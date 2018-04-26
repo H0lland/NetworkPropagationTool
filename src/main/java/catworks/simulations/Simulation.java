@@ -1,16 +1,11 @@
 package catworks.simulations;
 
 // Project import statements.
-import catworks.networks.*;
 import catworks.networks.metrics.*;
 import catworks.phenomena.*;
 
 // Additional import statements.
-import java.util.Arrays;
 import java.io.IOException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
 
 /**
  *
@@ -59,7 +54,7 @@ public abstract class Simulation {
      * @throws IOException              [description]
      * @throws IllegalArgumentException [description]
      */
-    public    abstract Object[][] run(int n) throws Exception, IOException, IllegalArgumentException;
+    public abstract Object[][] run(int n) throws Exception, IOException, IllegalArgumentException;
 
 
     /**

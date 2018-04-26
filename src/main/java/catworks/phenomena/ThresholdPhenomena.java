@@ -3,7 +3,7 @@ package catworks.phenomena;
 import java.lang.System;
 
 public class ThresholdPhenomena implements Phenomena {
-    private static double threshold;
+    private double threshold;
 
     public ThresholdPhenomena(){
         threshold = -1;
