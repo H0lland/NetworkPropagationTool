@@ -2,15 +2,10 @@ package catworks.simulations;
 
 // Project import statements.
 import catworks.networks.*;
-import catworks.networks.metrics.*;
 import catworks.phenomena.*;
 
 // Additional import statements.
-import java.util.ArrayList;
 import java.io.IOException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
 
 /**
  *

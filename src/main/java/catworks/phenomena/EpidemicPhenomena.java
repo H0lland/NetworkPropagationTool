@@ -1,7 +1,5 @@
 package catworks.phenomena;
 
-import java.lang.System.*;
-
 public class EpidemicPhenomena implements Phenomena {
 
     public EpidemicPhenomena(){}

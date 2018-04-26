@@ -7,10 +7,6 @@ import catworks.phenomena.*;
 
 // Additional import statements.
 import java.util.Arrays;
-import java.io.IOException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
 
 /**
  *
@@ -18,7 +14,6 @@ import java.io.BufferedWriter;
 public class IDNSimulation extends Simulation {
 
     private IDN     networks;
-    private Network bridgedNetwork;
     private boolean separateCentralities;
 
     private double[][] minimumAndMaximum;
@@ -57,7 +52,7 @@ public class IDNSimulation extends Simulation {
      * @throws Exception   [description]
      * @throws IOException [description]
      */
-    public Object[][] run(int n) throws Exception, IOException, IllegalArgumentException {
+    public Object[][] run(int n) throws Exception, IllegalArgumentException {
         if (n <= 0) {
             throw new IllegalArgumentException("`n` must be a positive number.");
         }
@@ -134,15 +129,15 @@ public class IDNSimulation extends Simulation {
      * @throws Exception     [description]
      * @throws IOException   [description]
      */
-    protected double[][] run() throws Exception, IOException {
+    protected double[][] run() throws Exception {
         // Get the adjacency matrix of the network and declare `N` to be the number
         // of nodes in the network.
         if ((networks.getNetwork(0) instanceof ERNetwork) || (networks.getNetwork(0) instanceof SFNetwork) || (networks.getNetwork(0) instanceof ERNetwork)) {
-            log("networks.regenerate();");
+            log(networks.getToken() + "  Interdependent network - regenerated.");
             networks.regenerate();
         }
         else {
-            log("networks.getNetwork(1).rewire();");
+            log(networks.getToken() + "  Cyber network - rewired.");
             networks.getNetwork(1).rewire(); // TODO: Complete this so that it works for an arbitrary number of networks.
         }
         Network bridgedNetwork = networks.bridge();
@@ -185,7 +180,7 @@ public class IDNSimulation extends Simulation {
             }
 
             // Log the start of the simulation to the user.
-            log("Starting Simulation " + runID + " -- " + metric);
+            log(networks.getToken() + "  Starting Simulation " + runID + " (" + metric + ")");
             int[] initialState  = new int[N];
 
             // To perform an interdependent network simulation, we must either:
@@ -244,7 +239,7 @@ public class IDNSimulation extends Simulation {
                 // Store the next state of phenomena propagation.
                 currentState = phenomena.propagate(matrix, currentState);
             }
-            log("Ending Simulation " + runID + " -- " + metric);
+            log(networks.getToken() + "  Ending Simulation " + runID + " (" + metric + ")");
         }
         return data;
     }

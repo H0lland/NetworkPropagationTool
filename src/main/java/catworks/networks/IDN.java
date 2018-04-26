@@ -1,8 +1,5 @@
 package catworks.networks;
 
-import catworks.networks.metrics.*;
-
-import java.lang.System.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -16,14 +13,15 @@ public class IDN extends AbstractNetwork {
 
     private ArrayList<InterEdge> interEdges;
     private ArrayList<Network>   networks;
-    private double               fraction;
     private double               interP;
+    private String               token;
 
-    private static final double INTER_EDGE_P = 10.0/600;
+    // private static final double INTER_EDGE_P = 10.0/600;
 
     public IDN() {
         interEdges = new ArrayList<InterEdge>();
         networks = new ArrayList<Network>();
+        token = "";
     }
 
     public IDN(Network... nets) {
@@ -32,18 +30,20 @@ public class IDN extends AbstractNetwork {
         for (Network net : nets) {
             networks.add(net);
         }
+        token = "";
     }
 
     public IDN(ArrayList<Network> nets){
         networks = nets;
         interEdges = new ArrayList<InterEdge>();
+        token = "";
     }
 
 
     /**
      * Initialize new set of inter-edges between networks in IDN. The number of
-     * inter-edges will be `fraction * numOfNodes`.
-     * @param fraction [description]
+     * inter-edges will be `interP * numOfNodes`.
+     * @param interP [description]
      */
     public void randomInterEdges(double interP) {
         this.interP = interP;
@@ -179,6 +179,9 @@ public class IDN extends AbstractNetwork {
         }
     }
 
+
+    public void setToken(String token) { this.token = token; }
+    public String getToken() { return token; }
 
     public Network getNetwork(int i) {
         return networks.get(i);

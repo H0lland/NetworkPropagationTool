@@ -1,7 +1,5 @@
 package catworks.networks;
 
-import catworks.networks.metrics.*;
-
 /**
  * The following abstract class will serve as the development guideline for the
  * Network and IDN (Interdependent Network) classes.
