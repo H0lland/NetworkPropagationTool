@@ -58,42 +58,48 @@ public class ERNetwork extends Network {
     }
 
     /**
-     * [init description]
-     * @param n [description]
-     * @param p [description]
+     * Generate a random network using the Erdos-Renyi model. This algorithm is slightly modified.
+     * This algorithm will ensure that every node has at least one edge, irrespective of probability.
+     * Further, this algorithm will run breadth-first search after construction to check if the graph
+     * is connected. If it is connected, then it will simply set the internal Adjacency Matrix to
+     * the constructed graph. Otherwise, it will try again to create a random network until it forms a
+     * connected graph.
+     * @param n Number of nodes in the network.
+     * @param p Probability of adding an edge (0 < p <= 1).
      */
     private void init(int n, double p) {
         // Check if `p` is valid; 0 <= p <= 1.
-        if (p < 0 || 1 < p) {
-            throw new IllegalArgumentException("Value `p` must be in the range [0, 1].");
+        if (p <= 0 || 1 < p) {
+            throw new IllegalArgumentException("Value `p` must be in the range (0, 1].");
         }
 
-        double rand;
+        int[][] graph;
+        do {
+            graph = new int[n][n];
+            for (int i = 0; i < n; i++) {
+                int connections = 0;
+                for (int j = 0; j < n; j++) {
+                    if (i == j) continue; // Avoid self-loops.
+                    if (Math.random() <= p/2) { // NOTE: This seems to hold for directed and undirected.
+                        graph[i][j] = 1;
+                        if (!directed) graph[j][i] = 1;
+                        connections++;
+                    }
+                }
 
-        int[][] graph = new int[n][n];
-        for (int i = 0; i < n; i++) {
-            int connections = 0;
-            for (int j = 0; j < n; j++) {
-                // rand = (directed) ? p : p/2;
-                if (Math.random() <= p/2) {// rand) { // NOTE: This seems to hold for directed and undirected.
-                    graph[i][j] = 1;
-                    if (!directed) graph[j][i] = 1;
-                    connections++;
+                // If no connections have been made and we are set to prevent disconnected
+                // nodes, then createa random edge.
+                if (connections == 0 && PREVENT_DISCONNECTED_NODES) {
+                    int randomEdge = (int) (Math.random() * n);
+                    if (randomEdge == i) {
+                        if (i >= n-1) randomEdge--;
+                        else          randomEdge++;
+                    }
+                    graph[i][randomEdge] = 1;
+                    if (!directed) graph[randomEdge][i] = 1;
                 }
             }
-
-            // If no connections have been made and we are set to prevent disconnected
-            // nodes, then createa random edge.
-            if (connections == 0 && PREVENT_DISCONNECTED_NODES) {
-                int randomEdge = (int) (Math.random() * n);
-                if (randomEdge == i) {
-                    if (i >= n-1) randomEdge--;
-                    else          randomEdge++;
-                }
-                graph[i][randomEdge] = 1;
-                if (!directed) graph[randomEdge][i] = 1;
-            }
-        }
+        } while (!isConnected(graph)); // If the graph is NOT connected, try again.
         setIntArrayMatrix(graph);
     }
 

@@ -68,61 +68,65 @@ public class SFNetwork extends Network {
      * @param p [description]
      */
     private void init(int n, int m0, int m) {
-        // STEP 1: Initialize a new adjacency matrix to represent the network.
-        int[][] graph = new int[n][n];
-        int edges = 0;
+        int[][] graph;
 
-        // STEP 2: Network begins with an initial connected network of m0 nodes.
-        for (int i = 0; i < m0; i++) {
-            for (int j = i+1; j < m0; j++) {
-                graph[i][j] = 1;
-                graph[j][i] = 1;
-                edges += 2;
+        do {
+            // STEP 1: Initialize a new adjacency matrix to represent the network.
+            graph = new int[n][n];
+            int edges = 0;
+
+            // STEP 2: Network begins with an initial connected network of m0 nodes.
+            for (int i = 0; i < m0; i++) {
+                for (int j = i+1; j < m0; j++) {
+                    graph[i][j] = 1;
+                    graph[j][i] = 1;
+                    edges += 2;
+                }
             }
-        }
 
-        // STEP 3: Connect new nodes to every pre-existing node_i with probability
-        // with respect to preferential attachment bias.
-        for (int i = m0; i < n; i++) {
-			int currDegree = 0;
-			while (currDegree < m) {
-                // Grab the index of a node that node i has no edge to already.
-				int[] sample = getSample(graph, i);
-				int randIndex = (int)(Math.random() * sample.length);
-				int j  = sample[randIndex];
+            // STEP 3: Connect new nodes to every pre-existing node_i with probability
+            // with respect to preferential attachment bias.
+            for (int i = m0; i < n; i++) {
+                int currDegree = 0;
+                while (currDegree < m) {
+                    // Grab the index of a node that node i has no edge to already.
+                    int[] sample = getSample(graph, i);
+                    int randIndex = (int)(Math.random() * sample.length);
+                    int j  = sample[randIndex];
 
-                // Preferential attachment bias.
-				double beta = (double) degree(graph, j) / edges;
-				double rand = Math.random();
-				if (beta > rand) {
-                    // Make bidirectional edge.
-					graph[i][j] = 1;
-					graph[j][i] = 1;
-					edges += 2;
-				}
-				else {
-					boolean noConnection = true;
-					while (noConnection) {
-                        // Grab the index of a node that node i has no edge to already.
-						sample = getSample(graph, i);
-						randIndex = (int)(Math.random() * sample.length);
-						int h  = sample[randIndex];
+                    // Preferential attachment bias.
+                    double beta = (double) degree(graph, j) / edges;
+                    double rand = Math.random();
+                    if (beta > rand) {
+                        // Make bidirectional edge.
+                        graph[i][j] = 1;
+                        graph[j][i] = 1;
+                        edges += 2;
+                    }
+                    else {
+                        boolean noConnection = true;
+                        while (noConnection) {
+                            // Grab the index of a node that node i has no edge to already.
+                            sample = getSample(graph, i);
+                            randIndex = (int)(Math.random() * sample.length);
+                            int h  = sample[randIndex];
 
-                        // Preferential attachment bias.
-						beta = (double) degree(graph, h) / edges;
-						rand = Math.random();
-						if (beta > rand) {
-                            // Make bidirectional edge.
-							graph[i][h] = 1;
-							graph[h][i] = 1;
-							edges += 2;
-							noConnection = false;
-						}
-					}
-				}
-				currDegree = degree(graph, i);
-			}
-		}
+                            // Preferential attachment bias.
+                            beta = (double) degree(graph, h) / edges;
+                            rand = Math.random();
+                            if (beta > rand) {
+                                // Make bidirectional edge.
+                                graph[i][h] = 1;
+                                graph[h][i] = 1;
+                                edges += 2;
+                                noConnection = false;
+                            }
+                        }
+                    }
+                    currDegree = degree(graph, i);
+                }
+            }
+        } while (!isConnected(graph));
 
         // STEP 4: Initialize network using the scale-free adjacency matrix.
         setIntArrayMatrix(graph);
