@@ -61,41 +61,45 @@ public class SWNetwork extends Network {
      * @param beta [description]
      */
     private void init(int n, double beta, int K) {
-        int[][] graph = new int[n][n]; // Initialize new adjacency graph.
-		if (K % 2 != 0) K++;           // Ensure that `K` is even.
+        int[][] graph;
+        
+        do {
+            graph = new int[n][n]; // Initialize new adjacency graph.
+            if (K % 2 != 0) K++;   // Ensure that `K` is even.
 
-        // STEP 1: Make ring lattice graph.
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-                // Determine whether to add a link or not.
-                double temp = Math.abs(i - j) % (n - 1 - K/2.0);
-				if (0 < temp && temp <= K/2.0) {
-                    graph[i][j] = 1;
-                    graph[j][i] = 1;
+            // STEP 1: Make ring lattice graph.
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    // Determine whether to add a link or not.
+                    double temp = Math.abs(i - j) % (n - 1 - K/2.0);
+                    if (0 < temp && temp <= K/2.0) {
+                        graph[i][j] = 1;
+                        graph[j][i] = 1;
+                    }
                 }
-			}
-		}
+            }
 
-		// STEP 2: Rewire the edges.
-		for (int j = 0; j < n; j++) {
-			for (int i = 0; i < j; i++) {
-				// Check if there is an edge.
-				if (graph[i][j] == 1) {
-					// Roll the die with `beta` probability.
-					if (Math.random() <= beta) {
-						// Randomly select a `k` value. If it is invalid, as in
-						// already an edge or is equal to `i`, pick another value.
-						int k = (int) (Math.random() * n);
-						while (k == i || graph[i][k] == 1)
-	                        k = (int) (Math.random() * n);
+            // STEP 2: Rewire the edges.
+            for (int j = 0; j < n; j++) {
+                for (int i = 0; i < j; i++) {
+                    // Check if there is an edge.
+                    if (graph[i][j] == 1) {
+                        // Roll the die with `beta` probability.
+                        if (Math.random() <= beta) {
+                            // Randomly select a `k` value. If it is invalid, as in
+                            // already an edge or is equal to `i`, pick another value.
+                            int k = (int) (Math.random() * n);
+                            while (k == i || graph[i][k] == 1)
+                                k = (int) (Math.random() * n);
 
-	                    // Rewire the edges.
-	                    graph[i][j] = 0; graph[j][i] = 0;
-	                    graph[i][k] = 1; graph[k][i] = 1;
-					}
-				}
-			}
-		}
+                            // Rewire the edges.
+                            graph[i][j] = 0; graph[j][i] = 0;
+                            graph[i][k] = 1; graph[k][i] = 1;
+                        }
+                    }
+                }
+            }
+        } while (!isConnected(graph));
 
         // Build network's topology based on graph representation.
         setIntArrayMatrix(graph);
