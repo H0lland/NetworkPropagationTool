@@ -176,6 +176,37 @@ public class Network extends AbstractNetwork {
 
 
     /**
+     * Run a breadth-first search to determine if a two-dimensional adjacency array (network)
+     * is connected.
+     * @param network Adjacency matrix representation.
+     * @return Boolean value: `true` for if the graph is connected, `false` otherwise.
+     */
+    protected boolean isConnected(int[][] network) {
+		// Run Breadth-First-Search on network.
+		java.util.LinkedList<Integer> openSet   = new java.util.LinkedList<Integer>();
+		java.util.LinkedList<Integer> closedSet = new java.util.LinkedList<Integer>();
+		Integer root = 0;
+		openSet.add(root);
+		
+		while (!openSet.isEmpty()) {
+			Integer subtreeRoot = openSet.removeFirst();
+			for (Integer child = 0; child < network[subtreeRoot].length; child++) {
+				if (network[subtreeRoot][child] == 1) {
+					if (closedSet.contains(child)) continue;
+					if (!openSet.contains(child))  openSet.add(child);
+				}
+			}
+			closedSet.add(subtreeRoot);
+		}
+		
+		for (Integer i = 0; i < network.length; i++)
+			if (!closedSet.contains(i)) 
+				return false;
+		return true;
+	}
+
+
+    /**
     * [addNode description]
     */
     public void addNode() {
