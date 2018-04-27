@@ -74,6 +74,7 @@ public class ERNetwork extends Network {
         for (int i = 0; i < n; i++) {
             int connections = 0;
             for (int j = 0; j < n; j++) {
+                if (i == j) continue; // Avoid self-loops.
                 // rand = (directed) ? p : p/2;
                 if (Math.random() <= p/2) {// rand) { // NOTE: This seems to hold for directed and undirected.
                     graph[i][j] = 1;
