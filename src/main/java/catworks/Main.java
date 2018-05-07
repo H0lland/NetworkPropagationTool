@@ -14,16 +14,16 @@ public class Main {
      */
     public static void main(String[] args) throws Exception, IOException {
         // Run the simulation threads.
-        (new Thread(new SimulationRunner(1))).start();
-        (new Thread(new SimulationRunner(2))).start();
-        (new Thread(new SimulationRunner(3))).start();
-        (new Thread(new SimulationRunner(4))).start();
-        (new Thread(new SimulationRunner(5))).start();
-        (new Thread(new SimulationRunner(6))).start();
-        (new Thread(new SimulationRunner(7))).start();
-        (new Thread(new SimulationRunner(8))).start();
-        (new Thread(new SimulationRunner(9))).start();
-        (new Thread(new SimulationRunner(-1))).start();
+        // (new Thread(new SimulationRunner(1))).start();
+        // (new Thread(new SimulationRunner(2))).start();
+        // (new Thread(new SimulationRunner(3))).start();
+        // (new Thread(new SimulationRunner(4))).start();
+        // (new Thread(new SimulationRunner(5))).start();
+        // (new Thread(new SimulationRunner(6))).start();
+        // (new Thread(new SimulationRunner(7))).start();
+        // (new Thread(new SimulationRunner(8))).start();
+        // (new Thread(new SimulationRunner(9))).start();
+        (new Thread(new SimulationRunner(-1))).start(); // NOTE: This is the only disconnected network.
 
         // IDN idn = new IDN(new ERNetwork(300, 0.02), new ERNetwork(300, 0.02));
         // idn.randomInterEdges(10.0/600);

@@ -181,7 +181,7 @@ public class Network extends AbstractNetwork {
      * @param network Adjacency matrix representation.
      * @return Boolean value: `true` for if the graph is connected, `false` otherwise.
      */
-    protected boolean isConnected(int[][] network) {
+    public static boolean isConnected(int[][] network) {
 		// Run Breadth-First-Search on network.
 		java.util.LinkedList<Integer> openSet   = new java.util.LinkedList<Integer>();
 		java.util.LinkedList<Integer> closedSet = new java.util.LinkedList<Integer>();

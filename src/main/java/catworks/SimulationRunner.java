@@ -24,12 +24,12 @@ public class SimulationRunner implements Runnable {
     private static final int    NUM_OF_SIMULATIONS = 100;
 
     // Network simulation variables to be modified.
-    private static int nodes = 300, m0 = 6, k = 6;
+    private static final int AVG_DEGREE = 4;
+    private static int nodes = 300, m0 = AVG_DEGREE, k = AVG_DEGREE;
+    private static int immune = 0, failed = 5, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
 
-    private static int immune = 5, failed = 5; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
-
-    private static double infect = failed/600.0, INTER_P = 10.0/600;
-    private static double p = 0.02, beta = 0.05;
+    private static double infect = failed/600.0, INTER_P = interEdgeNum/(double)(nodes*2);
+    private static double p = AVG_DEGREE/((double) nodes), beta = 0.05;
 
     // Declare variables that will be used in simulation methods.
     private int[] sizes;             private double[][] probs, threshMatrix;
@@ -99,7 +99,7 @@ public class SimulationRunner implements Runnable {
         physical = new SFNetwork(nodes, m0);
         cyber    = new SFNetwork(nodes, m0);
         idn = new IDN(physical, cyber);  // Cyber network, physical network.
-        idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+        idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
         // Run the "bridged" and the "separate" simulations.
@@ -120,12 +120,14 @@ public class SimulationRunner implements Runnable {
     	// Variables to change from simulation to simulation.
     	filename = "ER-ER-300";
     	probMatrix = new ProbabilityMatrix(sizes, probs);
-    	phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
+    	phe = new EpidemicPhenomena();// ProbThreshPhenomena(probMatrix, threshMatrix);
 
-    	physical = new ERNetwork(nodes, p);
-    	cyber    = new ERNetwork(nodes, p);
+        System.out.println(p);
+
+        physical = new ERNetwork(nodes, p);
+        cyber    = new ERNetwork(nodes, p);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P);//, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -150,7 +152,7 @@ public class SimulationRunner implements Runnable {
     	physical = new ERNetwork(nodes, p);
     	cyber    = new SFNetwork(nodes, m0);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -176,7 +178,7 @@ public class SimulationRunner implements Runnable {
     	physical = new ERNetwork(nodes, p);
     	cyber    = new SWNetwork(nodes, beta, k);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -202,7 +204,7 @@ public class SimulationRunner implements Runnable {
     	physical = new SFNetwork(nodes, m0);
     	cyber    = new ERNetwork(nodes, p);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -228,7 +230,7 @@ public class SimulationRunner implements Runnable {
     	physical = new SFNetwork(nodes, m0);
     	cyber    = new SWNetwork(nodes, beta, k);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -254,7 +256,7 @@ public class SimulationRunner implements Runnable {
     	physical = new SWNetwork(nodes, beta, k);
     	cyber    = new ERNetwork(nodes, p);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -280,7 +282,7 @@ public class SimulationRunner implements Runnable {
     	physical = new SWNetwork(nodes, beta, k);
     	cyber    = new SFNetwork(nodes, m0);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -306,7 +308,7 @@ public class SimulationRunner implements Runnable {
     	physical = new SWNetwork(nodes, beta, k);
     	cyber    = new SWNetwork(nodes, beta, k);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -328,9 +330,13 @@ public class SimulationRunner implements Runnable {
         phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
 
         physical = new Network(RealWorld.IEEE300());
-        cyber    = new Network(RealWorld.IEEE300()); cyber.rewire();
+        // System.out.println("Real world physical network is connected: " + Network.isConnected(RealWorld.IEEE300()));
+
+        cyber    = new Network(RealWorld.IEEE300()); cyber.rewire(); // NOTE: This network is not guaranteed to be connected.
+        // System.out.println("Real world cyber network is connected: " + Network.isConnected(cyber.getIntArrayMatrix()));
+
         idn = new IDN(physical, cyber);  // Cyber network, physical network.
-        idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+        idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
         // Run the "bridged" and the "separate" simulations.
