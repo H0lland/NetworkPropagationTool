@@ -132,7 +132,7 @@ public class IDNSimulation extends Simulation {
     protected double[][] run() throws Exception {
         // Get the adjacency matrix of the network and declare `N` to be the number
         // of nodes in the network.
-        if ((networks.getNetwork(0) instanceof ERNetwork) || (networks.getNetwork(0) instanceof SFNetwork) || (networks.getNetwork(0) instanceof ERNetwork)) {
+        if ((networks.getNetwork(0) instanceof ERNetwork) || (networks.getNetwork(0) instanceof SFNetwork) || (networks.getNetwork(0) instanceof SWNetwork)) {
             log(networks.getToken() + "  Interdependent network - regenerated.");
             networks.regenerate();
         }
