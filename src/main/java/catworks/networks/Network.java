@@ -356,7 +356,7 @@ public class Network extends AbstractNetwork {
                     }
                 }
             }
-        } while (isConnected(graph));
+        } while (!isConnected(graph));
         setIntArrayMatrix(graph);
     }
 
