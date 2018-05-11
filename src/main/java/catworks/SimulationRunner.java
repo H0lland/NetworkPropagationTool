@@ -26,7 +26,7 @@ public class SimulationRunner implements Runnable {
     // Network simulation variables to be modified.
     private static final int AVG_DEGREE = 4;
     private static int nodes = 300, m0 = AVG_DEGREE, k = AVG_DEGREE;
-    private static int immune = 0, failed = 5, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
+    private static int immune = 10, failed = 5, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
 
     private static double infect = failed/600.0, INTER_P = interEdgeNum/(double)(nodes*2);
     private static double p = AVG_DEGREE/((double) nodes), beta = 0.05;
@@ -44,7 +44,8 @@ public class SimulationRunner implements Runnable {
     // Threshold matrices for (Probabilistic) Threshold phenomena propagation. 
     // `CATASTROPHIC_THRESH` results in an average failure near the entirety of the IDN.
     private static final double[][] CATASTROPHIC_THRESH = {{0.075, 0.05}, {0.175, 0.125}};
-    private static final double[][] LOWER_THRESH = {{ 0.1125, 0.075 }, { 0.2625, 0.1875 }};private static final double[][] NORMAL_THRESH = {{0.20, 0.15}, {0.40, 0.30}};
+    private static final double[][] LOWER_THRESH = {{ 0.1125, 0.075 }, { 0.2625, 0.1875 }};
+    private static final double[][] NORMAL_THRESH = {{0.20, 0.15}, {0.40, 0.30}};
 
     public SimulationRunner() throws Exception {
         // Settings for the simulation.

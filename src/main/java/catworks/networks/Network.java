@@ -333,8 +333,9 @@ public class Network extends AbstractNetwork {
      * [rewire description]
      */
     public void rewire() {
+        int[][] graph;
         do {
-            int[][] graph = getIntArrayMatrix();
+            graph = getIntArrayMatrix();
             double beta = REWIRING_P;
             int n = getNumOfNodes();
             for (int j = 0; j < n; j++) {

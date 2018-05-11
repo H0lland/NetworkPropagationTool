@@ -1,10 +1,7 @@
 package catworks.networks;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Random;
-
 /**
  * Note: I removed the requirement that IDN extends AbstractNetwork. We need to
  * meet to elaborate as to why this is. The nature of adding nodes, deleting nodes,
@@ -84,6 +81,7 @@ public class IDN extends AbstractNetwork {
      * @param halve  Boolean variable that either allows or denies the halving process to ensue.
      */
     public void randomInterEdges(double interP, boolean halve) {
+        this.interP = interP;
         if (halve) {
             interP /= 2;
             int n = (int) (interP * getNumOfNodes() + 0.5);
@@ -254,6 +252,6 @@ public class IDN extends AbstractNetwork {
             network.regenerate();
         }
         interEdges = new ArrayList<InterEdge>();
-        randomInterEdges(interP); //INTER_EDGE_P);
+        randomInterEdges(interP, true);
     }
 }

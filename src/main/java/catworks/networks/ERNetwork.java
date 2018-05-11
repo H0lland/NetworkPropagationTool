@@ -30,7 +30,7 @@ public class ERNetwork extends Network {
         this.n = n;
         this.p = p;
         this.directed = UNDIRECTED;
-        init(n, p);
+        init();
     }
 
 
@@ -44,7 +44,7 @@ public class ERNetwork extends Network {
         this.n = n;
         this.p = p;
         this.directed = directed;
-        init(n, p);
+        init();
     }
 
     /**
@@ -54,7 +54,7 @@ public class ERNetwork extends Network {
      */
     @Override
     public void regenerate() {
-        init(n, p);
+        init();
     }
 
     /**
@@ -67,7 +67,7 @@ public class ERNetwork extends Network {
      * @param n Number of nodes in the network.
      * @param p Probability of adding an edge (0 < p <= 1).
      */
-    private void init(int n, double p) {
+    private void init() {
         // Check if `p` is valid; 0 <= p <= 1.
         if (p <= 0 || 1 < p) {
             throw new IllegalArgumentException("Value `p` must be in the range (0, 1].");

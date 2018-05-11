@@ -23,11 +23,7 @@ public class Main {
         (new Thread(new SimulationRunner(7))).start();
         (new Thread(new SimulationRunner(8))).start();
         (new Thread(new SimulationRunner(9))).start();
-        // (new Thread(new SimulationRunner(-1))).start(); // NOTE: This is the only disconnected network.
-
-        // IDN idn = new IDN(new ERNetwork(300, 0.02), new ERNetwork(300, 0.02));
-        // idn.randomInterEdges(10.0/600);
-        // System.out.println(idn.numberOfInterEdges());
+        (new Thread(new SimulationRunner(-1))).start();
     }
 
     public static double averageDegree(Network network) {
