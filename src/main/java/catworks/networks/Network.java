@@ -181,7 +181,7 @@ public class Network extends AbstractNetwork {
      * @param network Adjacency matrix representation.
      * @return Boolean value: `true` for if the graph is connected, `false` otherwise.
      */
-    protected boolean isConnected(int[][] network) {
+    public static boolean isConnected(int[][] network) {
 		// Run Breadth-First-Search on network.
 		java.util.LinkedList<Integer> openSet   = new java.util.LinkedList<Integer>();
 		java.util.LinkedList<Integer> closedSet = new java.util.LinkedList<Integer>();
@@ -333,28 +333,31 @@ public class Network extends AbstractNetwork {
      * [rewire description]
      */
     public void rewire() {
-        int[][] graph = getIntArrayMatrix();
-        double beta = REWIRING_P;
-        int n = getNumOfNodes();
-        for (int j = 0; j < n; j++) {
-			for (int i = 0; i < j; i++) {
-                if (graph[i][j] == 1) {
-    				if (Math.random() <= beta) {
-    					int k = (int) (Math.random() * n);
-    					while (k == i || graph[i][k] == 1)
-                            k = (int) (Math.random() * n);
+        int[][] graph;
+        do {
+            graph = getIntArrayMatrix();
+            double beta = REWIRING_P;
+            int n = getNumOfNodes();
+            for (int j = 0; j < n; j++) {
+                for (int i = 0; i < j; i++) {
+                    if (graph[i][j] == 1) {
+                        if (Math.random() <= beta) {
+                            int k = (int) (Math.random() * n);
+                            while (k == i || graph[i][k] == 1)
+                                k = (int) (Math.random() * n);
 
-                        // Rewire the edges.
-                        graph[i][j] = 0;
-                        graph[i][k] = 1;
-                        if (!directed) {
-                            graph[j][i] = 0;
-                            graph[k][i] = 1;
+                            // Rewire the edges.
+                            graph[i][j] = 0;
+                            graph[i][k] = 1;
+                            if (!directed) {
+                                graph[j][i] = 0;
+                                graph[k][i] = 1;
+                            }
                         }
-    				}
-    			}
+                    }
+                }
             }
-		}
+        } while (!isConnected(graph));
         setIntArrayMatrix(graph);
     }
 

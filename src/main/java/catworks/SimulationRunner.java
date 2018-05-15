@@ -24,12 +24,12 @@ public class SimulationRunner implements Runnable {
     private static final int    NUM_OF_SIMULATIONS = 100;
 
     // Network simulation variables to be modified.
-    private static int nodes = 300, m0 = 6, k = 6;
+    private static final int AVG_DEGREE = 4;
+    private static int nodes = 300, m0 = AVG_DEGREE, k = AVG_DEGREE;
+    private static int immune = 10, failed = 5, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
 
-    private static int immune = 5, failed = 5; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
-
-    private static double infect = failed/600.0, INTER_P = 10.0/600;
-    private static double p = 0.02, beta = 0.05;
+    private static double infect = failed/600.0, INTER_P = interEdgeNum/(double)(nodes*2);
+    private static double p = AVG_DEGREE/((double) nodes), beta = 0.05;
 
     // Declare variables that will be used in simulation methods.
     private int[] sizes;             private double[][] probs, threshMatrix;
@@ -41,13 +41,20 @@ public class SimulationRunner implements Runnable {
 
     private static final boolean[] IS_BRIDGED = { true, false };
 
-    private static final double[][] LOWER_THRESH  = {{0.15, 0.10}, {0.35, 0.25}};
+    // Threshold matrices for (Probabilistic) Threshold phenomena propagation. 
+    // `CATASTROPHIC_THRESH` results in an average failure near the entirety of the IDN.
+    private static final double[][] CATASTROPHIC_THRESH = {{0.075, 0.05}, {0.175, 0.125}};
+    private static final double[][] LOWER_THRESH = {{ 0.1125, 0.075 }, { 0.2625, 0.1875 }};
     private static final double[][] NORMAL_THRESH = {{0.20, 0.15}, {0.40, 0.30}};
 
     public SimulationRunner() throws Exception {
-        probs = new double[][] {{0.8, 0.8}, {0.8, 0.8}};
-        threshMatrix = NORMAL_THRESH;
-        sizes = new int[] {0, nodes};
+        // Settings for the simulation.
+        probs = new double[][] { {0.8, 0.8}, {0.8, 0.8} };
+        sizes = new int[] { 0, nodes };
+        threshMatrix = CATASTROPHIC_THRESH;
+        probMatrix = new ProbabilityMatrix(sizes, probs);
+        phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
+
         simulation1();
         simulation2();
         simulation3();
@@ -60,15 +67,24 @@ public class SimulationRunner implements Runnable {
         simulationRealWorld();
     }
 
+
+    /**
+     * Constructor that only initializes the settings necessary for the simulation
+     * to run. Simply modify these settings and you're good to go. Note: You must
+     * call `run()` for the simulation to begin. 
+     * @param simID The integer id of the simulation you wish to run (1-9 and -1).
+     */
     public SimulationRunner(int simID) throws Exception {
         this.simID = simID;
+        probs = new double[][] { {0.8, 0.8}, {0.8, 0.8} };
+        sizes = new int[] { 0, nodes };
+        threshMatrix = CATASTROPHIC_THRESH;
+        probMatrix = new ProbabilityMatrix(sizes, probs);
+        phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
     }
 
     public void run() {
         try {
-            probs = new double[][] {{0.8, 0.8}, {0.8, 0.8}};
-            threshMatrix = NORMAL_THRESH;
-            sizes = new int[] {0, nodes};
             switch (simID) {
                 case 1:  simulation1();         break;
                 case 2:  simulation2();         break;
@@ -93,13 +109,10 @@ public class SimulationRunner implements Runnable {
     private void simulation1() throws IOException, Exception {
         // Variables to change from simulation to simulation.
         filename = "SF-SF-300";
-        probMatrix = new ProbabilityMatrix(sizes, probs);
-        phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-
         physical = new SFNetwork(nodes, m0);
         cyber    = new SFNetwork(nodes, m0);
         idn = new IDN(physical, cyber);  // Cyber network, physical network.
-        idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+        idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
         // Run the "bridged" and the "separate" simulations.
@@ -119,13 +132,10 @@ public class SimulationRunner implements Runnable {
     private void simulation2() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
     	filename = "ER-ER-300";
-    	probMatrix = new ProbabilityMatrix(sizes, probs);
-    	phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-
-    	physical = new ERNetwork(nodes, p);
-    	cyber    = new ERNetwork(nodes, p);
+        physical = new ERNetwork(nodes, p);
+        cyber    = new ERNetwork(nodes, p);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P);//, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -144,13 +154,10 @@ public class SimulationRunner implements Runnable {
     private void simulation3() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
     	filename = "ER-SF-300";
-    	probMatrix = new ProbabilityMatrix(sizes, probs);
-    	phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-
     	physical = new ERNetwork(nodes, p);
     	cyber    = new SFNetwork(nodes, m0);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -170,13 +177,10 @@ public class SimulationRunner implements Runnable {
     private void simulation4() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
     	filename = "ER-SW-300";
-    	probMatrix = new ProbabilityMatrix(sizes, probs);
-    	phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-
     	physical = new ERNetwork(nodes, p);
     	cyber    = new SWNetwork(nodes, beta, k);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -196,13 +200,10 @@ public class SimulationRunner implements Runnable {
     private void simulation5() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
     	filename = "SF-ER-300";
-    	probMatrix = new ProbabilityMatrix(sizes, probs);
-    	phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-
     	physical = new SFNetwork(nodes, m0);
     	cyber    = new ERNetwork(nodes, p);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -222,13 +223,10 @@ public class SimulationRunner implements Runnable {
     private void simulation6() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
     	filename = "SF-SW-300";
-    	probMatrix = new ProbabilityMatrix(sizes, probs);
-    	phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-
     	physical = new SFNetwork(nodes, m0);
     	cyber    = new SWNetwork(nodes, beta, k);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -248,13 +246,10 @@ public class SimulationRunner implements Runnable {
     private void simulation7() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
     	filename = "SW-ER-300";
-    	probMatrix = new ProbabilityMatrix(sizes, probs);
-    	phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-
     	physical = new SWNetwork(nodes, beta, k);
     	cyber    = new ERNetwork(nodes, p);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -274,13 +269,10 @@ public class SimulationRunner implements Runnable {
     private void simulation8() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
     	filename = "SW-SF-300";
-    	probMatrix = new ProbabilityMatrix(sizes, probs);
-    	phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-
     	physical = new SWNetwork(nodes, beta, k);
     	cyber    = new SFNetwork(nodes, m0);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -300,13 +292,10 @@ public class SimulationRunner implements Runnable {
     private void simulation9() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
     	filename = "SW-SW-300";
-    	probMatrix = new ProbabilityMatrix(sizes, probs);
-    	phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-
     	physical = new SWNetwork(nodes, beta, k);
     	cyber    = new SWNetwork(nodes, beta, k);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
@@ -324,13 +313,10 @@ public class SimulationRunner implements Runnable {
         // Variables to change from simulation to simulation.
         // infect = 0.15; immune = 0.05;
         filename = "IEEE-300";
-        probMatrix = new ProbabilityMatrix(sizes, probs);
-        phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-
         physical = new Network(RealWorld.IEEE300());
-        cyber    = new Network(RealWorld.IEEE300()); cyber.rewire();
+        cyber    = new Network(RealWorld.IEEE300()); cyber.rewire(); // NOTE: This network is not guaranteed to be connected.
         idn = new IDN(physical, cyber);  // Cyber network, physical network.
-        idn.randomInterEdges(INTER_P);   // Inter-edge probability.
+        idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
         // Run the "bridged" and the "separate" simulations.

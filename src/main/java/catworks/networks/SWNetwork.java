@@ -25,7 +25,7 @@ public class SWNetwork extends Network {
         this.beta = beta;
         this.K = K;
         this.directed = UNDIRECTED;
-        init(n, beta, K);
+        init();
     }
 
 
@@ -40,7 +40,7 @@ public class SWNetwork extends Network {
         this.beta = beta;
         this.K = K;
         this.directed = directed;
-        init(n, beta, K);
+        init();
     }
 
 
@@ -51,7 +51,7 @@ public class SWNetwork extends Network {
      */
     @Override
     public void regenerate() {
-        init(n, beta, K);
+        init();
     }
 
 
@@ -60,9 +60,8 @@ public class SWNetwork extends Network {
      * @param n [description]
      * @param beta [description]
      */
-    private void init(int n, double beta, int K) {
+    private void init() {
         int[][] graph;
-        
         do {
             graph = new int[n][n]; // Initialize new adjacency graph.
             if (K % 2 != 0) K++;   // Ensure that `K` is even.

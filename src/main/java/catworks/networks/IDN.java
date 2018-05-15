@@ -2,7 +2,6 @@ package catworks.networks;
 
 import java.util.ArrayList;
 import java.util.Random;
-
 /**
  * Note: I removed the requirement that IDN extends AbstractNetwork. We need to
  * meet to elaborate as to why this is. The nature of adding nodes, deleting nodes,
@@ -43,6 +42,7 @@ public class IDN extends AbstractNetwork {
     /**
      * Initialize new set of inter-edges between networks in IDN. The number of
      * inter-edges will be `interP * numOfNodes`.
+     * 
      * @param interP [description]
      */
     public void randomInterEdges(double interP) {
@@ -67,6 +67,51 @@ public class IDN extends AbstractNetwork {
                 interEdges.add(newEdge);
                 i++;
             }
+        }
+    }
+
+
+    /**
+     * Initialize a new set of inter-edges, however, you now have the option to
+     * 'halve' the probability. When you have 'halve' this process, the interP probability
+     * is halved. The reason for this is that two inter-edges will be made, one from one
+     * network C to some other network P and then one from the network P to network C.
+     * 
+     * @param interP The probability of there being an inter-edge between networks.
+     * @param halve  Boolean variable that either allows or denies the halving process to ensue.
+     */
+    public void randomInterEdges(double interP, boolean halve) {
+        this.interP = interP;
+        if (halve) {
+            interP /= 2;
+            int n = (int) (interP * getNumOfNodes() + 0.5);
+            int i = 0;
+            while (i < n) {
+                // Make a random inter-edge by first selecting the source network and
+                // the dest network.
+                int srcNet  = (int) (Math.random() * getNumOfNetworks());
+                int destNet = (int) (Math.random() * getNumOfNetworks());
+                while (srcNet == destNet) destNet = (int) (Math.random() * getNumOfNetworks());
+
+                // Select random nodes in each network for the first inter-edge.
+                int srcNode1  = (int) (Math.random() * networks.get(srcNet).getNumOfNodes());
+                int destNode1 = (int) (Math.random() * networks.get(destNet).getNumOfNodes());
+                InterEdge interEdge1 = new InterEdge(srcNet, srcNode1, destNet, destNode1);
+
+                // Select random nodes in each network for the second inter-edge.
+                int srcNode2  = (int) (Math.random() * networks.get(destNet).getNumOfNodes());
+                int destNode2 = (int) (Math.random() * networks.get(srcNet).getNumOfNodes());
+                InterEdge interEdge2 = new InterEdge(destNet, srcNode2, srcNet, destNode2);
+
+                // Create new inter-edge and add to array of inter-edges.
+                if (!interEdges.contains(interEdge1) && !interEdges.contains(interEdge2)) {
+                    interEdges.add(interEdge1);
+                    interEdges.add(interEdge2);
+                    i++;
+                }
+            }
+        } else {
+            randomInterEdges(interP);
         }
     }
 
@@ -207,6 +252,6 @@ public class IDN extends AbstractNetwork {
             network.regenerate();
         }
         interEdges = new ArrayList<InterEdge>();
-        randomInterEdges(interP); //INTER_EDGE_P);
+        randomInterEdges(interP, true);
     }
 }
