@@ -18,8 +18,8 @@ public class SFNetwork extends Network {
 
     /**
      * Scale-Free (SF) random network constructor, using the Barabasi-Albert model.
-     * @param n Number of nodes to be in the network.
-     * @param m Probability that a node has an edge to another node.
+     * @param n  Number of nodes to be in the network.
+     * @param m0 Probability that a node has an edge to another node.
      */
     public SFNetwork(int n, int m0) {
         // Make sure that the parameters are legal.
@@ -30,13 +30,14 @@ public class SFNetwork extends Network {
         this.m0 = m0;
         this.m  = m0;
         this.directed = UNDIRECTED;
-        init(n, m0, m);
+        init();
     }
 
     /**
      * Scale-Free (SF) random network constructor, using the Barabasi-Albert model.
-     * @param n Number of nodes to be in the network.
-     * @param m Probability that a node has an edge to another node.
+     * @param n  Number of nodes to be in the network.
+     * @param m0 Probability that a node has an edge to another node.
+     * @param m  
      */
     public SFNetwork(int n, int m0, int m) {
         // Make sure that the parameters are legal.
@@ -47,7 +48,7 @@ public class SFNetwork extends Network {
         this.m0 = m0;
         this.m  = m;
         this.directed = UNDIRECTED;
-        init(n, m0, m);
+        init();
     }
 
 
@@ -58,7 +59,7 @@ public class SFNetwork extends Network {
      */
     @Override
     public void regenerate() {
-        init(n, m0, m);
+        init();
     }
 
 
@@ -67,9 +68,8 @@ public class SFNetwork extends Network {
      * @param n [description]
      * @param p [description]
      */
-    private void init(int n, int m0, int m) {
+    private void init() {
         int[][] graph;
-
         do {
             // STEP 1: Initialize a new adjacency matrix to represent the network.
             graph = new int[n][n];
