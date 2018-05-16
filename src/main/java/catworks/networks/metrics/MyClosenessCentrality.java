@@ -1,6 +1,6 @@
 package catworks.networks.metrics;
 
-public class ClosenessCentrality implements Centrality {
+public class MyClosenessCentrality implements Centrality {
 
 public Double[] getCentralities(Integer[][] matrix) {
 
