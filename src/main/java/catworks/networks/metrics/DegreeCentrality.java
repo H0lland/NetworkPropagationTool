@@ -32,7 +32,7 @@ public class DegreeCentrality implements Centrality {
 
     @Override
     public String toString() {
-        return "degree";
+        return "Degree";
     }
 
 }

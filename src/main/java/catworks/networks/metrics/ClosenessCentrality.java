@@ -22,7 +22,7 @@ public class ClosenessCentrality implements Centrality {
             }
         }
 
-        org.graphstream.algorithm.measure.ClosenessCentrality centrality = new org.graphstream.algorithm.measure.ClosenessCentrality("centrality", org.graphstream.algorithm.measure.AbstractCentrality.NormalizationMode.SUM_IS_1);
+        org.graphstream.algorithm.measure.ClosenessCentrality centrality = new org.graphstream.algorithm.measure.ClosenessCentrality("centrality", org.graphstream.algorithm.measure.AbstractCentrality.NormalizationMode.NONE);
         centrality.init(graph);
         centrality.compute();
 
@@ -44,7 +44,7 @@ public class ClosenessCentrality implements Centrality {
 
     @Override
     public String toString() {
-        return "closeness";
+        return "Closeness";
     }
 
 }
