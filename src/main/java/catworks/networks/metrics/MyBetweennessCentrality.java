@@ -13,7 +13,7 @@ import java.util.LinkedList;
  * Paper on an algorithm to implement Betweenness Centrality:
  * https://people.csail.mit.edu/jshun/6886-s18/papers/p35-prountzos.pdf
  */
-public class MyBetweenness implements Centrality {
+public class MyBetweennessCentrality implements Centrality {
 
     /**
      * Calculate the betweenness centrality for each node in the network. This method implements
@@ -131,6 +131,11 @@ public class MyBetweenness implements Centrality {
      */
     public int type() {
         return Centrality.MYBETWEENNESS;
+    }
+
+    @Override
+    public String toString() {
+        return "MyBetweenness";
     }
 
 }

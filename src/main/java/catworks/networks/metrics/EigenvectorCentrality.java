@@ -44,7 +44,7 @@ public class EigenvectorCentrality implements Centrality {
 
     @Override
     public String toString() {
-        return "eigenvector";
+        return "Eigenvector";
     }
 
 }
