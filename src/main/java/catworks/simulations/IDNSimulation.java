@@ -307,7 +307,7 @@ public class IDNSimulation extends Simulation {
      * @param metric  [description]
      */
     private void immunize(int[] state, Network network, Centrality metric, int offset) {
-        Integer[] immuneIndices = network.mostCentralNodes(metric, immuneCount);
+        int[] immuneIndices = network.mostCentralNodes(metric, immuneCount);
         for (Integer immuneIndex : immuneIndices) {
             state[immuneIndex + offset] = Phenomena.IMMUNE;
         }
@@ -371,7 +371,7 @@ public class IDNSimulation extends Simulation {
     private void targetedInfect(int[] state, Network network, int offset) {
         int i = 0, index = 0, infectCount = (int) (state.length * infectFraction + 0.5);
         int num = immuneCount + infectCount;
-        Integer[] centralIndicies = network.mostCentralNodes(new DegreeCentrality(), num);
+        int[] centralIndicies = network.mostCentralNodes(new DegreeCentrality(), num);
 
         while (i < infectCount) {
             // System.out.printf("%d < %d\n", i, infectCount);
