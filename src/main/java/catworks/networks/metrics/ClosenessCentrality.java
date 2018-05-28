@@ -2,6 +2,7 @@ package catworks.networks.metrics;
 
 public class ClosenessCentrality implements Centrality {
 
+  public ClosenessCentrality(){}
     /**
      * Return the closeness centralities of a given network.
      * @param matrix Adjacency Matrix representation for the network.
@@ -11,13 +12,40 @@ public class ClosenessCentrality implements Centrality {
         int n = matrix.length;
         double[][] d = allPairsShortestPaths(matrix);
         double[] centralities = new double[n];
-        
-        // Sum up the reciprocals for every node and store the value in `h`.
-        for (int x = 0; x < n; x++)
-            for (int y = 0; y < n; y++)
-                if (x != y)
-                    centralities[x] += 1.0 / d[x][y];
 
+        // Sum up the reciprocals for every node and store the value in `h`.
+        for (int x = 0; x < n; x++){
+            for (int y = 0; y < n; y++){
+                if (x != y){
+                    centralities[x] += 1.0 / d[x][y];
+                }
+            }
+            centralities[x] *= ((double) matrix.length-1);
+        }
+        // Return the array of centralities.
+        return centralities;
+    }
+
+    /**
+     * Return the closeness centralities of a given network.
+     * @param matrix Adjacency Matrix representation for the network.
+     * @param weight weight to multiply the reciprocal fairness by
+     */
+    public double[] getCentralities(int[][] matrix, double weight) {
+        // Initialize variables and data strutcures necessary for this method.
+        int n = matrix.length;
+        double[][] d = allPairsShortestPaths(matrix);
+        double[] centralities = new double[n];
+
+        // Sum up the reciprocals for every node and store the value in `h`.
+        for (int x = 0; x < n; x++){
+            for (int y = 0; y < n; y++){
+                if (x != y){
+                    centralities[x] += 1.0 / d[x][y];
+                }
+            }
+            centralities[x] *= weight;
+        }
         // Return the array of centralities.
         return centralities;
     }
@@ -40,43 +68,43 @@ public class ClosenessCentrality implements Centrality {
      * belonging to the provided graph. This method will take advantage of the Floyd-Warshall algorithm
      * for calculating shortest distance.
      * @param  graph
-     * @return 
+     * @return
      */
     private double[][] allPairsShortestPaths(int[][] graph) {
         // Initialize `d`, which will serve as the two-dimensional array to store the shortest
         // paths among all pairs. Also, let `n` be the number of nodes for code brevity.
         int n = graph.length;
         double[][] d = prepare(graph);
-        
+
         // Floyd-Warshall algorithm.
         for (int k = 0; k < n; k++)
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
                     if (i != j && i != k && j != k)
                         d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
-    
+
         // Return the two-dimensional array containing the shortest path among all pairs.
         return d;
-    }   
+    }
 
     /**
      * Make and return a modified copy of the passed in `graph` that is ready for the Floyd-Warshall
      * algorithm. By "ready", we mean that nodes values indicating no edge will become a positive infinity
      * and self-loops (if they exist) will be ignored/removed.
      * @param  graph
-     * @return 
+     * @return
      */
     private double[][] prepare(int[][] graph) {
         double[][] newGraph = new double[graph.length][graph.length];
 
         for (int i = 0; i < graph.length; i++) {
             for (int j = 0; j < graph.length; j++) {
-                if (i == j) 
+                if (i == j)
                     newGraph[i][j] = 0.0;
-                
-                else if (graph[i][j] != 0) 
+
+                else if (graph[i][j] != 0)
                     newGraph[i][j] = graph[i][j];
-                
+
                 else // Note: graph[i][j] == 0.
                     newGraph[i][j] = Double.POSITIVE_INFINITY;
             }
@@ -97,7 +125,7 @@ public class ClosenessCentrality implements Centrality {
 
     /**
      * A prior implementation using the GraphStream API. We have began to move away from
-     * GraphStream's library as a whole. However, the results of our implementation of 
+     * GraphStream's library as a whole. However, the results of our implementation of
      * Closeness Centrality slightly differs from the results of GraphStream's. With this
      * in mind, this method is simply serving to "backup" the original implementation.
      * @param matrix Adjacency matrix representation of graph underpinning network.
