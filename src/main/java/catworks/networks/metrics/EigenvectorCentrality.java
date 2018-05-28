@@ -2,36 +2,50 @@ package catworks.networks.metrics;
 
 public class EigenvectorCentrality implements Centrality {
 
+    private static final int NUM_OF_ITERATIONS = 100;
+
     /*
      * Gets the centrality specifically for finding the Eigenvectors of the matrix
      * @param  Integer[][] matrix        original matrix
      * @return             eigenvector values
      */
-    public Double[] getCentralities(Integer[][] matrix) {
+    public double[] getCentralities(int[][] matrix) {
         final int N = matrix.length;
-        org.graphstream.graph.implementations.SingleGraph graph = new org.graphstream.graph.implementations.SingleGraph("graph");
+        double[] centralities = new double[N];
+        for (int i = 0; i < N; i++) 
+            centralities[i] = 1.0;
 
-        for (int u = 0; u < N; u++)
-            graph.addNode(u + "");
-
-        for (int u = 0; u < N; u++) {
-            for (int v = 0; v < N; v++) {
-                // If there's an edge, add a directed edge.
-                if (matrix[u][v] == 1)
-                    graph.addEdge(u + "_" + v, u + "", v + "", true);
+        // 2. Loop through the number of iterations to calculate eigenvector centralities for
+        //    each node.
+        for (int iteration = 0; iteration < NUM_OF_ITERATIONS; iteration++) {
+            double[] w = new double[N];
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    if (i == j) continue;
+                    if (matrix[i][j] == 1) {
+                        w[j] = w[j] + centralities[i];
+                    }
+                }
             }
+            centralities = w;
         }
 
-        org.graphstream.algorithm.measure.EigenvectorCentrality centrality = new org.graphstream.algorithm.measure.EigenvectorCentrality("centrality", org.graphstream.algorithm.measure.AbstractCentrality.NormalizationMode.SUM_IS_1);
-        centrality.init(graph);
-        centrality.compute();
-
-        Double[] centralities = new Double[N];
-        for (int node = 0; node < N; node++) {
-            centralities[node] = graph.getNode(node + "").getAttribute("centrality");
-        }
-
+        // Normalize and return centralities array.
+        normalize(centralities);
         return centralities;
+    }
+
+    private void normalize(double[] arr) {
+        double sum = sum(arr);
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = arr[i] / sum;
+        }
+    }
+
+    private double sum(double[] arr) {
+        double sum = 0.0;
+        for (double d : arr) sum += d;
+        return sum;
     }
 
     /**
@@ -44,7 +58,7 @@ public class EigenvectorCentrality implements Centrality {
 
     @Override
     public String toString() {
-        return "eigenvector";
+        return "Eigenvector";
     }
 
 }

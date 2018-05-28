@@ -8,12 +8,12 @@ public class DegreeCentrality implements Centrality {
      * @return        An array with each i-th element being the centrality of the
      *                i-th node in the network that is being measured for centrality.
      */
-    public Integer[] getCentralities(Integer[][] matrix) {
+    public double[] getCentralities(int[][] matrix) {
         int n = matrix.length;
-        Integer[] centralities = new Integer[n];
+        double[] centralities = new double[n];
 
 		for (int i = 0; i < n; i++) {
-			int degree = 0;
+			double degree = 0;
 			for (int j = 0; j < n; j++) {
 				degree += (matrix[i][j] + matrix[j][i]);
 			}
@@ -32,7 +32,7 @@ public class DegreeCentrality implements Centrality {
 
     @Override
     public String toString() {
-        return "degree";
+        return "Degree";
     }
 
 }
