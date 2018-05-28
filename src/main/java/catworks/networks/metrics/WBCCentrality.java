@@ -4,6 +4,7 @@ import catworks.networks.*;
 
 public class WBCCentrality implements InterdependentCentrality{
 
+  public WBCCentrality(){}
   /**
   * Return the Weighted Boundary Closeness Centarlities of a given idn
   * @param idn the IDN for which we find the getCentralities
@@ -25,7 +26,8 @@ public class WBCCentrality implements InterdependentCentrality{
       }
       int[][] mat = net.getIntArrayMatrix();
       double[] ithCents = cloCent.getCentralities(mat);
-      System.arraycopy(ithCents,0,centralities,offset,count);
+      for(int k = offset; k < count; k++)
+        centralities[k] = ithCents[k-offset];
       offset += count;
     }
     return centralities;

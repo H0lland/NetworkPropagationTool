@@ -20,7 +20,7 @@ public class ClosenessCentrality implements Centrality {
                     centralities[x] += 1.0 / d[x][y];
                 }
             }
-            centralities[x] *= (double) matrix.length;
+            centralities[x] *= ((double) matrix.length-1);
         }
         // Return the array of centralities.
         return centralities;
