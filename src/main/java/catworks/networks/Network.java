@@ -187,7 +187,7 @@ public class Network extends AbstractNetwork {
 		java.util.LinkedList<Integer> closedSet = new java.util.LinkedList<Integer>();
 		Integer root = 0;
 		openSet.add(root);
-		
+
 		while (!openSet.isEmpty()) {
 			Integer subtreeRoot = openSet.removeFirst();
 			for (Integer child = 0; child < network[subtreeRoot].length; child++) {
@@ -198,9 +198,9 @@ public class Network extends AbstractNetwork {
 			}
 			closedSet.add(subtreeRoot);
 		}
-		
+
 		for (Integer i = 0; i < network.length; i++)
-			if (!closedSet.contains(i)) 
+			if (!closedSet.contains(i))
 				return false;
 		return true;
 	}
@@ -359,6 +359,11 @@ public class Network extends AbstractNetwork {
             }
         } while (!isConnected(graph));
         setIntArrayMatrix(graph);
+    }
+
+    public Network clone(){
+      Network clone = new Network(this.getMatrix());
+      return clone;
     }
 
     @Override

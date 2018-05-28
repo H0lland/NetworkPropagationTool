@@ -2,6 +2,7 @@ package catworks.networks.metrics;
 
 public class ClosenessCentrality implements Centrality {
 
+  public ClosenessCentrality(){}
     /**
      * Return the closeness centralities of a given network.
      * @param matrix Adjacency Matrix representation for the network.
