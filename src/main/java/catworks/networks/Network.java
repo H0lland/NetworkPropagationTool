@@ -85,8 +85,8 @@ public class Network extends AbstractNetwork {
      * @return        Array of Integers with each i-th element being the centrality
      *                of the i-th node in the Network.
      */
-    public <E extends Number> E[] getCentralities(Centrality metric) {
-        Integer[][] arrayMatrix = getArrayMatrix();
+    public double[] getCentralities(Centrality metric) {
+        int[][] arrayMatrix = getIntArrayMatrix();
         return metric.getCentralities(arrayMatrix);
     }
 
@@ -101,25 +101,25 @@ public class Network extends AbstractNetwork {
      *                central nodes in the Network. The order of the indices matters
      *                as they are sorted by most central nodes to least central nodes.
      */
-    public Integer[] mostCentralNodes(Centrality metric, int n) {
-        ArrayList<Number> centralities = new ArrayList<Number>(Arrays.asList((Number[]) getCentralities(metric)));
-        Integer[] mostCentral = new Integer[n];
+    public int[] mostCentralNodes(Centrality metric, int n) {
+        double[] centralities = getCentralities(metric);
+        int[] mostCentral = new int[n];
 
         for (int i = 0; i < n; i++) {
             // Set the current minimum value, at first, to the maximum Integer
             // value. This guarantees that the first element will be selected to
             // maintain simple logic. Then initialize the current index to -1.
-            Number currentMax = Integer.MIN_VALUE;
+            double currentMax = Integer.MIN_VALUE;
             int currentIndex = -1;
 
             // Iterate through each centrality in `centralities`. Each iteration
             // through the loop will find the smallest value in `centralities`.
             // Upon completion of the loop, the value of the smallest value will
             // be changed such that it is not redundantly selected.
-            for (int j = 0; j < centralities.size(); j++) {
-                if (centralities.get(j).doubleValue() > currentMax.doubleValue()) {
+            for (int j = 0; j < centralities.length; j++) {
+                if (centralities[j] > currentMax) {
                     currentIndex = j;
-                    currentMax = centralities.get(j);
+                    currentMax = centralities[j];
                 }
             }
 
@@ -127,7 +127,7 @@ public class Network extends AbstractNetwork {
             // value in `centralities` and then set the i-th smallest value in
             // `centralities` to the largest Integer value so it's not re-selected.
             mostCentral[i] = currentIndex;
-            centralities.set(currentIndex, Integer.MIN_VALUE);
+            centralities[currentIndex] = Integer.MIN_VALUE;
         }
         return mostCentral;
     }
@@ -142,26 +142,26 @@ public class Network extends AbstractNetwork {
      *                central nodes in the Network. The order of the indices matters
      *                as they are sorted by least central nodes to most central nodes.
      */
-    public Integer[] leastCentralNodes(Centrality metric, int n) {
-        ArrayList<Number> centralities = new ArrayList<Number>(Arrays.asList((Number[]) getCentralities(metric)));
-        Integer[] leastCentral = new Integer[n];
+    public int[] leastCentralNodes(Centrality metric, int n) {
+        double[] centralities = getCentralities(metric);
+        int[] leastCentral = new int[n];
 
         // Find the i-th most central node for each iteration.
         for (int i = 0; i < n; i++) {
             // Set the current minimum value, at first, to the maximum Integer
             // value. This guarantees that the first element will be selected to
             // maintain simple logic. Then initialize the current index to -1.
-            Number currentMin = Integer.MAX_VALUE;
+            double currentMin = Integer.MAX_VALUE;
             int currentIndex = -1;
 
             // Iterate through each centrality in `centralities`. Each iteration
             // through the loop will find the smallest value in `centralities`.
             // Upon completion of the loop, the value of the smallest value will
             // be changed such that it is not redundantly selected.
-            for (int j = 0; j < centralities.size(); j++) {
-                if (centralities.get(j).doubleValue() < currentMin.doubleValue()) {
+            for (int j = 0; j < centralities.length; j++) {
+                if (centralities[j] < currentMin) {
                     currentIndex = j;
-                    currentMin = centralities.get(j);
+                    currentMin = centralities[j];
                 }
             }
 
@@ -169,7 +169,7 @@ public class Network extends AbstractNetwork {
             // value in `centralities` and then set the i-th smallest value in
             // `centralities` to the largest Integer value so it's not re-selected.
             leastCentral[i] = currentIndex;
-            centralities.set(currentIndex, Integer.MAX_VALUE);
+            centralities[currentIndex] = Integer.MAX_VALUE;
         }
         return leastCentral;
     }
