@@ -2,19 +2,17 @@ package catworks.networks.metrics;
 
 import catworks.networks.IDN;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * An implementation of Path-Degree centrality -- a novel approach to calculating centralities for interdependent networks.
+ * This centrality metric takes advantage of interdependent links to calculate centralities.
+ */
 public class PathDegreeCentrality implements InterdependentCentrality {
 
     private static double kx = 0.3,  ky = 0.3;  // Intra-edge link weights.
     private static double kxy = 0.4, kyx = 0.4; // Inter-edge link weights.
 
-    /**
-     * TODO: Look at the MatLab code that Khamfroush sent out earlier in the spring semester. Use that as a reference
-     * to implement this centrality metric. The mathematical notation is a bit bloated and unclear.
-     */
     public double[] getCentralities(IDN idn) {
         // Verify that the idn only has two networks, since PathDegree
         // only works with IDNs comprised of two networks.
@@ -41,16 +39,6 @@ public class PathDegreeCentrality implements InterdependentCentrality {
             }
         }
 
-        // System.out.printf("[");
-        // for (int[] row : A) {
-        //     System.out.printf("[");
-        //     for (int edge : row) {
-        //         System.out.printf("%d, ", edge);
-        //     }
-        //     System.out.printf("], ");
-        // }
-        // System.out.printf("]\n\n");
-
         // Step 2: Get border nodes in the interdependent network.
         ArrayList<Integer> borderXTemp = new ArrayList<Integer>();
         ArrayList<Integer> borderYTemp = new ArrayList<Integer>();
@@ -68,16 +56,18 @@ public class PathDegreeCentrality implements InterdependentCentrality {
                         borderXTemp.add(j);
             }
         }
+
         // Convert the ArrayList instances to standard arrays.
-        Integer[] borderX = new Integer[borderXTemp.size()];
-        Integer[] borderY = new Integer[borderYTemp.size()];
-        borderX = borderXTemp.toArray(borderX);
-        borderY = borderYTemp.toArray(borderY);
+        int[] borderX = new int[borderXTemp.size()];
+        int[] borderY = new int[borderYTemp.size()];
+        for (int i = 0; i < borderXTemp.size(); i++) borderX[i] = borderXTemp.get(i);
+        for (int i = 0; i < borderYTemp.size(); i++) borderY[i] = borderYTemp.get(i);
 
         // Step 3: Calculate the costs for each nodes.
         int[][] cost = new int[n1+n2][n1+n2];
         for (int q = 0; q < n1 + n2; q++) {
             for (int t = 0; t < n1 + n2; t++) {
+                // Figure out which portion of the IDN the edge (q, t) belongs to.
                 if (q < n1 && t < n1) {
     				if (A[q][t] == 1)
                         cost[q][t] = (int) Math.ceil(kx * sum(col(Ax, t)));
@@ -110,36 +100,30 @@ public class PathDegreeCentrality implements InterdependentCentrality {
 
         // Step 4: Calculate centralities for each node.
         int[][] C = cost;
-        // System.out.println(C[21][8]); // Should be "cost[21][8] = 3".
         double[]   centrality = new double[n1+n2];
         int source, target;
 
+        // Step 4.1: Calculate centralities for nodes in X.
         for (int i = 0; i < n1; i++) {
     		for (int j = 0; j < borderY.length; j++) {
     			source = i;
     			target = borderY[j] + n1;
-                // dist, P = dijkstra(C, source, target); // TODO: Revisit this.
-                int[] P = dijkstraPath(C, source, target);
-    			for (int k = 1; k < P.length - 1; k++) {
-                    int s1 = P[k];
+                int[] path = dijkstraPath(C, source, target);
+    			for (int k = 1; k < path.length - 1; k++) {
+                    int s1 = path[k];
     				centrality[s1] = centrality[s1] + 1;
                 }
             }
         }
 
+        // Step 4.2: Calculate centralities for nodes in Y.
     	for (int i = n1; i < n1 + n2; i++) {
     		for (int j = 0; j < borderX.length; j++) {
     			source = i;
     			target = borderX[j];
-                // dist, P = dijkstra(C, source, target); // TODO: Revisit this.
-                int[] P = dijkstraPath(C, source, target);
-                
-                StringBuilder sb = new StringBuilder();
-                for (int node : P) sb.append(node + " ");
-                // System.out.println("path -> " + sb); // DEBUG
-
-    			for (int k = 1; k < P.length - 1; k++) {
-                    int s1 = P[k];
+                int[] path = dijkstraPath(C, source, target);
+    			for (int k = 1; k < path.length - 1; k++) {
+                    int s1 = path[k];
     				centrality[s1] = centrality[s1] + 1;
                 }
             }
@@ -162,147 +146,102 @@ public class PathDegreeCentrality implements InterdependentCentrality {
      */
     private int[] dijkstraPath(int[][] adj, int source, int target) {
         int n = adj.length;
-        HashMap<Integer, ArrayList<Integer>> adjList = toAdjacencyList(adj);
-
+        ArrayList<Integer> queue = new ArrayList<Integer>();
         double[] dist = new double[n];
-        for (int i = 0; i < n; i++) {
-            dist[i] = Double.POSITIVE_INFINITY;
+        int[] prev = new int[n];
+
+        // Initialize the data structures necessary for computing dijkstra's algorithm to initial values.
+        for (int node : range(n)) {
+            queue.add(node);
+            dist[node] = Double.POSITIVE_INFINITY;
+            prev[node] = -1;
         }
-        dist[source] = 0;
+        dist[source] = 0.0;
 
-        HashMap<Integer, Double> previous = new HashMap<Integer, Double>();
-        for (int i = 0; i < n; i++) {
-            previous.put(i, Double.POSITIVE_INFINITY);
-        }
+        // Loop through all elements of the queue until you reach the target.
+        boolean targetFound = false;
+        while (!queue.isEmpty() && !targetFound) {
+            int minIndex = min(dist, queue);
+            int u = queue.remove(minIndex);
 
-        HashMap<Integer, ArrayList<Number>> paths = new HashMap<Integer, ArrayList<Number>>();
-        for (int i = 0; i < n; i++) {
-            paths.put(i, new ArrayList<Number>());
-        }
-
-        LinkedList<Integer> queue = new LinkedList<Integer>();
-        for (int i = 0; i < n; i++) {
-            queue.add(i);
-        }
-
-        while (!queue.isEmpty()) {
-            Number[] temp = min(subset(dist, queue));
-            double minDist = (double) temp[0];
-            int minIndex = (int) temp[1];
-            int u = queue.get(minIndex);
-
-            // Termination condition.
-            double t = u;
-            while (previous.containsKey(t)) {
-                paths.get(u).add(0, t);
-                t = previous.get(t);
-            }
-
-            // We reached our target, return the path.
             if (u == target) {
-                double pathLength = dist[u];
-                int[] path = new int[paths.get(u).size()];
-                for (int i = 0; i < path.length; i++)
-                    path[i] = paths.get(u).get(i).intValue();
-                
-                System.out.printf("`pathLength` = %f\npath.length = %d\n\n", pathLength, path.length);
-                return path;
+                targetFound = true;
             }
 
-            queue.remove(new Integer(u)); // Needs to be an Integer object, otherwise `remove` will remove by index.
-            for (int v = 0; v < adjList.get(u).size(); v++) {
-                int val = adjList.get(u).get(v);
-                double alt = dist[u] + adj[u][val];
-
-                // System.out.printf("val = %d, alt = %f, dist[%d] = %f\n", val, alt, val, dist[val]);
-
-                if (alt < dist[val]) {
-                    dist[val] = alt;
-                    previous.put(val, (double) u);
-                    // System.out.printf("previous[%d] = %f\n", val, (double) u);
+            for (int v : range(n)) {
+                // If there is a neighbor (via some weighted edge).
+                if (adj[u][v] > 0) {
+                    double alt = dist[u] + adj[u][v];
+                    if (alt < dist[v]) {
+                        dist[v] = alt;
+                        prev[v] = u;
+                    }
                 }
             }
         }
-        return new int[1];
+        return shortestPath(prev, target);
     }
 
     /**
-     * 
+     * Upon computing dijkstra's, find the path from the source node to the target node using the computed array of
+     * previous nodes.
+     * @param prev   Array of ints such that `prev[i]` will hold the index of the node that comes before `i` in the shortest path.
+     * @param target The node in which we wish to find the shortest path for.
+     * @return       An array of ints that will represent the shortest path to `target`.
      */
-    private HashMap<Integer, ArrayList<Integer>> toAdjacencyList(int[][] adjMatrix) {
-        HashMap<Integer, ArrayList<Integer>> adjL = new HashMap<Integer, ArrayList<Integer>>();
-        for (int i = 0; i < adjMatrix.length; i++) {
-            for (int j = 0; j < adjMatrix.length; j++) {
-                if (adjL.containsKey(i)) {
-                    adjL.get(i).add(j);
-                }
-                else {
-                    adjL.put(i, new ArrayList<Integer>());
-                    adjL.get(i).add(j);
-                }
-            }
+    private int[] shortestPath(int[] prev, int target) {
+        ArrayList<Integer> S = new ArrayList<Integer>();
+        while (0 <= target && target < prev.length) {
+            S.add(0, target);
+            target = prev[target];
         }
-        return adjL;
+
+        int[] path = new int[S.size()];
+        for (int i = 0; i < S.size(); i++) path[i] = S.get(i);
+        return path;
     }
 
     /**
-     * Make and return a new ArrayList from `arr` that only contains the elements at the indices in `indices`.
-     * @param arr     The array that we want a subset of. 
-     * @param indices An ArrayList of indices.
+     * Find the index of the smallest element in an array among the set of indices we're interested in.
+     * @param arr     The array in which we wish to find the minimum value's index.
+     * @param indices Set of indices that will be used to search for. If an index in `arr`, does not belong in `indices`,
+     *                then we are not concerned with it when finding the minimum value's index (hence, we ignore it).
+     * @return        Index of smallest value in `arr`, such that this index is among the set of the provided indices.
      */
-    private double[] subset(double[] arr, List<Integer> indices) {
-        double[] subset = new double[indices.size()];
+    private int min(double[] arr, List<Integer> indices) {
+        double[] newArr = new double[indices.size()];
         int i = 0;
-        for (Integer index : indices) {
-            if (index < 0 || index >= arr.length)
-                throw new IndexOutOfBoundsException();
-            subset[i++] = arr[index];
-        }
-        return subset;
-    }
-
-    /**
-     * Creates and returns a tuple (represented as an array of Numbers) in which the tuple contains the
-     * minimum element value and the index of that value.
-     * @param arr The array in which we wish to find the minimum value and minimum index of.
-     */
-    private Number[] min(double[] arr) {
-        Number[] tuple = new Number[2];
-        double minValue = Double.POSITIVE_INFINITY;
+        for (Integer index : indices)
+            newArr[i++] = arr[index];
+        
+        double minVal = newArr[0];
         int minIndex = 0;
-
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] < minValue) {
-                minValue = arr[i];
+        for (i = 1; i < newArr.length; i++) {
+            if (newArr[i] < minVal) {
+                minVal = newArr[i];
                 minIndex = i;
             }
         }
 
-        // Place the values into the tuple and then return it.
-        tuple[0] = new Double(minValue);
-        tuple[1] = new Integer(minIndex);
-        return tuple;
+        return minIndex;
     }
 
     /**
-     * [sum description]
-     * 
-     * @param arr [description]
-     * @return [description]
+     * This method works identically to the one-arg version of Python's native `range` function. It returns an
+     * array of ints of length `n` such that each element is incremental.
+     * @param n The number of elements to belong to the array.
+     * @return  Newly created array of ints, e.g., {0, 1, 2, ..., n-1}.
      */
-    private double sum(double[] arr) {
-        double total = 0.0;
-        for (double d : arr) {
-            total += d;
-        }
-        return total;
+    private int[] range(int n) {
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) arr[i] = i;
+        return arr;
     }
 
     /**
-     * [sum description]
-     * 
-     * @param arr [description]
-     * @return [description]
+     * Add every value belonging to an array and return the value.
+     * @param arr Array of ints we wish to get the summation of.
+     * @return Summation.
      */
     private double sum(int[] arr) {
         double total = 0.0;
@@ -313,11 +252,10 @@ public class PathDegreeCentrality implements InterdependentCentrality {
     }
 
     /**
-     * [col description]
-     * 
-     * @param arr [description]
-     * @param n   [description]
-     * @return [description]
+     * Grab the n-th column in a two-dimensional array of ints.
+     * @param arr Two-dimensional array of ints.
+     * @param n   The column index we wish to grab.
+     * @return The n-th column of `arr`.
      */
     private int[] col(int[][] arr, int n) {
         int[] column = new int[arr.length];
