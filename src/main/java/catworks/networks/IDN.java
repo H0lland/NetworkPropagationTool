@@ -2,6 +2,8 @@ package catworks.networks;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import catworks.networks.metrics.InterdependentCentrality;
 /**
  * Note: I removed the requirement that IDN extends AbstractNetwork. We need to
  * meet to elaborate as to why this is. The nature of adding nodes, deleting nodes,
@@ -38,6 +40,9 @@ public class IDN extends AbstractNetwork {
         token = "";
     }
 
+    public double[] getCentralities(InterdependentCentrality metric) {
+        return metric.getCentralities(this);
+    }
 
     /**
      * Initialize new set of inter-edges between networks in IDN. The number of
@@ -118,6 +123,24 @@ public class IDN extends AbstractNetwork {
 
     public int numberOfInterEdges() {
         return interEdges.size();
+    }
+
+    public int[][] getInterEdgeMatrix(int i, int j) {
+        if (i < 0 || i >= interEdges.size() || j < 0 || j >= interEdges.size()) {
+            throw new IllegalArgumentException("Network ID out of bounds.");
+        }
+
+        int n1 = networks.get(i).getNumOfNodes();
+        int n2 = networks.get(j).getNumOfNodes();
+        int[][] adj = new int[n1][n2];
+        for (InterEdge edge : interEdges) {
+            if (i == edge.networkID() && j == edge.destNetworkID()) {
+                int x = edge.sourceNodeID();
+                int y = edge.destNodeID();
+                adj[x][y] = 1;
+            }
+        }
+        return adj;
     }
 
 

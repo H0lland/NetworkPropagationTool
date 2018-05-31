@@ -21,11 +21,18 @@ public class InterEdge {
       this.destNodeID = destID;
     }
 
-    @Override public String toString() {
+    public int networkID()     { return networkID; }
+    public int sourceNodeID()  { return sourceNodeID; }
+    public int destNetworkID() { return destNetworkID; }
+    public int destNodeID()    { return destNodeID; }
+
+    @Override 
+    public String toString() {
         return "(" + networkID + ":" + sourceNodeID + " -> " + destNetworkID + ":" + destNodeID + ")";
     }
 
-    @Override public boolean equals(Object other) {
+    @Override 
+    public boolean equals(Object other) {
         if (other == this) return true;
         if (other instanceof InterEdge) {
             return this.toString().equals(other.toString());
