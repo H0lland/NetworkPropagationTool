@@ -22,14 +22,20 @@ public class InterEdge {
     }
 
     public int getSourceNetwork(){
-      return networkID;
+        return networkID;
     }
 
     public int getSourceNode(){
-      return sourceNodeID;
+        return sourceNodeID;
     }
 
-    @Override public String toString() {
+    public int networkID()     { return networkID; }
+    public int sourceNodeID()  { return sourceNodeID; }
+    public int destNetworkID() { return destNetworkID; }
+    public int destNodeID()    { return destNodeID; }
+
+    @Override 
+    public String toString() {
         return "(" + networkID + ":" + sourceNodeID + " -> " + destNetworkID + ":" + destNodeID + ")";
     }
 
