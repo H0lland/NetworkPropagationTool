@@ -21,6 +21,14 @@ public class InterEdge {
       this.destNodeID = destID;
     }
 
+    public int getSourceNetwork(){
+      return networkID;
+    }
+
+    public int getSourceNode(){
+      return sourceNodeID;
+    }
+
     @Override public String toString() {
         return "(" + networkID + ":" + sourceNodeID + " -> " + destNetworkID + ":" + destNodeID + ")";
     }

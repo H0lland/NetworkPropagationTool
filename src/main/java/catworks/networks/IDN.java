@@ -47,7 +47,7 @@ public class IDN extends AbstractNetwork {
     /**
      * Initialize new set of inter-edges between networks in IDN. The number of
      * inter-edges will be `interP * numOfNodes`.
-     * 
+     *
      * @param interP [description]
      */
     public void randomInterEdges(double interP) {
@@ -81,7 +81,7 @@ public class IDN extends AbstractNetwork {
      * 'halve' the probability. When you have 'halve' this process, the interP probability
      * is halved. The reason for this is that two inter-edges will be made, one from one
      * network C to some other network P and then one from the network P to network C.
-     * 
+     *
      * @param interP The probability of there being an inter-edge between networks.
      * @param halve  Boolean variable that either allows or denies the halving process to ensue.
      */
@@ -121,7 +121,7 @@ public class IDN extends AbstractNetwork {
     }
 
 
-    public int numberOfInterEdges() {
+    public int getNumOfInterEdges() {
         return interEdges.size();
     }
 
@@ -204,7 +204,9 @@ public class IDN extends AbstractNetwork {
       interEdges.add(connection);
     }
 
-
+    public InterEdge getInterEdge(int i){
+      return interEdges.get(i);
+    }
     /**
       * [bridge description]
     */
