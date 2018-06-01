@@ -40,9 +40,60 @@ public class IDN extends AbstractNetwork {
         token = "";
     }
 
+
+    /**
+     * Calculate the centralities of each node in the Interdependent Network and return 
+     * these values as an array of double. Order of this array matters. The element at the
+     * 0th index is the centrality of the 0th node and so on.
+     * @param  metric The centrality metric that will be used to calculate centrality.
+     * @return        Array of Integers with each i-th element being the centrality
+     *                of the i-th node in the Network.
+     */
     public double[] getCentralities(InterdependentCentrality metric) {
         return metric.getCentralities(this);
     }
+
+
+    /**
+     * Selects the "top `n`" central nodes in a Network given a centrality metric.
+     * @param  metric The centrality metric that will be used to determine the
+     *                centrality of nodes.
+     * @param  n      The number of nodes to select based on centrality.
+     * @return        An array of Integers that contains the indices of the most
+     *                central nodes in the Network. The order of the indices matters
+     *                as they are sorted by most central nodes to least central nodes.
+     */
+    public int[] mostCentralNodes(InterdependentCentrality metric, int n) {
+        double[] centralities = getCentralities(metric);
+        int[] mostCentral = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            // Set the current minimum value, at first, to the maximum Integer
+            // value. This guarantees that the first element will be selected to
+            // maintain simple logic. Then initialize the current index to -1.
+            double currentMax = Double.NEGATIVE_INFINITY;
+            int currentIndex = -1;
+
+            // Iterate through each centrality in `centralities`. Each iteration
+            // through the loop will find the smallest value in `centralities`.
+            // Upon completion of the loop, the value of the smallest value will
+            // be changed such that it is not redundantly selected.
+            for (int j = 0; j < centralities.length; j++) {
+                if (centralities[j] > currentMax) {
+                    currentIndex = j;
+                    currentMax = centralities[j];
+                }
+            }
+
+            // Set the value at the i-th index in `leastCentral` to the i-th smallest
+            // value in `centralities` and then set the i-th smallest value in
+            // `centralities` to the largest Integer value so it's not re-selected.
+            mostCentral[i] = currentIndex;
+            centralities[currentIndex] = Double.NEGATIVE_INFINITY;
+        }
+        return mostCentral;
+    }
+
 
     /**
      * Initialize new set of inter-edges between networks in IDN. The number of

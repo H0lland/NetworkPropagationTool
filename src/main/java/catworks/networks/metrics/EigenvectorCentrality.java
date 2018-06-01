@@ -1,6 +1,6 @@
 package catworks.networks.metrics;
 
-public class EigenvectorCentrality implements Centrality {
+public class EigenvectorCentrality extends Centrality {
 
     private static final int NUM_OF_ITERATIONS = 100;
 

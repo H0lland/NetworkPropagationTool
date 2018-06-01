@@ -8,7 +8,7 @@ import java.util.List;
  * An implementation of Path-Degree centrality -- a novel approach to calculating centralities for interdependent networks.
  * This centrality metric takes advantage of interdependent links to calculate centralities.
  */
-public class PathDegreeCentrality implements InterdependentCentrality {
+public class PathDegreeCentrality extends InterdependentCentrality {
 
     private static double kx = 0.3,  ky = 0.3;  // Intra-edge link weights.
     private static double kxy = 0.4, kyx = 0.4; // Inter-edge link weights.
@@ -132,13 +132,15 @@ public class PathDegreeCentrality implements InterdependentCentrality {
         return centrality;
     }
 
+    @Override
+    public String toString() { return "Path-Degree"; }
+
     public int type() {
-        return -1;
+        return AbstractCentrality.PATH_DEGREE;
     }
 
     /**
-     * [dijkstraPath description]
-     * 
+     * Get the path from a source node to a target node using Dijkstra's algorithm.
      * @param adj    [description]
      * @param source [description]
      * @param target [description]

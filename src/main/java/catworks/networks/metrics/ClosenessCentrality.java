@@ -1,6 +1,6 @@
 package catworks.networks.metrics;
 
-public class ClosenessCentrality implements Centrality {
+public class ClosenessCentrality extends Centrality {
 
   public ClosenessCentrality(){}
     /**
@@ -55,7 +55,7 @@ public class ClosenessCentrality implements Centrality {
      * @return Type identifier of centrality metric.
      */
     public int type() {
-        return Centrality.CLOSENESS;
+        return AbstractCentrality.CLOSENESS;
     }
 
     @Override

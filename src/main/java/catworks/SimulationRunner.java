@@ -98,6 +98,7 @@ public class SimulationRunner implements Runnable {
                 case -1: simulationRealWorld(); break;
             }
         } catch (Exception e) {
+            System.out.println("It's in SimulationRunner.run().");
             System.out.println(e.getStackTrace());
         }
     }

@@ -3,7 +3,7 @@ package catworks.networks;
 import catworks.networks.metrics.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+// import java.util.Arrays;
 
 /**
   * Note: I changed the indices from longs to ints to work with ArrayLists, whose
@@ -79,7 +79,7 @@ public class Network extends AbstractNetwork {
 
     /**
      * Calculate the centralities of each node in a Network and return these values
-     * as an array of Integers. Order of this array matters. The element at the
+     * as an array of doubles. Order of this array matters. The element at the
      * 0th index is the centrality of the 0th node and so on.
      * @param  metric The centrality metric that will be used to calculate centrality.
      * @return        Array of Integers with each i-th element being the centrality
