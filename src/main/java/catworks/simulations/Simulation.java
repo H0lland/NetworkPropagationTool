@@ -16,7 +16,7 @@ public abstract class Simulation {
     protected static final String[] HEADER = { "Time Step", "Number of Nodes", "Number of Immune", "Infected - Betweenness (AVG)", "Infected - Betweenness (MIN)", "Infected - Betweenness (MAX)", "Infected - Closeness (AVG)", "Infected - Closeness (MIN)", "Infected - Closeness (MAX)", "Infected - Degree (AVG)", "Infected - Degree (MIN)", "Infected - Degree (MAX)", "Infected - Eigenvector (AVG)", "Infected - Eigenvector (MIN)", "Infected - Eigenvector (MAX)", "Infected - Path Degree (AVG)", "Infected - Path Degree (MIN)", "Infected - Path Degree (MAX)", "Infected - Weighted Boundary (AVG)", "Infected - Weighted Boundary (MIN)", "Infected - Weighted Boundary (MAX)", };
     
     protected static final Centrality[] CENTRALITIES = { new BetweennessCentrality(), new ClosenessCentrality(), new DegreeCentrality(), new EigenvectorCentrality() };
-    protected static final InterdependentCentrality[] INTERDEPENDENT_CENTRALITIES = { new PathDegreeCentrality(), new IdnCentrality1() };
+    protected static final InterdependentCentrality[] INTERDEPENDENT_CENTRALITIES = { new PathDegreeCentrality(), new WBCentrality() };
 
     protected static final int TIMESTAMP_COL    = 0;
     protected static final int NODE_COUNT_COL   = 1;

@@ -6,6 +6,42 @@ import java.util.List;
 public class Algorithms {
 
     /**
+     * [description]
+     * @param adj
+     * @return
+     */
+    public static double[][] floydWarsall(int[][] adj) {
+		int n = adj.length;
+        double[][] dist = new double[n][n];
+        
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < n; j++)
+				if      (i == j)        dist[i][j] = 0;
+				else if (adj[i][j] > 0) dist[i][j] = adj[i][j];
+				else                    dist[i][j] = Double.POSITIVE_INFINITY;
+		
+		for (int k = 0; k < n; k++) {
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if (dist[i][j] > dist[i][k] + dist[k][j])
+						dist[i][j] = dist[i][k] + dist[k][j];
+				}
+			}
+		}
+		return dist;
+    }
+    
+    /**
+     * [description]
+     * @param dist   []
+     * @param source []
+     * @param target []
+     */
+    public static double[][] floydPath(double[][] dist, int source, int target) {
+        return new double[1][1];
+    }
+
+    /**
      * Get the path from a source node to a target node using Dijkstra's algorithm.
      * @param adj    [description]
      * @param source [description]

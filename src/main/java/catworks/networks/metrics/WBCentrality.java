@@ -1,11 +1,10 @@
 package catworks.networks.metrics;
 
 import catworks.networks.IDN;
-import catworks.networks.Network;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IdnCentrality1 extends InterdependentCentrality {
+public class WBCentrality extends InterdependentCentrality {
 
     public double[] getCentralities(IDN idn) {
         // Initialize array to store centrality values.
@@ -28,6 +27,7 @@ public class IdnCentrality1 extends InterdependentCentrality {
                 else if (i >= n1 && j >= n1)  A[i][j] = Y[i-n1][j-n1];
             }
         }
+        double[][] dist = Algorithms.floydWarsall(A);
 
         // Step 2: Get border nodes in the interdependent network.
         ArrayList<Integer> borderXTemp = new ArrayList<Integer>();
@@ -58,7 +58,7 @@ public class IdnCentrality1 extends InterdependentCentrality {
         double denom = 0.0;
         for (int x = 0; x < n1; x++) {
             for (int y = 0; y < n1; y++) {
-                denom += d(A, x, y);
+                denom += dist[x][y];
             }
             centrality[x] = numer/denom;
             denom = 0.0;
@@ -67,7 +67,7 @@ public class IdnCentrality1 extends InterdependentCentrality {
         numer = borderY.length - 1;
         for (int x = 0; x < n1; x++) {
             for (int z : borderY) {
-                denom += d(A, x, z + n1);
+                denom += dist[x][z+n1];
             }
             centrality[x] += numer/denom;
             denom = 0.0;
@@ -78,7 +78,7 @@ public class IdnCentrality1 extends InterdependentCentrality {
         denom = 0.0;
         for (int x = n1; x < n1 + n2; x++) {
             for (int y = n1; y < n1 + n2; y++) {
-                denom += d(A, x, y);
+                denom += dist[x][y];
             }
             centrality[x] = numer/denom;
             denom = 0.0;
@@ -87,7 +87,7 @@ public class IdnCentrality1 extends InterdependentCentrality {
         numer = borderX.length - 1;
         for (int x = 0; x < n1; x++) {
             for (int z : borderX) {
-                denom += d(A, x, z);
+                denom += dist[x][z];
             }
             centrality[x] += numer/denom;
             denom = 0.0;
@@ -185,7 +185,7 @@ public class IdnCentrality1 extends InterdependentCentrality {
 
     @Override
     public String toString() {
-        return "Idn-Centra1";
+        return "Weighted-Boundary";
     }
 
 }
