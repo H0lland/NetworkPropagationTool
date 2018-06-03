@@ -2,7 +2,7 @@ package catworks.networks.metrics;
 
 import catworks.networks.*;
 
-public class WBCCentrality extends InterdependentCentrality{
+public class WBCCentrality extends InterdependentCentrality {
 
     public WBCCentrality(){}
     /**
@@ -38,7 +38,7 @@ public class WBCCentrality extends InterdependentCentrality{
         return "Weighted-Boundary";
     }
 
-    public int type(){
+    public int type() {
         return AbstractCentrality.WEIGHTED_BOUNDARY;
     }
 }

@@ -24,16 +24,19 @@ public class Main {
         (new Thread(new SimulationRunner(7))).start();
         (new Thread(new SimulationRunner(8))).start();
         (new Thread(new SimulationRunner(9))).start();
-        // (new Thread(new SimulationRunner(-1))).start();
+        (new Thread(new SimulationRunner(-1))).start();
+
+        // Test interdependent centralities:
+        // testInterCentrality(new PathDegreeCentrality(), new IdnCentrality1());
     }
 
     public static void testCentrality(Centrality centrality1, Centrality centrality2) {
         int n = 20;
         double p = 0.1;
         Network net = new ERNetwork(n, p);
-        boolean getSortedIndicies = true;
+        boolean getSortedIndices = true;
 
-        if (getSortedIndicies) {
+        if (getSortedIndices) {
             int[] results1 = net.mostCentralNodes(centrality1, n); 
             int[] results2 = net.mostCentralNodes(centrality2, n);
 
@@ -61,8 +64,43 @@ public class Main {
                 if (i == n - 1) System.out.print(results2[i] + "}\n");
                 else            System.out.print(results2[i] + ", ");
         }
-
         
+    }
+
+    public static void testInterCentrality(InterdependentCentrality cen1, InterdependentCentrality cen2) {
+        int n = 50, m = 3;
+        IDN idn = new IDN(new SFNetwork(n, m), new SFNetwork(n, m));
+        idn.randomInterEdges(0.12, true);
+        boolean getSortedIndices = true;
+
+        if (getSortedIndices) {
+            int[] results1 = idn.mostCentralNodes(cen1, n); 
+            int[] results2 = idn.mostCentralNodes(cen2, n);
+
+            System.out.print(cen1 + " = {");
+            for (int i = 0; i < n; i++)
+                if (i == n - 1) System.out.print(results1[i] + "}\n");
+                else            System.out.print(results1[i] + ", ");
+
+            System.out.print(cen2 + " = {");
+            for (int i = 0; i < n; i++)
+                if (i == n - 1) System.out.print(results2[i] + "}\n");
+                else            System.out.print(results2[i] + ", ");
+        } 
+        else {
+            double[] results1 = idn.getCentralities(cen1);
+            double[] results2 = idn.getCentralities(cen2);
+
+            System.out.print(cen1 + " = {");
+            for (int i = 0; i < n; i++)
+                if (i == n - 1) System.out.print(results1[i] + "}\n");
+                else            System.out.print(results1[i] + ", ");
+
+            System.out.print(cen2 + " = {");
+            for (int i = 0; i < n; i++)
+                if (i == n - 1) System.out.print(results2[i] + "}\n");
+                else            System.out.print(results2[i] + ", ");
+        } 
     }
 
 }

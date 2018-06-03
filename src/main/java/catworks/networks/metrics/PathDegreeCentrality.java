@@ -43,14 +43,14 @@ public class PathDegreeCentrality extends InterdependentCentrality {
         ArrayList<Integer> borderXTemp = new ArrayList<Integer>();
         ArrayList<Integer> borderYTemp = new ArrayList<Integer>();
         for (int i = 0; i < n1; i++) {
-            for (int j = 0; j < n1; j++) {
+            for (int j = 0; j < Axy[i].length; j++) { // for (int j = 0; j < n1; j++) {
                 if (Axy[i][j] == 1)
                     if (!borderYTemp.contains(j))
                         borderYTemp.add(j);
             }
         }
         for (int i = 0; i < n2; i++) {
-            for (int j = 0; j < n2; j++) {
+            for (int j = 0; j < Ayx[i].length; j++) { // for (int j = 0; j < n2; j++) {
                 if (Ayx[i][j] == 1)
                     if (!borderXTemp.contains(j))
                         borderXTemp.add(j);

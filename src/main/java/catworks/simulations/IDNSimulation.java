@@ -161,6 +161,22 @@ public class IDNSimulation extends Simulation {
         final Integer N = networks.getNumOfNodes();
         int avgIndex, minIndex, maxIndex;
 
+        /**
+         * TODO: Implement a helper method that will run each centrality and interdependent-centrality
+         *       on the provided topology. This helper method should return data of type Set<Integer>,
+         *       with each element being indices for nodes that all the centralities deemed to be "central".
+         *       The point of this is to then guarantee that the infection methods do not select nodes belonging
+         *       to this set. Let's denote this set to be `S` and `n` to be the number of nodes we wish to infect.
+         *       Infection methods should aim to find the `S + n` most central nodes and then infect the first `n`
+         *       nodes to not belong to set `S`.
+         * 
+         *       Further, move the portion of code that regenerates and rewires the network to the run(n) method.
+         *       Place it in the loop that deals with running the number of simulations. Place it after the call
+         *       to this method and then make a check such that if it's the last simulation, it doesn't bother
+         *       regenerating/rewiring -- it's a trivially simple way to maximize efficiency.
+         */
+
+        // Loop through each centrality metric and run a simulation.
         for (Centrality metric : CENTRALITIES) {
             // Determine which columns (average, minimum, and maximum) to modify
             // with respect to centrality.
