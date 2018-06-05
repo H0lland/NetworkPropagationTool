@@ -26,9 +26,9 @@ public class SimulationRunner implements Runnable {
     // Network simulation variables to be modified.
     private static final int AVG_DEGREE = 4;
     private static int nodes = 300, m0 = AVG_DEGREE, k = AVG_DEGREE;
-    private static int immune = 10, failed = 5, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
+    private static int immune = 12, failed = 5, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
 
-    private static double infect = failed/600.0, INTER_P = interEdgeNum/(double)(nodes*2);
+    private static double INTER_P = interEdgeNum/(double)(nodes*2);
     private static double p = AVG_DEGREE/((double) nodes), beta = 0.05;
 
     // Declare variables that will be used in simulation methods.
@@ -37,7 +37,9 @@ public class SimulationRunner implements Runnable {
     private Simulation simulation;   private Phenomena  phe;
     private ProbabilityMatrix probMatrix;
     private Network cyber, physical; private IDN idn;
-    private static final String baseFilename = "out" + slash + "simulations" + slash + "targeted" + slash + "immune=" + immune + "_infect=" + failed + slash;
+
+    private static final String simulationType = "random"; // Attack type ("targeted" or "random").
+    private static final String baseFilename = "out" + slash + "simulations" + slash + simulationType + slash + "immune=" + immune + "_infect=" + failed + slash;
 
     private static final boolean[] IS_BRIDGED = { true, false };
 
@@ -118,7 +120,7 @@ public class SimulationRunner implements Runnable {
 
         // Run the "bridged" and the "separate" simulations.
         for (boolean isBridged : IS_BRIDGED) {
-            simulation = new IDNSimulation(idn, phe, TIME, immune, infect, isBridged);
+            simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
             data = simulation.run(NUM_OF_SIMULATIONS);
             path = getPath(filename, isBridged);
             outputData(data, path);
@@ -141,7 +143,7 @@ public class SimulationRunner implements Runnable {
 
     	// Run the "bridged" and the "separate" simulations.
     	for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, infect, isBridged);
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
     		data = simulation.run(NUM_OF_SIMULATIONS);
     		path = getPath(filename, isBridged);
     		outputData(data, path);
@@ -163,7 +165,7 @@ public class SimulationRunner implements Runnable {
 
     	// Run the "bridged" and the "separate" simulations.
     	for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, infect, isBridged);
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
     		data = simulation.run(NUM_OF_SIMULATIONS);
     		path = getPath(filename, isBridged);
     		outputData(data, path);
@@ -186,7 +188,7 @@ public class SimulationRunner implements Runnable {
 
     	// Run the "bridged" and the "separate" simulations.
     	for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, infect, isBridged);
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
     		data = simulation.run(NUM_OF_SIMULATIONS);
     		path = getPath(filename, isBridged);
     		outputData(data, path);
@@ -209,7 +211,7 @@ public class SimulationRunner implements Runnable {
 
     	// Run the "bridged" and the "separate" simulations.
     	for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, infect, isBridged);
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
     		data = simulation.run(NUM_OF_SIMULATIONS);
     		path = getPath(filename, isBridged);
     		outputData(data, path);
@@ -232,7 +234,7 @@ public class SimulationRunner implements Runnable {
 
     	// Run the "bridged" and the "separate" simulations.
     	for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, infect, isBridged);
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
     		data = simulation.run(NUM_OF_SIMULATIONS);
     		path = getPath(filename, isBridged);
     		outputData(data, path);
@@ -255,7 +257,7 @@ public class SimulationRunner implements Runnable {
 
     	// Run the "bridged" and the "separate" simulations.
     	for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, infect, isBridged);
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
     		data = simulation.run(NUM_OF_SIMULATIONS);
     		path = getPath(filename, isBridged);
     		outputData(data, path);
@@ -278,7 +280,7 @@ public class SimulationRunner implements Runnable {
 
     	// Run the "bridged" and the "separate" simulations.
     	for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, infect, isBridged);
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
     		data = simulation.run(NUM_OF_SIMULATIONS);
     		path = getPath(filename, isBridged);
     		outputData(data, path);
@@ -301,7 +303,7 @@ public class SimulationRunner implements Runnable {
 
     	// Run the "bridged" and the "separate" simulations.
     	for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, infect, isBridged);
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
     		data = simulation.run(NUM_OF_SIMULATIONS);
     		path = getPath(filename, isBridged);
     		outputData(data, path);
@@ -322,7 +324,7 @@ public class SimulationRunner implements Runnable {
 
         // Run the "bridged" and the "separate" simulations.
         for (boolean isBridged : IS_BRIDGED) {
-            simulation = new IDNSimulation(idn, phe, TIME, immune, infect, isBridged);
+            simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
             data = simulation.run(NUM_OF_SIMULATIONS);
             path = getPath(filename, isBridged);
             outputData(data, path);

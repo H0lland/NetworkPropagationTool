@@ -7,6 +7,8 @@ import catworks.phenomena.*;
 
 // Additional import statements.
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Random;
 
 /**
  *
@@ -15,35 +17,20 @@ public class IDNSimulation extends Simulation {
 
     private IDN     networks;
     private boolean separateCentralities;
-
     private double[][] minimumAndMaximum;
+    private HashSet<Integer> immuneNodes;
 
-    public IDNSimulation(IDN networks, Phenomena phenomena, int timeSteps, int immuneCount, double infectFraction, boolean separateCentralities) {
+    public IDNSimulation(IDN networks, Phenomena phenomena, int timeSteps, int immuneCount, int failedCount, boolean separateCentralities) {
         this.networks = networks;
         this.phenomena = phenomena;
         this.timeSteps = timeSteps;
         this.immuneCount = immuneCount;
-        this.infectFraction = infectFraction;
+        this.failedCount = failedCount;
         this.separateCentralities = separateCentralities;
 
         runID = 0;
         simulationID++;
     }
-
-    public IDNSimulation(IDN networks, Phenomena phenomena, int timeSteps, double immuneFraction, double infectFraction, boolean separateCentralities) {
-        this.networks = networks;
-        this.phenomena = phenomena;
-        this.timeSteps = timeSteps;
-        this.immuneFraction = immuneFraction;
-        this.infectFraction = infectFraction;
-        this.separateCentralities = separateCentralities;
-
-        runID = 0;
-        immuneCount = (int) (networks.getNumOfNodes() * immuneFraction);
-        if (immuneCount % 2 != 0) immuneCount++;
-        simulationID++;
-    }
-
 
     /**
      * [run description]
@@ -70,7 +57,23 @@ public class IDNSimulation extends Simulation {
         // (2) Go through the number of simulations and sum up the values between
         //     data sets.
         for (int simulationNum = 0; simulationNum < n; simulationNum++) {
+            // Run a single instance of the simulation and add the results of that simulation to our `data` instance.
             sumData(data, run());
+
+            // Check to make sure we're not on the last simulation (if so, there's no need to regenerate/rewire the networks).
+            if (simulationNum != n-1) {
+                // Get the adjacency matrix of the network and declare `N` to be the number
+                // of nodes in the network.
+                if ((networks.getNetwork(0) instanceof ERNetwork) || (networks.getNetwork(0) instanceof SFNetwork) || (networks.getNetwork(0) instanceof SWNetwork)) {
+                    log(networks.getToken() + "  Interdependent network - regenerated."); // TODO: Include this again.
+                    networks.regenerate();
+                } else {
+                    log(networks.getToken() + "  Cyber network - rewired."); // TODO: Include this again.
+                    networks.getNetwork(1).rewire(); // TODO: Complete this so that it works for an arbitrary number of networks.
+                }
+            }
+
+            // Increment the run id.
             runID++;
         }
 
@@ -89,6 +92,8 @@ public class IDNSimulation extends Simulation {
                     case EIGENVECTOR_MAX_COL: break;
                     case PATH_DEGREE_MIN_COL: break;
                     case PATH_DEGREE_MAX_COL: break;
+                    // case PROPOSAL_MIN_COL:    break;
+                    // case PROPOSAL_MAX_COL:    break;
                     case WBC_MIN_COL:         break;
                     case WBC_MAX_COL:         break;
                     default:
@@ -128,6 +133,10 @@ public class IDNSimulation extends Simulation {
             finalData[i][PATH_DEGREE_MIN_COL] = (Double) minimumAndMaximum[i-1][PATH_DEGREE_MIN_COL];
             finalData[i][PATH_DEGREE_MAX_COL] = (Double) minimumAndMaximum[i-1][PATH_DEGREE_MAX_COL];
 
+            // finalData[i][PROPOSAL_AVG_COL] = (Double) data[i-1][PROPOSAL_AVG_COL];
+            // finalData[i][PROPOSAL_MIN_COL] = (Double) minimumAndMaximum[i-1][PROPOSAL_MIN_COL];
+            // finalData[i][PROPOSAL_MAX_COL] = (Double) minimumAndMaximum[i-1][PROPOSAL_MAX_COL];
+
             finalData[i][WBC_AVG_COL] = (Double) data[i-1][WBC_AVG_COL];
             finalData[i][WBC_MIN_COL] = (Double) minimumAndMaximum[i-1][WBC_MIN_COL];
             finalData[i][WBC_MAX_COL] = (Double) minimumAndMaximum[i-1][WBC_MAX_COL];
@@ -143,21 +152,11 @@ public class IDNSimulation extends Simulation {
      * @throws IOException   [description]
      */
     protected double[][] run() throws Exception {
-        // Get the adjacency matrix of the network and declare `N` to be the number
-        // of nodes in the network.
-        if ((networks.getNetwork(0) instanceof ERNetwork) || (networks.getNetwork(0) instanceof SFNetwork) || (networks.getNetwork(0) instanceof SWNetwork)) {
-            log(networks.getToken() + "  Interdependent network - regenerated.");
-            networks.regenerate();
-        } else {
-            log(networks.getToken() + "  Cyber network - rewired.");
-            networks.getNetwork(1).rewire(); // TODO: Complete this so that it works for an arbitrary number of networks.
-        }
-
         // Initialize the two-dimensional data set that will store the data that
         // will be used to make the .CSV output file.
         double[][] data = initializeData();
         Network bridgedNetwork = networks.bridge();
-        Integer[][] matrix = bridgedNetwork.getArrayMatrix();
+        final Integer[][] matrix = bridgedNetwork.getArrayMatrix();
         final Integer N = networks.getNumOfNodes();
         int avgIndex, minIndex, maxIndex;
 
@@ -175,6 +174,35 @@ public class IDNSimulation extends Simulation {
          *       to this method and then make a check such that if it's the last simulation, it doesn't bother
          *       regenerating/rewiring -- it's a trivially simple way to maximize efficiency.
          */
+
+        immuneNodes = getInitialImmuneNodes(networks); 
+        Network failureNet = networks.getNetwork(0);
+        int[] controlledInitialFailure = new int[N];
+        int fails = 0;
+        boolean targeted = false; // If true, then targeted attacks. Otherwise, random attacks.
+        if (targeted) {
+            int index = 0;
+            int[] mostCentral = failureNet.mostCentralNodes(new DegreeCentrality(), immuneNodes.size() + failedCount);
+            while (fails < failedCount) {
+                int node = mostCentral[index];
+                if (!immuneNodes.contains(node)) {
+                    controlledInitialFailure[node] = Phenomena.AFFLICTED;
+                    fails++;
+                }
+                index++;
+            }
+        } else {
+            Random rand = new Random();
+            while (fails < failedCount) {
+                int node = rand.nextInt(failureNet.getNumOfNodes());
+                if (!immuneNodes.contains(node)) {
+                    if (controlledInitialFailure[node] == Phenomena.UNAFFLICTED) {
+                        controlledInitialFailure[node] = Phenomena.AFFLICTED;
+                        fails++;
+                    }
+                }
+            }
+        }
 
         // Loop through each centrality metric and run a simulation.
         for (Centrality metric : CENTRALITIES) {
@@ -206,8 +234,13 @@ public class IDNSimulation extends Simulation {
             }
 
             // Log the start of the simulation to the user.
-            log(networks.getToken() + "  Starting Simulation " + runID + " (" + metric + ")");
-            int[] initialState  = new int[N];
+            log(networks.getToken() + "  Starting Simulation " + runID + " (" + metric + ")"); // TODO: Include this again.
+            int[] initialState = Arrays.copyOf(controlledInitialFailure, N);// new int[N];
+            
+            // NOTE: Delete this block later.
+            // System.out.print("Infected Nodes: ");
+            // for (int i = 0; i < initialState.length; i++) if (initialState[i] == Phenomena.AFFLICTED) System.out.print(i + ", ");
+            // System.out.println();
 
             // To perform an interdependent network simulation, we must either:
             //   (1) Bridge the network AFTER picking the most central nodes from
@@ -225,14 +258,14 @@ public class IDNSimulation extends Simulation {
                     immunize(initialState, temp, metric, offset);
                     offset += temp.getNumOfNodes(); // Increment offset by number of nodes.
                 }
-                targetedInfect(initialState, networks.getNetwork(0), 0);
+                // targetedInfect(initialState, networks.getNetwork(0), 0); // TODO: Investigate this.
                 immuneCount = backupImmuneCount;
             }
             // OPTION 3: Immunize most central nodes of the bridged network.
             else {
                 // In this case, we simply immunize and infect once and hard-code `offset` to be 0.
                 immunize(initialState, bridgedNetwork, metric, 0);
-                targetedInfect(initialState, networks.getNetwork(0), 0);
+                // targetedInfect(initialState, networks.getNetwork(0), 0); // TODO: Investigate this.
             }
 
             // Propagate phenomena throughout the network and store the state data at
@@ -258,7 +291,7 @@ public class IDNSimulation extends Simulation {
                 // Store the next state of phenomena propagation.
                 currentState = phenomena.propagate(matrix, currentState);
             }
-            log(networks.getToken() + "  Ending Simulation " + runID + " (" + metric + ")");
+            log(networks.getToken() + "  Ending Simulation " + runID + " (" + metric + ")"); // TODO: Include this again.
         }
 
         for (InterdependentCentrality metric : INTERDEPENDENT_CENTRALITIES) {
@@ -269,6 +302,11 @@ public class IDNSimulation extends Simulation {
                     minIndex = PATH_DEGREE_MIN_COL;
                     maxIndex = PATH_DEGREE_MAX_COL;
                     break;
+                // case Centrality.PROPOSAL:
+                //     avgIndex = PROPOSAL_AVG_COL;
+                //     minIndex = PROPOSAL_MIN_COL;
+                //     maxIndex = PROPOSAL_MAX_COL;
+                //     break;
                 case Centrality.WEIGHTED_BOUNDARY:
                     avgIndex = WBC_AVG_COL;
                     minIndex = WBC_MIN_COL;
@@ -279,10 +317,16 @@ public class IDNSimulation extends Simulation {
             }
 
             // Initialize the first state and then immunize and infect it for the first time step..
-            log(networks.getToken() + "  Starting Simulation " + runID + " (" + metric + ")");
-            int[] initialState  = new int[N];
+            log(networks.getToken() + "  Starting Simulation " + runID + " (" + metric + ")"); // TODO: Include this again.
+            int[] initialState = Arrays.copyOf(controlledInitialFailure, N); // new int[N];
+            
+            // NOTE: Delete this block later.
+            // System.out.print("Infected Nodes: ");
+            // for (int i = 0; i < initialState.length; i++) if (initialState[i] == Phenomena.AFFLICTED) System.out.print(i + ", ");
+            // System.out.println();
+
             immunize(initialState, networks, (InterdependentCentrality) metric, 0);
-            targetedInfect(initialState, networks.getNetwork(0), 0);
+            // targetedInfect(initialState, networks.getNetwork(0), 0); // TODO: Investigate this.
 
             // Propagate phenomena throughout the network and store the state data at
             // the end of each time step.
@@ -307,11 +351,48 @@ public class IDNSimulation extends Simulation {
                 // Store the next state of phenomena propagation.
                 currentState = phenomena.propagate(matrix, currentState);
             }
-            log(networks.getToken() + "  Ending Simulation " + runID + " (" + metric + ")");
+            log(networks.getToken() + "  Ending Simulation " + runID + " (" + metric + ")"); // TODO: Include this again.
         }
+        // System.out.println("-------"); 
         return data;
     }
 
+    public HashSet<Integer> getInitialImmuneNodes(IDN idn) { // TODO: Change this back to private once you finish testing it.
+        HashSet<Integer> set = new HashSet<Integer>();
+        Centrality[] singleCentralities = { new BetweennessCentrality(), new ClosenessCentrality(), new DegreeCentrality(), new EigenvectorCentrality() };
+        InterdependentCentrality[] interCentralities = { new PathDegreeCentrality(), new ProposalCentrality(), new WBCentrality() };
+        int n = idn.getNumOfNetworks();
+        int[] nodes;
+
+        // Step 2: If the simulation is running separate or bridged local centralities, compute accordingly to find central indices.
+        if (separateCentralities) {
+            int immune = immuneCount / n;
+            Network net = null;
+            for (Centrality metric : singleCentralities) {
+                int offset = 0;
+                for (int i = 0; i < n; i++) { // NOTE: Originally `for (int i = 0; i < n; i++)`.
+                    net = idn.getNetwork(i);
+                    nodes = net.mostCentralNodes(metric, immune);
+                    for (int node : nodes) set.add(node + offset);
+                    offset += net.getNumOfNodes();
+                }
+            }
+        } else {
+            Network bridgedNetwork = idn.bridge();
+            for (Centrality metric : singleCentralities) {
+                nodes = bridgedNetwork.mostCentralNodes(metric, immuneCount);
+                for (int node : nodes) set.add(node);
+            }
+        }
+
+        // Step 3: Find most central nodes of entire interdependent network.
+        for (InterdependentCentrality metric : interCentralities) {
+            nodes = idn.mostCentralNodes(metric, immuneCount);
+            for (int node : nodes) set.add(node);
+        }
+
+        return set;
+    }
 
     /**
      * [initializeData description]
@@ -345,6 +426,7 @@ public class IDNSimulation extends Simulation {
             minimumAndMaximum[t][EIGENVECTOR_MIN_COL] = Double.POSITIVE_INFINITY;
 
             minimumAndMaximum[t][PATH_DEGREE_MIN_COL] = Double.POSITIVE_INFINITY;
+            // minimumAndMaximum[t][PROPOSAL_MIN_COL] = Double.POSITIVE_INFINITY;
             minimumAndMaximum[t][WBC_MIN_COL] = Double.POSITIVE_INFINITY;
 
             // Set all the minimum columns to negative infinity.
@@ -354,6 +436,7 @@ public class IDNSimulation extends Simulation {
             minimumAndMaximum[t][EIGENVECTOR_MAX_COL] = Double.NEGATIVE_INFINITY;
 
             minimumAndMaximum[t][PATH_DEGREE_MAX_COL] = Double.NEGATIVE_INFINITY;
+            // minimumAndMaximum[t][PROPOSAL_MAX_COL] = Double.NEGATIVE_INFINITY;
             minimumAndMaximum[t][WBC_MAX_COL] = Double.NEGATIVE_INFINITY;
         }
     }
@@ -457,17 +540,20 @@ public class IDNSimulation extends Simulation {
      */
     private void targetedInfect(int[] state, Network network, int offset) {
         int i = 0, index = 0, infectCount = (int) (state.length * infectFraction + 0.5);
-        int num = immuneCount + infectCount;
-        int[] centralIndicies = network.mostCentralNodes(new DegreeCentrality(), num);
+        int num = immuneCount + infectCount + immuneNodes.size(); // NOTE: Changed it from `immuneCount + infectCount`.
+        int[] centralIndices = network.mostCentralNodes(new DegreeCentrality(), num);
 
+        System.out.print("Infected Nodes: ");
         while (i < infectCount) {
-            // System.out.printf("%d < %d\n", i, infectCount);
-            if (state[centralIndicies[index]] == Phenomena.UNAFFLICTED) {
-                state[centralIndicies[index]] = Phenomena.AFFLICTED;
+            int v = centralIndices[index];
+            if (state[v] == Phenomena.UNAFFLICTED && immuneNodes.contains(v) == false) {
+                state[v] = Phenomena.AFFLICTED;
                 i += 1;
+                System.out.print(v + ", ");
             }
             index += 1;
         }
+        System.out.println();
     }
 
 }

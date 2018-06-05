@@ -53,6 +53,7 @@ public abstract class Simulation {
     protected double     immuneFraction;
     protected double     infectFraction;
     protected int        immuneCount;
+    protected int        failedCount;
     protected static int simulationID = 0;
     protected int runID = 0;
 

@@ -2,22 +2,18 @@ package catworks.networks.metrics;
 
 import catworks.networks.IDN;
 import java.util.ArrayList;
-import java.util.List;
 
-public class WBCentrality extends InterdependentCentrality {
+public class ProposalCentrality extends InterdependentCentrality {
 
     public double[] getCentralities(IDN idn) {
-        // Initialize array to store centrality values.
-        double[] centrality = new double[idn.getNumOfNodes()];
-
-        // Iniitalize data structures to represent IDN.
-        int[][] X = idn.getNetwork(0).getIntArrayMatrix();
-        int[][] Y = idn.getNetwork(1).getIntArrayMatrix();
+        // Step 1: Get the adjacency matrix representations for networks X and Y.
+        final int[][] X = idn.getNetwork(0).getIntArrayMatrix();
+        final int[][] Y = idn.getNetwork(1).getIntArrayMatrix();
         int[][] XY = idn.getInterEdgeMatrix(0, 1);
         int[][] YX = idn.getInterEdgeMatrix(1, 0);
         int n1 = X.length, n2 = Y.length;
 
-        // Step 1: Bridge the network manually.
+        // Step 2: Bridge the interdependent network manually.
         int[][] A = new int[n1+n2][n1+n2];
         for (int i = 0; i < n1 + n2; i++) {
             for (int j = 0; j < n1 + n2; j++) {
@@ -27,9 +23,11 @@ public class WBCentrality extends InterdependentCentrality {
                 else if (i >= n1 && j >= n1)  A[i][j] = Y[i-n1][j-n1];
             }
         }
+
+        // Step 3: Get the distanes among all pairs in the IDN.
         double[][] dist = Algorithms.floydWarsall(A);
 
-        // Step 2: Get border nodes in the interdependent network.
+        // Step 4: Get the border nodes in the interdependent network.
         ArrayList<Integer> borderXTemp = new ArrayList<Integer>();
         ArrayList<Integer> borderYTemp = new ArrayList<Integer>();
         for (int i = 0; i < n1; i++) {
@@ -46,64 +44,61 @@ public class WBCentrality extends InterdependentCentrality {
                         borderXTemp.add(j);
             }
         }
-
-        // Step 2.1: Convert the ArrayList instances to standard arrays.
         int[] borderX = new int[borderXTemp.size()]; // Nodes in X that have an in-edge from a node in Y.
         int[] borderY = new int[borderYTemp.size()]; // Nodes in Y that have an in-edge from a node in X.
         for (int i = 0; i < borderXTemp.size(); i++) borderX[i] = borderXTemp.get(i);
         for (int i = 0; i < borderYTemp.size(); i++) borderY[i] = borderYTemp.get(i);
 
-        // Step 3.1: Calculate centralities for network `X`.
-        double numer = X.length - 1;
-        double denom = 0.0;
-        for (int x = 0; x < n1; x++) {
-            for (int y = 0; y < n1; y++) {
+        // Step 5: Calculate centralities for the IDN.
+        double[] centralities = new double[idn.getNumOfNodes()];
+        double[] degrees = new double[idn.getNumOfNodes()];
+        for (int node = 0; node < n1; node++) degrees[node] = degree(A, node);
+        for (int node = 0; node < n2; node++) degrees[node+n1] = degree(A, node+n1);
+
+        double sumDegreeX = 0;
+        double sumDegreeY = 0;
+        for (int node = 0; node < X.length; node++) sumDegreeX += degree(X, node);
+        for (int node = 0; node < Y.length; node++) sumDegreeY += degree(Y, node);
+
+        // Step 5.1: Calculate centralities for network X.
+        for (int x = 0; x < X.length; x++) {
+            double multi = degrees[x] / sumDegreeX;
+            double denom = 0.0;
+            for (int y : borderX) {
                 denom += dist[x][y];
             }
-            centrality[x] = numer/denom;
-            denom = 0.0;
+            centralities[x] = multi * 1.0/denom;
         }
 
-        numer = borderY.length - 1;
-        for (int x = 0; x < n1; x++) {
-            for (int z : borderY) {
-                denom += dist[x][z+n1];
+        // Step 5.2: Calculate centralities for network Y.
+        for (int x = 0; x < Y.length; x++) {
+            double multi = degrees[x+n1] / sumDegreeY;
+            double denom = 0.0;
+            for (int y : borderY) {
+                denom += dist[x+n1][y+n1];
             }
-            centrality[x] += numer/denom;
-            denom = 0.0;
+            centralities[x+n1] = multi * 1.0/denom;
         }
 
-        // Step 3.2: Calculate centralities for network `Y`.
-        numer = Y.length - 1;
-        denom = 0.0;
-        for (int x = n1; x < n1 + n2; x++) {
-            for (int y = n1; y < n1 + n2; y++) {
-                denom += dist[x][y];
-            }
-            centrality[x] = numer/denom;
-            denom = 0.0;
-        }
-
-        numer = borderX.length - 1;
-        for (int x = 0; x < n1; x++) {
-            for (int z : borderX) {
-                denom += dist[x][z];
-            }
-            centrality[x] += numer/denom;
-            denom = 0.0;
-        }
-
-        // Return the centralities for each node.
-        return centrality;
+        // Step 6: Return the results.
+        return centralities;
     }
 
     public int type() {
-        return AbstractCentrality.WEIGHTED_BOUNDARY;
+        return AbstractCentrality.PROPOSAL;
     }
-    
+
     @Override
     public String toString() {
-        return "Weighted-Boundary";
+        return "Proposal";
+    }
+
+    private int degree(int[][] adj, int node) {
+        int sum = 0;
+        for (int i = 0; i < adj.length; i++) {
+            sum += (adj[i][node] + adj[node][i]);
+        }
+        return sum;
     }
 
 }
