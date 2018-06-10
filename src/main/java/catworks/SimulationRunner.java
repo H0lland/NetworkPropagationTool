@@ -26,7 +26,7 @@ public class SimulationRunner implements Runnable {
     // Network simulation variables to be modified.
     private static final int AVG_DEGREE = 4;
     private static int nodes = 300, m0 = AVG_DEGREE, k = AVG_DEGREE;
-    private static int immune = 12, failed = 5, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
+    private static int immune = 10, failed = 5, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
 
     private static double INTER_P = interEdgeNum/(double)(nodes*2);
     private static double p = AVG_DEGREE/((double) nodes), beta = 0.05;

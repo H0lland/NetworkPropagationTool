@@ -2,7 +2,6 @@ package catworks.networks.metrics;
 
 import catworks.networks.IDN;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * An implementation of Path-Degree centrality -- a novel approach to calculating centralities for interdependent networks.
@@ -100,7 +99,7 @@ public class PathDegreeCentrality extends InterdependentCentrality {
 
         // Step 4: Calculate centralities for each node.
         int[][] C = cost;
-        double[]   centrality = new double[n1+n2];
+        double[] centrality = new double[n1+n2];
         int source, target;
 
         // Step 4.1: Calculate centralities for nodes in X.

@@ -15,10 +15,12 @@ import java.util.Random;
  */
 public class IDNSimulation extends Simulation {
 
+    private boolean TARGETED = false; // If true, then targeted attacks. Otherwise, random attacks.
     private IDN     networks;
     private boolean separateCentralities;
     private double[][] minimumAndMaximum;
     private HashSet<Integer> immuneNodes;
+    
 
     public IDNSimulation(IDN networks, Phenomena phenomena, int timeSteps, int immuneCount, int failedCount, boolean separateCentralities) {
         this.networks = networks;
@@ -62,13 +64,11 @@ public class IDNSimulation extends Simulation {
 
             // Check to make sure we're not on the last simulation (if so, there's no need to regenerate/rewire the networks).
             if (simulationNum != n-1) {
-                // Get the adjacency matrix of the network and declare `N` to be the number
-                // of nodes in the network.
                 if ((networks.getNetwork(0) instanceof ERNetwork) || (networks.getNetwork(0) instanceof SFNetwork) || (networks.getNetwork(0) instanceof SWNetwork)) {
-                    log(networks.getToken() + "  Interdependent network - regenerated."); // TODO: Include this again.
+                    log(networks.getToken() + "  Interdependent network - regenerated.");
                     networks.regenerate();
                 } else {
-                    log(networks.getToken() + "  Cyber network - rewired."); // TODO: Include this again.
+                    log(networks.getToken() + "  Cyber network - rewired.");
                     networks.getNetwork(1).rewire(); // TODO: Complete this so that it works for an arbitrary number of networks.
                 }
             }
@@ -92,8 +92,6 @@ public class IDNSimulation extends Simulation {
                     case EIGENVECTOR_MAX_COL: break;
                     case PATH_DEGREE_MIN_COL: break;
                     case PATH_DEGREE_MAX_COL: break;
-                    // case PROPOSAL_MIN_COL:    break;
-                    // case PROPOSAL_MAX_COL:    break;
                     case WBC_MIN_COL:         break;
                     case WBC_MAX_COL:         break;
                     default:
@@ -132,10 +130,6 @@ public class IDNSimulation extends Simulation {
             finalData[i][PATH_DEGREE_AVG_COL] = (Double) data[i-1][PATH_DEGREE_AVG_COL];
             finalData[i][PATH_DEGREE_MIN_COL] = (Double) minimumAndMaximum[i-1][PATH_DEGREE_MIN_COL];
             finalData[i][PATH_DEGREE_MAX_COL] = (Double) minimumAndMaximum[i-1][PATH_DEGREE_MAX_COL];
-
-            // finalData[i][PROPOSAL_AVG_COL] = (Double) data[i-1][PROPOSAL_AVG_COL];
-            // finalData[i][PROPOSAL_MIN_COL] = (Double) minimumAndMaximum[i-1][PROPOSAL_MIN_COL];
-            // finalData[i][PROPOSAL_MAX_COL] = (Double) minimumAndMaximum[i-1][PROPOSAL_MAX_COL];
 
             finalData[i][WBC_AVG_COL] = (Double) data[i-1][WBC_AVG_COL];
             finalData[i][WBC_MIN_COL] = (Double) minimumAndMaximum[i-1][WBC_MIN_COL];
@@ -179,8 +173,7 @@ public class IDNSimulation extends Simulation {
         Network failureNet = networks.getNetwork(0);
         int[] controlledInitialFailure = new int[N];
         int fails = 0;
-        boolean targeted = false; // If true, then targeted attacks. Otherwise, random attacks.
-        if (targeted) {
+        if (TARGETED) {
             int index = 0;
             int[] mostCentral = failureNet.mostCentralNodes(new DegreeCentrality(), immuneNodes.size() + failedCount);
             while (fails < failedCount) {
@@ -204,7 +197,8 @@ public class IDNSimulation extends Simulation {
             }
         }
 
-        // Loop through each centrality metric and run a simulation.
+        // PHASE 1: Propagate phenomena using the standard centrality metrics to immunize nodes to failure within an IDN
+        //          under both cases -- i) separate local centralities and ii) bridged global centralities.
         for (Centrality metric : CENTRALITIES) {
             // Determine which columns (average, minimum, and maximum) to modify
             // with respect to centrality.
@@ -234,20 +228,17 @@ public class IDNSimulation extends Simulation {
             }
 
             // Log the start of the simulation to the user.
-            log(networks.getToken() + "  Starting Simulation " + runID + " (" + metric + ")"); // TODO: Include this again.
-            int[] initialState = Arrays.copyOf(controlledInitialFailure, N);// new int[N];
-            
-            // NOTE: Delete this block later.
-            // System.out.print("Infected Nodes: ");
-            // for (int i = 0; i < initialState.length; i++) if (initialState[i] == Phenomena.AFFLICTED) System.out.print(i + ", ");
-            // System.out.println();
+            log(networks.getToken() + "  Starting Simulation " + runID + " (" + metric + ")");
+            int[] initialState = Arrays.copyOf(controlledInitialFailure, N);
 
+            // ===== SUMMARY: 
             // To perform an interdependent network simulation, we must either:
             //   (1) Bridge the network AFTER picking the most central nodes from
             //       each network separately.
             //   (2) Bridge the network BEFORE picking the most central nodes.
             // Upon doing that, immunize and infect the appropriate nodes in the
             // network and set that as the initial state, or the state at time step 0.
+
             // OPTION 1: Immunize most central nodes of separate networks before bridging.
             if (separateCentralities) {
                 int offset = 0;
@@ -258,15 +249,12 @@ public class IDNSimulation extends Simulation {
                     immunize(initialState, temp, metric, offset);
                     offset += temp.getNumOfNodes(); // Increment offset by number of nodes.
                 }
-                // targetedInfect(initialState, networks.getNetwork(0), 0); // TODO: Investigate this.
                 immuneCount = backupImmuneCount;
             }
-            // OPTION 3: Immunize most central nodes of the bridged network.
-            else {
-                // In this case, we simply immunize and infect once and hard-code `offset` to be 0.
-                immunize(initialState, bridgedNetwork, metric, 0);
-                // targetedInfect(initialState, networks.getNetwork(0), 0); // TODO: Investigate this.
-            }
+            
+            // OPTION 2: Immunize most central nodes of the bridged network. In this case, we
+            //           simply immunize and infect once and hard-code `offset` to be 0.
+            else immunize(initialState, bridgedNetwork, metric, 0);
 
             // Propagate phenomena throughout the network and store the state data at
             // the end of each time step.
@@ -291,9 +279,12 @@ public class IDNSimulation extends Simulation {
                 // Store the next state of phenomena propagation.
                 currentState = phenomena.propagate(matrix, currentState);
             }
-            log(networks.getToken() + "  Ending Simulation " + runID + " (" + metric + ")"); // TODO: Include this again.
+            log(networks.getToken() + "  Ending Simulation " + runID + " (" + metric + ")");
         }
 
+
+        // PHASE 2: Using interdependent centrality metrics against interdependent network 
+        //          to immunize nodes for phenomena propagation.
         for (InterdependentCentrality metric : INTERDEPENDENT_CENTRALITIES) {
             // Get the indices for data storage for the current metric.
             switch (metric.type()) {
@@ -302,11 +293,6 @@ public class IDNSimulation extends Simulation {
                     minIndex = PATH_DEGREE_MIN_COL;
                     maxIndex = PATH_DEGREE_MAX_COL;
                     break;
-                // case Centrality.PROPOSAL:
-                //     avgIndex = PROPOSAL_AVG_COL;
-                //     minIndex = PROPOSAL_MIN_COL;
-                //     maxIndex = PROPOSAL_MAX_COL;
-                //     break;
                 case Centrality.WEIGHTED_BOUNDARY:
                     avgIndex = WBC_AVG_COL;
                     minIndex = WBC_MIN_COL;
@@ -317,16 +303,9 @@ public class IDNSimulation extends Simulation {
             }
 
             // Initialize the first state and then immunize and infect it for the first time step..
-            log(networks.getToken() + "  Starting Simulation " + runID + " (" + metric + ")"); // TODO: Include this again.
-            int[] initialState = Arrays.copyOf(controlledInitialFailure, N); // new int[N];
-            
-            // NOTE: Delete this block later.
-            // System.out.print("Infected Nodes: ");
-            // for (int i = 0; i < initialState.length; i++) if (initialState[i] == Phenomena.AFFLICTED) System.out.print(i + ", ");
-            // System.out.println();
-
-            immunize(initialState, networks, (InterdependentCentrality) metric, 0);
-            // targetedInfect(initialState, networks.getNetwork(0), 0); // TODO: Investigate this.
+            log(networks.getToken() + "  Starting Simulation " + runID + " (" + metric + ")");
+            int[] initialState = Arrays.copyOf(controlledInitialFailure, N);
+            immunize(initialState, networks, metric, 0);
 
             // Propagate phenomena throughout the network and store the state data at
             // the end of each time step.
@@ -351,16 +330,15 @@ public class IDNSimulation extends Simulation {
                 // Store the next state of phenomena propagation.
                 currentState = phenomena.propagate(matrix, currentState);
             }
-            log(networks.getToken() + "  Ending Simulation " + runID + " (" + metric + ")"); // TODO: Include this again.
+            log(networks.getToken() + "  Ending Simulation " + runID + " (" + metric + ")");
         }
-        // System.out.println("-------"); 
         return data;
     }
 
-    public HashSet<Integer> getInitialImmuneNodes(IDN idn) { // TODO: Change this back to private once you finish testing it.
+    public HashSet<Integer> getInitialImmuneNodes(IDN idn) {
         HashSet<Integer> set = new HashSet<Integer>();
         Centrality[] singleCentralities = { new BetweennessCentrality(), new ClosenessCentrality(), new DegreeCentrality(), new EigenvectorCentrality() };
-        InterdependentCentrality[] interCentralities = { new PathDegreeCentrality(), new ProposalCentrality(), new WBCentrality() };
+        InterdependentCentrality[] interCentralities = { new PathDegreeCentrality(), new WBCentrality() };
         int n = idn.getNumOfNetworks();
         int[] nodes;
 
@@ -370,7 +348,7 @@ public class IDNSimulation extends Simulation {
             Network net = null;
             for (Centrality metric : singleCentralities) {
                 int offset = 0;
-                for (int i = 0; i < n; i++) { // NOTE: Originally `for (int i = 0; i < n; i++)`.
+                for (int i = 0; i < n; i++) {
                     net = idn.getNetwork(i);
                     nodes = net.mostCentralNodes(metric, immune);
                     for (int node : nodes) set.add(node + offset);
@@ -426,7 +404,6 @@ public class IDNSimulation extends Simulation {
             minimumAndMaximum[t][EIGENVECTOR_MIN_COL] = Double.POSITIVE_INFINITY;
 
             minimumAndMaximum[t][PATH_DEGREE_MIN_COL] = Double.POSITIVE_INFINITY;
-            // minimumAndMaximum[t][PROPOSAL_MIN_COL] = Double.POSITIVE_INFINITY;
             minimumAndMaximum[t][WBC_MIN_COL] = Double.POSITIVE_INFINITY;
 
             // Set all the minimum columns to negative infinity.
@@ -436,16 +413,15 @@ public class IDNSimulation extends Simulation {
             minimumAndMaximum[t][EIGENVECTOR_MAX_COL] = Double.NEGATIVE_INFINITY;
 
             minimumAndMaximum[t][PATH_DEGREE_MAX_COL] = Double.NEGATIVE_INFINITY;
-            // minimumAndMaximum[t][PROPOSAL_MAX_COL] = Double.NEGATIVE_INFINITY;
             minimumAndMaximum[t][WBC_MAX_COL] = Double.NEGATIVE_INFINITY;
         }
     }
 
 
     /**
-     * [numberOfInfectedNodes description]
-     * @param  state [description]
-     * @return       [description]
+     * Counts how many infected/failed/afflicted nodes exist within a nework state.
+     * @param  state The current state of a network.
+     * @return       The number of infected/failed/afflicted nodes in a network state.
      */
     private int numberOfInfectedNodes(int[] state) {
         int count = 0;
@@ -458,10 +434,12 @@ public class IDNSimulation extends Simulation {
 
 
     /**
-     * [immunize description]
-     * @param state   [description]
-     * @param network [description]
-     * @param metric  [description]
+     * Immunize the number of nodes set by `immuneCount` in the provided state using a standard centrality metric for single networks. 
+     * This method will overlook whether a node is failed or immune before immuzation, so it's best to provide an empty state to this
+     * before failing nodes.
+     * @param state   The state of the network topology. The state represents failed and immune nodes.
+     * @param network Topology you wish to immunize with respect to.
+     * @param metric  Standard centrality metric you wish to immunize with respect to.
      */
     private void immunize(int[] state, Network network, Centrality metric, int offset) {
         int[] immuneIndices = network.mostCentralNodes(metric, immuneCount);
@@ -471,89 +449,18 @@ public class IDNSimulation extends Simulation {
     }
 
     /**
-     * [immunize description]
-     * @param state   [description]
-     * @param network [description]
-     * @param metric  [description]
+     * Immunize the number of nodes set by `immuneCount` in the provided state using an interdepenent network for an interdependent network. 
+     * This method will overlook whether a node is failed or immune before immuzation, so it's best to provide an empty state to this
+     * before failing nodes.
+     * @param state   The state of the network topology. The state represents failed and immune nodes.
+     * @param network Topology you wish to immunize with respect to.
+     * @param metric  Standard centrality metric you wish to immunize with respect to.
      */
     private void immunize(int[] state, IDN idn, InterdependentCentrality metric, int offset) {
         int[] immuneIndices = idn.mostCentralNodes(metric, immuneCount);
         for (Integer immuneIndex : immuneIndices) {
             state[immuneIndex + offset] = Phenomena.IMMUNE;
         }
-    }
-
-
-    /**
-     * [infect description]
-     * @param state [description]
-     */
-    private void infect(int[] state, int offset) {
-        int denom = networks.getNumOfNetworks();
-        int i = 0, upperBound = state.length / denom, randomIndex;
-        int infectCount = (int) (state.length * infectFraction + 0.5);
-        if (separateCentralities) infectCount /= denom;
-
-        while (i < infectCount) {
-            randomIndex = (int) (Math.random() * upperBound);
-            if (state[randomIndex + offset] == Phenomena.UNAFFLICTED) {
-                state[randomIndex + offset] =  Phenomena.AFFLICTED;
-                i++;
-            }
-        }
-    }
-
-    /**
-     * [infect description]
-     * @param state  [description]
-     * @param offset [description]
-     * @param n      Select the first `n` networks in the IDN to infect.
-     */
-    private void infectFirstNetworks(int[] state, int offset, int n) {
-        if (n > networks.getNumOfNetworks()) {
-            throw new IllegalArgumentException("`n` must be <= number of networks in IDN (" + networks.getNumOfNetworks() + ")");
-        }
-        int length = 0;
-        for (int i = 0; i < n; i++) {
-            length += networks.getNetwork(i).getNumOfNodes();
-        }
-
-        int i = 0, upperBound = length, randomIndex;
-        int infectCount = (int) (state.length * infectFraction + 0.5);
-
-        while (i < infectCount) {
-            randomIndex = (int) (Math.random() * upperBound);
-            if (state[randomIndex + offset] == Phenomena.UNAFFLICTED) {
-                state[randomIndex + offset] =  Phenomena.AFFLICTED;
-                i++;
-            }
-        }
-    }
-
-
-    /**
-     * Infect the designated fraction of infected nodes from the selected network.
-     * Nodes will be infected based on centrality.
-     * @param state   [description]
-     * @param network [description]
-     * @param offset  [description]
-     */
-    private void targetedInfect(int[] state, Network network, int offset) {
-        int i = 0, index = 0, infectCount = (int) (state.length * infectFraction + 0.5);
-        int num = immuneCount + infectCount + immuneNodes.size(); // NOTE: Changed it from `immuneCount + infectCount`.
-        int[] centralIndices = network.mostCentralNodes(new DegreeCentrality(), num);
-
-        System.out.print("Infected Nodes: ");
-        while (i < infectCount) {
-            int v = centralIndices[index];
-            if (state[v] == Phenomena.UNAFFLICTED && immuneNodes.contains(v) == false) {
-                state[v] = Phenomena.AFFLICTED;
-                i += 1;
-                System.out.print(v + ", ");
-            }
-            index += 1;
-        }
-        System.out.println();
     }
 
 }

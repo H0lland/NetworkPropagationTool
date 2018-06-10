@@ -2,7 +2,6 @@ package catworks.networks.metrics;
 
 import catworks.networks.IDN;
 import java.util.ArrayList;
-import java.util.List;
 
 public class WBCentrality extends InterdependentCentrality {
 
