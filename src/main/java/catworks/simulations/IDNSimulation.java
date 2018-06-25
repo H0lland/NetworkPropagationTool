@@ -15,7 +15,7 @@ import java.util.Random;
  */
 public class IDNSimulation extends Simulation {
 
-    private boolean TARGETED = false; // If true, then targeted attacks. Otherwise, random attacks.
+    private boolean TARGETED = true; // If true, then targeted attacks. Otherwise, random attacks.
     private IDN     networks;
     private boolean separateCentralities;
     private double[][] minimumAndMaximum;

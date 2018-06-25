@@ -21,7 +21,7 @@ public class SimulationRunner implements Runnable {
     // Class-wide constants.
     private static final String slash = File.separator;
     private static final int    TIME = 300;
-    private static final int    NUM_OF_SIMULATIONS = 100;
+    private static final int    NUM_OF_SIMULATIONS = 300;
 
     // Network simulation variables to be modified.
     private static final int AVG_DEGREE = 4;
@@ -38,7 +38,7 @@ public class SimulationRunner implements Runnable {
     private ProbabilityMatrix probMatrix;
     private Network cyber, physical; private IDN idn;
 
-    private static final String simulationType = "random"; // Attack type ("targeted" or "random").
+    private static final String simulationType = "targeted"; // Attack type ("targeted" or "random").
     private static final String baseFilename = "out" + slash + "simulations" + slash + simulationType + slash + "immune=" + immune + "_infect=" + failed + slash;
 
     private static final boolean[] IS_BRIDGED = { true, false };
@@ -138,7 +138,7 @@ public class SimulationRunner implements Runnable {
         physical = new ERNetwork(nodes, p);
         cyber    = new ERNetwork(nodes, p);
     	idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	idn.randomInterEdges(INTER_P);//, true);   // Inter-edge probability.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.

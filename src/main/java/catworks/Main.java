@@ -25,9 +25,6 @@ public class Main {
         (new Thread(new SimulationRunner(8))).start();
         (new Thread(new SimulationRunner(9))).start();
         (new Thread(new SimulationRunner(-1))).start();
-
-        // Test interdependent centralities:
-        // testInterCentrality(new PathDegreeCentrality(), new IdnCentrality1());
     }
 
     public static void testCentrality(Centrality centrality1, Centrality centrality2) {

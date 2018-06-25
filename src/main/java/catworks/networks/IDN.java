@@ -288,7 +288,7 @@ public class IDN extends AbstractNetwork {
         return bridged;
     }
 
-    public void rewire(){
+    public void rewire() {
         for (int h = 0; h < networks.size(); h += 1) { // rewire all networks in the IDN
             networks.get(h).rewire();
         }
