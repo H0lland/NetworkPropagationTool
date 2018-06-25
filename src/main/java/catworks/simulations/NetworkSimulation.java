@@ -14,15 +14,14 @@ public class NetworkSimulation extends Simulation {
 
     private Network network;
 
-    public NetworkSimulation(Network network, Phenomena phenomena, int timeSteps, double immuneFraction, double infectFraction) {
+    public NetworkSimulation(Network network, Phenomena phenomena, int timeSteps, int immuneCount, int failedCount) {
         this.network = network;
         this.phenomena = phenomena;
         this.timeSteps = timeSteps;
-        this.immuneFraction = immuneFraction;
-        this.infectFraction = infectFraction;
+        this.immuneCount = immuneCount;
+        this.failedCount = failedCount;
 
         runID = 0;
-        immuneCount = (int) (network.getNumOfNodes() * immuneFraction);
         simulationID++;
     }
 
@@ -36,7 +35,7 @@ public class NetworkSimulation extends Simulation {
      */
     public Object[][] run(int n) throws Exception, IOException, IllegalArgumentException {
         IDN idn = new IDN(network);
-        IDNSimulation sim = new IDNSimulation(idn, phenomena, timeSteps, immuneFraction, infectFraction, false);
+        IDNSimulation sim = new IDNSimulation(idn, phenomena, timeSteps, immuneCount, failedCount, false);
         return sim.run(n);
     }
 

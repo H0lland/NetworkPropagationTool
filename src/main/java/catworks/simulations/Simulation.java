@@ -12,9 +12,11 @@ import java.io.IOException;
  */
 public abstract class Simulation {
 
-    protected static final int COLUMNS = 15;
-    protected static final String[] HEADER = { "Time Step", "Number of Nodes", "Number of Immune", "Infected - Betweenness (AVG)", "Infected - Betweenness (MIN)", "Infected - Betweenness (MAX)", "Infected - Closeness (AVG)", "Infected - Closeness (MIN)", "Infected - Closeness (MAX)", "Infected - Degree (AVG)", "Infected - Degree (MIN)", "Infected - Degree (MAX)", "Infected - Eigenvector (AVG)", "Infected - Eigenvector (MIN)", "Infected - Eigenvector (MAX)", };
+    protected static final int COLUMNS = 21;
+    protected static final String[] HEADER = { "Time Step", "Number of Nodes", "Number of Immune", "Infected - Betweenness (AVG)", "Infected - Betweenness (MIN)", "Infected - Betweenness (MAX)", "Infected - Closeness (AVG)", "Infected - Closeness (MIN)", "Infected - Closeness (MAX)", "Infected - Degree (AVG)", "Infected - Degree (MIN)", "Infected - Degree (MAX)", "Infected - Eigenvector (AVG)", "Infected - Eigenvector (MIN)", "Infected - Eigenvector (MAX)", "Infected - Path Degree (AVG)", "Infected - Path Degree (MIN)", "Infected - Path Degree (MAX)", "Infected - Weighted Boundary (AVG)", "Infected - Weighted Boundary (MIN)", "Infected - Weighted Boundary (MAX)", "Infected - Proposal (AVG)", "Infected - Proposal (MIN)", "Infected - Proposal (MAX)" };
+    
     protected static final Centrality[] CENTRALITIES = { new BetweennessCentrality(), new ClosenessCentrality(), new DegreeCentrality(), new EigenvectorCentrality() };
+    protected static final InterdependentCentrality[] INTERDEPENDENT_CENTRALITIES = { new PathDegreeCentrality(), new WBCentrality() };
 
     protected static final int TIMESTAMP_COL    = 0;
     protected static final int NODE_COUNT_COL   = 1;
@@ -36,6 +38,14 @@ public abstract class Simulation {
     protected static final int EIGENVECTOR_MIN_COL = 13;
     protected static final int EIGENVECTOR_MAX_COL = 14;
 
+    protected static final int PATH_DEGREE_AVG_COL = 15;
+    protected static final int PATH_DEGREE_MIN_COL = 16;
+    protected static final int PATH_DEGREE_MAX_COL = 17;
+
+    protected static final int WBC_AVG_COL = 18;
+    protected static final int WBC_MIN_COL = 19;
+    protected static final int WBC_MAX_COL = 20;
+
     // Instance variables for simulations.
     // protected Network    network;
     protected Phenomena  phenomena;
@@ -43,6 +53,7 @@ public abstract class Simulation {
     protected double     immuneFraction;
     protected double     infectFraction;
     protected int        immuneCount;
+    protected int        failedCount;
     protected static int simulationID = 0;
     protected int runID = 0;
 

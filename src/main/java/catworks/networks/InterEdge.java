@@ -22,18 +22,25 @@ public class InterEdge {
     }
 
     public int getSourceNetwork(){
-      return networkID;
+        return networkID;
     }
 
     public int getSourceNode(){
-      return sourceNodeID;
+        return sourceNodeID;
     }
 
-    @Override public String toString() {
+    public int networkID()     { return networkID; }
+    public int sourceNodeID()  { return sourceNodeID; }
+    public int destNetworkID() { return destNetworkID; }
+    public int destNodeID()    { return destNodeID; }
+
+    @Override 
+    public String toString() {
         return "(" + networkID + ":" + sourceNodeID + " -> " + destNetworkID + ":" + destNodeID + ")";
     }
 
-    @Override public boolean equals(Object other) {
+    @Override 
+    public boolean equals(Object other) {
         if (other == this) return true;
         if (other instanceof InterEdge) {
             return this.toString().equals(other.toString());

@@ -2,11 +2,9 @@ package catworks.networks.metrics;
 
 import catworks.networks.IDN;
 
-public interface InterdependentCentrality {
+public abstract class InterdependentCentrality extends AbstractCentrality {
 
-    final int WBCCentrality = 0;
-
-    public double[] getCentralities(IDN idn);
-    public int type();
+    public abstract double[] getCentralities(IDN idn);
+    public abstract int type();
 
 }

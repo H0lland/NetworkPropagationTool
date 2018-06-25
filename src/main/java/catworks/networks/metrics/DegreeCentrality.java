@@ -1,6 +1,6 @@
 package catworks.networks.metrics;
 
-public class DegreeCentrality implements Centrality {
+public class DegreeCentrality extends Centrality {
 
     /**
      * [getCentralities description]
@@ -27,7 +27,7 @@ public class DegreeCentrality implements Centrality {
      * @return [description]
      */
     public int type() {
-        return Centrality.DEGREE;
+        return AbstractCentrality.DEGREE;
     }
 
     @Override
