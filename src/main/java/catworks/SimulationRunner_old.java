@@ -25,8 +25,8 @@ public class SimulationRunner implements Runnable {
 
     // Network simulation variables to be modified.
     private static final int AVG_DEGREE = 4;
-    private static int nodes = 100, m0 = AVG_DEGREE, k = AVG_DEGREE;
-    private static int immune = 0, failed = 10, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
+    private static int nodes = 300, m0 = AVG_DEGREE, k = AVG_DEGREE;
+    private static int immune = 10, failed = 5, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
 
     private static double INTER_P = interEdgeNum/(double)(nodes*2);
     private static double p = AVG_DEGREE/((double) nodes), beta = 0.05;
@@ -60,12 +60,12 @@ public class SimulationRunner implements Runnable {
         simulation1();
         simulation2();
         simulation3();
-        /*simulation4();
+        simulation4();
         simulation5();
         simulation6();
         simulation7();
         simulation8();
-        simulation9();*/
+        simulation9();
         simulationRealWorld();
     }
 
@@ -111,18 +111,18 @@ public class SimulationRunner implements Runnable {
      */
     private void simulation1() throws IOException, Exception {
         // Variables to change from simulation to simulation.
-        filename = "SF-100";
+        filename = "SF-SF-300";
         physical = new SFNetwork(nodes, m0);
-        //cyber    = new SFNetwork(nodes, m0);
-        //idn = new IDN(physical, cyber);  // Cyber network, physical network.
-        //idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
-        //idn.setToken(filename);
+        cyber    = new SFNetwork(nodes, m0);
+        idn = new IDN(physical, cyber);  // Cyber network, physical network.
+        idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
+        idn.setToken(filename);
 
         // Run the "bridged" and the "separate" simulations.
-        //for (boolean isBridged : IS_BRIDGED) {
+        for (boolean isBridged : IS_BRIDGED) {
             simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
             data = simulation.run(NUM_OF_SIMULATIONS);
-            path = getPath(filename);
+            path = getPath(filename, isBridged);
             outputData(data, path);
         }
 
@@ -134,18 +134,18 @@ public class SimulationRunner implements Runnable {
      */
     private void simulation2() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
-    	filename = "ER-100";
+    	filename = "ER-ER-300";
         physical = new ERNetwork(nodes, p);
-        //cyber    = new ERNetwork(nodes, p);
-    	//idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	//idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
-        //idn.setToken(filename);
+        cyber    = new ERNetwork(nodes, p);
+    	idn = new IDN(physical, cyber);  // Cyber network, physical network.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
+        idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
-    	//for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed);
+    	for (boolean isBridged : IS_BRIDGED) {
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
     		data = simulation.run(NUM_OF_SIMULATIONS);
-    		path = getPath(filename);
+    		path = getPath(filename, isBridged);
     		outputData(data, path);
     	}
 
@@ -156,39 +156,180 @@ public class SimulationRunner implements Runnable {
      */
     private void simulation3() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
-    	filename = "ER-SW-300";
-    	physical = new SWNetwork(nodes, beta, k);
-    	//cyber    = new SFNetwork(nodes, m0);
-    	//idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	//idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
-        //idn.setToken(filename);
+    	filename = "ER-SF-300";
+    	physical = new ERNetwork(nodes, p);
+    	cyber    = new SFNetwork(nodes, m0);
+    	idn = new IDN(physical, cyber);  // Cyber network, physical network.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
+        idn.setToken(filename);
 
     	// Run the "bridged" and the "separate" simulations.
-    	//for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed);
+    	for (boolean isBridged : IS_BRIDGED) {
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
     		data = simulation.run(NUM_OF_SIMULATIONS);
-    		path = getPath(filename);
+    		path = getPath(filename, isBridged);
     		outputData(data, path);
     	}
 
     }
+
+
+    /**
+     * Simulation 4.
+     */
+    private void simulation4() throws IOException, Exception {
+    	// Variables to change from simulation to simulation.
+    	filename = "ER-SW-300";
+    	physical = new ERNetwork(nodes, p);
+    	cyber    = new SWNetwork(nodes, beta, k);
+    	idn = new IDN(physical, cyber);  // Cyber network, physical network.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
+        idn.setToken(filename);
+
+    	// Run the "bridged" and the "separate" simulations.
+    	for (boolean isBridged : IS_BRIDGED) {
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
+    		data = simulation.run(NUM_OF_SIMULATIONS);
+    		path = getPath(filename, isBridged);
+    		outputData(data, path);
+    	}
+
+    }
+
+
+    /**
+     * Simulation 5.
+     */
+    private void simulation5() throws IOException, Exception {
+    	// Variables to change from simulation to simulation.
+    	filename = "SF-ER-300";
+    	physical = new SFNetwork(nodes, m0);
+    	cyber    = new ERNetwork(nodes, p);
+    	idn = new IDN(physical, cyber);  // Cyber network, physical network.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
+        idn.setToken(filename);
+
+    	// Run the "bridged" and the "separate" simulations.
+    	for (boolean isBridged : IS_BRIDGED) {
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
+    		data = simulation.run(NUM_OF_SIMULATIONS);
+    		path = getPath(filename, isBridged);
+    		outputData(data, path);
+    	}
+
+    }
+
+
+    /**
+     * Simulation 6.
+     */
+    private void simulation6() throws IOException, Exception {
+    	// Variables to change from simulation to simulation.
+    	filename = "SF-SW-300";
+    	physical = new SFNetwork(nodes, m0);
+    	cyber    = new SWNetwork(nodes, beta, k);
+    	idn = new IDN(physical, cyber);  // Cyber network, physical network.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
+        idn.setToken(filename);
+
+    	// Run the "bridged" and the "separate" simulations.
+    	for (boolean isBridged : IS_BRIDGED) {
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
+    		data = simulation.run(NUM_OF_SIMULATIONS);
+    		path = getPath(filename, isBridged);
+    		outputData(data, path);
+    	}
+
+    }
+
+
+    /**
+     * Simulation 7.
+     */
+    private void simulation7() throws IOException, Exception {
+    	// Variables to change from simulation to simulation.
+    	filename = "SW-ER-300";
+    	physical = new SWNetwork(nodes, beta, k);
+    	cyber    = new ERNetwork(nodes, p);
+    	idn = new IDN(physical, cyber);  // Cyber network, physical network.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
+        idn.setToken(filename);
+
+    	// Run the "bridged" and the "separate" simulations.
+    	for (boolean isBridged : IS_BRIDGED) {
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
+    		data = simulation.run(NUM_OF_SIMULATIONS);
+    		path = getPath(filename, isBridged);
+    		outputData(data, path);
+    	}
+
+    }
+
+
+    /**
+     * Simulation 8.
+     */
+    private void simulation8() throws IOException, Exception {
+    	// Variables to change from simulation to simulation.
+    	filename = "SW-SF-300";
+    	physical = new SWNetwork(nodes, beta, k);
+    	cyber    = new SFNetwork(nodes, m0);
+    	idn = new IDN(physical, cyber);  // Cyber network, physical network.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
+        idn.setToken(filename);
+
+    	// Run the "bridged" and the "separate" simulations.
+    	for (boolean isBridged : IS_BRIDGED) {
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
+    		data = simulation.run(NUM_OF_SIMULATIONS);
+    		path = getPath(filename, isBridged);
+    		outputData(data, path);
+    	}
+
+    }
+
+
+    /**
+     * Simulation 9.
+     */
+    private void simulation9() throws IOException, Exception {
+    	// Variables to change from simulation to simulation.
+    	filename = "SW-SW-300";
+    	physical = new SWNetwork(nodes, beta, k);
+    	cyber    = new SWNetwork(nodes, beta, k);
+    	idn = new IDN(physical, cyber);  // Cyber network, physical network.
+    	idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
+        idn.setToken(filename);
+
+    	// Run the "bridged" and the "separate" simulations.
+    	for (boolean isBridged : IS_BRIDGED) {
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
+    		data = simulation.run(NUM_OF_SIMULATIONS);
+    		path = getPath(filename, isBridged);
+    		outputData(data, path);
+    	}
+
+    }
+
 
     private void simulationRealWorld() throws IOException, Exception {
         // Variables to change from simulation to simulation.
         // infect = 0.15; immune = 0.05;
         filename = "IEEE-300";
         physical = new Network(RealWorld.IEEE300());
-        //cyber    = new Network(RealWorld.IEEE300()); cyber.rewire(); // NOTE: This network is not guaranteed to be connected.
-        //idn = new IDN(physical, cyber);  // Cyber network, physical network.
-        //idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
+        cyber    = new Network(RealWorld.IEEE300()); cyber.rewire(); // NOTE: This network is not guaranteed to be connected.
+        idn = new IDN(physical, cyber);  // Cyber network, physical network.
+        idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         idn.setToken(filename);
 
         // Run the "bridged" and the "separate" simulations.
-        //for (boolean isBridged : IS_BRIDGED) {
+        for (boolean isBridged : IS_BRIDGED) {
             simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
             data = simulation.run(NUM_OF_SIMULATIONS);
             path = getPath(filename, isBridged);
             outputData(data, path);
+        }
+
     }
 
 
