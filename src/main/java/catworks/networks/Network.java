@@ -239,6 +239,15 @@ public class Network extends AbstractNetwork {
     }
 
     /**
+    * [addEdge description]
+    * @param int source [description]
+    * @param int dest [description]
+    */
+    public void addEdge(int source, int dest, int weight) {
+        matrix.get(source).set(dest, weight);
+    }
+
+    /**
     * [deleteEdge description]
     * @param int source [description]
     * @param int dest [description]
@@ -259,7 +268,7 @@ public class Network extends AbstractNetwork {
     }
     public int getNumOfNodes() {
         return matrix.size();
-    }
+   }
 
     public void regenerate() {
         return;

@@ -59,8 +59,8 @@ public class SimulationRunner implements Runnable {
 
         simulation1();
         simulation2();
-        simulation3();
-        /*simulation4();
+        /*simulation3();
+        simulation4();
         simulation5();
         simulation6();
         simulation7();
@@ -90,13 +90,13 @@ public class SimulationRunner implements Runnable {
             switch (simID) {
                 case 1:  simulation1();         break;
                 case 2:  simulation2();         break;
-                case 3:  simulation3();         break;
+                /*case 3:  simulation3();         break;
                 case 4:  simulation4();         break;
                 case 5:  simulation5();         break;
                 case 6:  simulation6();         break;
                 case 7:  simulation7();         break;
                 case 8:  simulation8();         break;
-                case 9:  simulation9();         break;
+                case 9:  simulation9();         break;*/
                 case -1: simulationRealWorld(); break;
             }
         } catch (Exception e) {
@@ -120,12 +120,10 @@ public class SimulationRunner implements Runnable {
 
         // Run the "bridged" and the "separate" simulations.
         //for (boolean isBridged : IS_BRIDGED) {
-            simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
+            simulation = new IDNSimulation(idn, phe, TIME, immune, failed, true);
             data = simulation.run(NUM_OF_SIMULATIONS);
-            path = getPath(filename);
+            path = getPath(filename, true);
             outputData(data, path);
-        }
-
     }
 
 
@@ -143,12 +141,10 @@ public class SimulationRunner implements Runnable {
 
     	// Run the "bridged" and the "separate" simulations.
     	//for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed);
+    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, true);
     		data = simulation.run(NUM_OF_SIMULATIONS);
-    		path = getPath(filename);
+    		path = getPath(filename, true);
     		outputData(data, path);
-    	}
-
     }
 
     /**
@@ -185,9 +181,9 @@ public class SimulationRunner implements Runnable {
 
         // Run the "bridged" and the "separate" simulations.
         //for (boolean isBridged : IS_BRIDGED) {
-            simulation = new IDNSimulation(idn, phe, TIME, immune, failed, isBridged);
+            simulation = new IDNSimulation(idn, phe, TIME, immune, failed, true);
             data = simulation.run(NUM_OF_SIMULATIONS);
-            path = getPath(filename, isBridged);
+            path = getPath(filename, true);
             outputData(data, path);
     }
 
@@ -218,7 +214,20 @@ public class SimulationRunner implements Runnable {
             outputCSVRow(writer, row);
         writer.close();
     }
-
+    
+	/**
+     * [outputData description]
+     * @param data     [description]
+     * @param filename [description]
+     */
+    public static void outputData(int[][] data, String filename) throws IOException {
+        File file = new File(filename);
+        file.getParentFile().mkdirs();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        for (int[] row : data)
+            outputCSVRow(writer, row);
+        writer.close();
+	}
 
     /**
      * [outputCSVRow description]
@@ -226,6 +235,21 @@ public class SimulationRunner implements Runnable {
      * @param row    [description]
      */
     public static void outputCSVRow(BufferedWriter writer, Object[] row) throws IOException {
+        StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < row.length; i++) {
+			if (i < row.length-1)
+				sb.append(row[i] + ", ");
+			else
+				sb.append(row[i] + "\n");
+		}
+		writer.write(sb.toString());
+    }
+    /**
+     * [outputCSVRow description]
+     * @param writer [description]
+     * @param row    [description]
+     */
+    public static void outputCSVRow(BufferedWriter writer, int[] row) throws IOException {
         StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < row.length; i++) {
 			if (i < row.length-1)
