@@ -112,7 +112,7 @@ public class SimulationRunner implements Runnable {
     private void simulation1() throws IOException, Exception {
         // Variables to change from simulation to simulation.
         filename = "SF-100";
-        physical = new SFNetwork(nodes, m0);
+        physical = new SFNetwork(nodes, m0, true);
         //cyber    = new SFNetwork(nodes, m0);
         //idn = new IDN(physical, cyber);  // Cyber network, physical network.
         //idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
@@ -135,7 +135,7 @@ public class SimulationRunner implements Runnable {
     private void simulation2() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
     	filename = "ER-100";
-        physical = new ERNetwork(nodes, p);
+        physical = new ERNetwork(nodes, p, true);
         //cyber    = new ERNetwork(nodes, p);
     	//idn = new IDN(physical, cyber);  // Cyber network, physical network.
     	//idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
@@ -154,7 +154,7 @@ public class SimulationRunner implements Runnable {
     /**
      * Simulation 3.
      */
-    private void simulation3() throws IOException, Exception {
+/*    private void simulation3() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
     	filename = "ER-SW-300";
     	physical = new SWNetwork(nodes, beta, k);
@@ -172,7 +172,7 @@ public class SimulationRunner implements Runnable {
     	}
 
     }
-
+*/
     private void simulationRealWorld() throws IOException, Exception {
         // Variables to change from simulation to simulation.
         // infect = 0.15; immune = 0.05;

@@ -37,6 +37,23 @@ public class SFNetwork extends Network {
      * Scale-Free (SF) random network constructor, using the Barabasi-Albert model.
      * @param n  Number of nodes to be in the network.
      * @param m0 Probability that a node has an edge to another node.
+     * @param directed boolean value on whether or not the network is directed
+	*/
+    public SFNetwork(int n, int m0, boolean directed) {
+        // Make sure that the parameters are legal.
+        if (m0 < 1 || m0 >= n) {
+            throw new IllegalArgumentException("Barabasi-Albert network must have m0 >= 1 and m0 < n. (m0 = " + m0 + ", n = " + n + ")");
+        }
+        this.n  = n;
+        this.m0 = m0;
+        this.m  = m0;
+        this.directed = directed;
+        init();
+	}
+    /**
+     * Scale-Free (SF) random network constructor, using the Barabasi-Albert model.
+     * @param n  Number of nodes to be in the network.
+     * @param m0 Probability that a node has an edge to another node.
      * @param m  
      */
     public SFNetwork(int n, int m0, int m) {
@@ -79,7 +96,7 @@ public class SFNetwork extends Network {
             for (int i = 0; i < m0; i++) {
                 for (int j = i+1; j < m0; j++) {
                     graph[i][j] = 1;
-                    graph[j][i] = 1;
+                    if(!directed) graph[j][i] = 1;
                     edges += 2;
                 }
             }
@@ -98,10 +115,14 @@ public class SFNetwork extends Network {
                     double beta = (double) degree(graph, j) / edges;
                     double rand = Math.random();
                     if (beta > rand) {
-                        // Make bidirectional edge.
+                        // Make directional edge
                         graph[i][j] = 1;
-                        graph[j][i] = 1;
-                        edges += 2;
+                        edges += 1;
+						//Make directional edge if necessary
+						if(!directed){
+							graph[j][i] = 1;
+                        	edges += 1;
+						}
                     }
                     else {
                         boolean noConnection = true;
@@ -115,11 +136,15 @@ public class SFNetwork extends Network {
                             beta = (double) degree(graph, h) / edges;
                             rand = Math.random();
                             if (beta > rand) {
-                                // Make bidirectional edge.
+                                // Make directional edge.
                                 graph[i][h] = 1;
-                                graph[h][i] = 1;
-                                edges += 2;
-                                noConnection = false;
+                                edges += 1;
+								//Make bidirectional edge if necessary
+								if(!directed){
+									graph[h][i] = 1;
+                                	edges += 1;
+                                }
+								noConnection = false;
                             }
                         }
                     }
