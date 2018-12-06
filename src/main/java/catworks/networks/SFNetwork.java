@@ -50,11 +50,28 @@ public class SFNetwork extends Network {
         this.directed = directed;
         init();
 	}
+  /**
+   * Scale-Free (SF) random network constructor, using the Barabasi-Albert model.
+   * @param n  Number of nodes to be in the network.
+   * @param m0 Probability that a node has an edge to another node.
+   * @param directed boolean value on whether or not the network is directed
+*/
+    public SFNetwork(int n, int m0, boolean directed, int min, int max) {
+      // Make sure that the parameters are legal.
+      if (m0 < 1 || m0 >= n) {
+          throw new IllegalArgumentException("Barabasi-Albert network must have m0 >= 1 and m0 < n. (m0 = " + m0 + ", n = " + n + ")");
+      }
+      this.n  = n;
+      this.m0 = m0;
+      this.m  = m0;
+      this.directed = directed;
+      initWeighted(min, max);
+}
     /**
      * Scale-Free (SF) random network constructor, using the Barabasi-Albert model.
      * @param n  Number of nodes to be in the network.
      * @param m0 Probability that a node has an edge to another node.
-     * @param m  
+     * @param m
      */
     public SFNetwork(int n, int m0, int m) {
         // Make sure that the parameters are legal.
@@ -96,8 +113,11 @@ public class SFNetwork extends Network {
             for (int i = 0; i < m0; i++) {
                 for (int j = i+1; j < m0; j++) {
                     graph[i][j] = 1;
-                    if(!directed) graph[j][i] = 1;
-                    edges += 2;
+                    edges += 1
+                    if(!directed){
+                      graph[j][i] = 1;
+                      edges += 1;
+                    }
                 }
             }
 
@@ -157,6 +177,89 @@ public class SFNetwork extends Network {
         setIntArrayMatrix(graph);
     }
 
+    /**
+     * [init description]
+     * @param n [description]
+     * @param p [description]
+     */
+    private void initWeighted(int min, int max) {
+        int[][] graph;
+        int weight;
+        do {
+            // STEP 1: Initialize a new adjacency matrix to represent the network.
+            graph = new int[n][n];
+            int edges = 0;
+
+            // STEP 2: Network begins with an initial connected network of m0 nodes.
+            for (int i = 0; i < m0; i++) {
+                for (int j = i+1; j < m0; j++) {
+                    weight = Math.random().nextInt(max-min)+min;
+                    graph[i][j] = weight;
+                    edges += 1;
+                    if(!directed){
+                      graph[j][i] = weight;
+                      edges += 1;
+                    }
+                }
+            }
+
+            // STEP 3: Connect new nodes to every pre-existing node_i with probability
+            // with respect to preferential attachment bias.
+            for (int i = m0; i < n; i++) {
+                int currDegree = 0;
+                while (currDegree < m) {
+                    // Grab the index of a node that node i has no edge to already.
+                    int[] sample = getSample(graph, i);
+                    int randIndex = (int)(Math.random() * sample.length);
+                    int j  = sample[randIndex];
+
+                    // Preferential attachment bias.
+                    double beta = (double) degree(graph, j) / edges;
+                    double rand = Math.random();
+                    if (beta > rand) {
+                        // Make directional edge
+                        weight = Math.random().nextInt(max-min)+min;
+                        graph[i][j] = weight;
+                        edges += 1;
+						//Make directional edge if necessary
+						if(!directed){
+							graph[j][i] = weight;
+              edges += 1;
+						}
+                    }
+                    else {
+                        boolean noConnection = true;
+                        while (noConnection) {
+                            // Grab the index of a node that node i has no edge to already.
+                            sample = getSample(graph, i);
+                            randIndex = (int)(Math.random() * sample.length);
+                            int h  = sample[randIndex];
+
+                            // Preferential attachment bias.
+                            beta = (double) degree(graph, h) / edges;
+                            rand = Math.random();
+                            if (beta > rand) {
+                                // Make directional edge.
+                                weight = Math.random().nextInt(max-min)+min;
+                                graph[i][h] = weight;
+                                edges += 1;
+								//Make bidirectional edge if necessary
+								if(!directed){
+									graph[h][i] = weight;
+                                	edges += 1;
+                                }
+								noConnection = false;
+                            }
+                        }
+                    }
+                    currDegree = degree(graph, i);
+                }
+            }
+        } while (!isConnected(graph));
+
+        // STEP 4: Initialize network using the scale-free adjacency matrix.
+        setIntArrayMatrix(graph);
+    }
 
     /**
      * A sample will contain the elements from the range [0:n) with the set of
