@@ -83,7 +83,8 @@ public class SimulationRunner implements Runnable {
         threshMatrix = CATASTROPHIC_THRESH;
         probMatrix = new ProbabilityMatrix(sizes, probs);
         phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-    }
+    	System.out.println(simID);
+	}
 
     public void run() {
         try {

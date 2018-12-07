@@ -52,8 +52,10 @@ public class NetworkSimulation extends Simulation {
 		int[][] data = new int[n][cents.length+1];
 		int flow;
 		for(int i =0; i< n; i+=1){
+			System.out.println("i="+i);
 			for(int j=0; j<cents.length+1; j+=1){
 				//construct a clone with the same adjacency matrix as network
+				System.out.print("j=" +j);
 				Network clone = this.network.clone();
 				int size = clone.getNumOfNodes();
 				//get the normal max flow so we have a baseline reading
@@ -71,8 +73,9 @@ public class NetworkSimulation extends Simulation {
 					//Run Ford-Fulkerson from S to T
 					int s = size; 
 					int t = size + 1;
+					System.out.print("FF ");
 					flow= fordFulkerson(this.network.getIntArrayMatrix(),s,t);
-					
+					System.out.print("Finished\n");
 				}
 				//use the appropriate centrality metric
 				else{
@@ -95,7 +98,9 @@ public class NetworkSimulation extends Simulation {
 					//run Ford-Fulkerson from S to T (reduce their indices, since you removed nodes)
 					int s = size - failedCount;
 					int t = size - failedCount + 1;
+					System.out.print("FF ");
 					flow= fordFulkerson(this.network.getIntArrayMatrix(),s,t);
+					System.out.print("Finished\n");
 				}
 				data[i][j]=flow;
 			}
