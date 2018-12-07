@@ -29,7 +29,7 @@ public class FlowWeightCentrality extends Centrality {
     }
 
     @Override
-    public string toString(){
-      return "Flow Weight"
+    public String toString(){
+      return "Flow Weight";
     }
 }

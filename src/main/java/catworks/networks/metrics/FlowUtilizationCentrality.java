@@ -33,7 +33,7 @@ public class FlowUtilizationCentrality extends Centrality {
     }
 
     @Override
-    public string toString(){
-      return "Flow Utilization"
+    public String toString(){
+      return "Flow Utilization";
     }
 }

@@ -1,6 +1,7 @@
 package catworks.networks;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class SFNetwork extends Network {
 
@@ -113,7 +114,7 @@ public class SFNetwork extends Network {
             for (int i = 0; i < m0; i++) {
                 for (int j = i+1; j < m0; j++) {
                     graph[i][j] = 1;
-                    edges += 1
+                    edges += 1;
                     if(!directed){
                       graph[j][i] = 1;
                       edges += 1;
@@ -193,7 +194,7 @@ public class SFNetwork extends Network {
             // STEP 2: Network begins with an initial connected network of m0 nodes.
             for (int i = 0; i < m0; i++) {
                 for (int j = i+1; j < m0; j++) {
-                    weight = Math.random().nextInt(max-min)+min;
+                    weight = new Random().nextInt(max-min)+min;
                     graph[i][j] = weight;
                     edges += 1;
                     if(!directed){
@@ -218,7 +219,7 @@ public class SFNetwork extends Network {
                     double rand = Math.random();
                     if (beta > rand) {
                         // Make directional edge
-                        weight = Math.random().nextInt(max-min)+min;
+                        weight = new Random().nextInt(max-min)+min;
                         graph[i][j] = weight;
                         edges += 1;
 						//Make directional edge if necessary
@@ -240,7 +241,7 @@ public class SFNetwork extends Network {
                             rand = Math.random();
                             if (beta > rand) {
                                 // Make directional edge.
-                                weight = Math.random().nextInt(max-min)+min;
+                                weight = new Random().nextInt(max-min)+min;
                                 graph[i][h] = weight;
                                 edges += 1;
 								//Make bidirectional edge if necessary

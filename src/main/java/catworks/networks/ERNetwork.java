@@ -1,5 +1,6 @@
 package catworks.networks;
 
+import java.util.Random;
 public class ERNetwork extends Network {
 
     private int    n;
@@ -141,7 +142,7 @@ public class ERNetwork extends Network {
                 for (int j = 0; j < n; j++) {
                     if (i == j) continue; // Avoid self-loops.
                     if (Math.random() <= p/2) { // NOTE: This seems to hold for directed and undirected.
-                        weight = Math.random().nextInt(max-min)+min;
+                        weight = new Random().nextInt(max-min)+min;
                         graph[i][j] = weight;
                         if (!directed) graph[j][i] = weight;
                         connections++;
@@ -156,7 +157,7 @@ public class ERNetwork extends Network {
                         if (i >= n-1) randomEdge--;
                         else          randomEdge++;
                     }
-                    weight = Math.random().nextInt(max-min)+min;
+                    weight = new Random().nextInt(max-min)+min;
                     graph[i][randomEdge] = weight;
                     if (!directed) graph[randomEdge][i] = weight;
                 }
