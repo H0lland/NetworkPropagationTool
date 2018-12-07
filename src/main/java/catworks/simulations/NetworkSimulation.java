@@ -9,6 +9,7 @@ import catworks.phenomena.*;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.lang.*;
+import java.util.Arrays;
 
 /**
  *
@@ -74,7 +75,7 @@ public class NetworkSimulation extends Simulation {
 					int s = size; 
 					int t = size + 1;
 					System.out.print("FF ");
-					flow= fordFulkerson(this.network.getIntArrayMatrix(),s,t);
+					flow= fordFulkerson(clone.getIntArrayMatrix(),s,t);
 					System.out.print("Finished\n");
 				}
 				//use the appropriate centrality metric
@@ -91,9 +92,11 @@ public class NetworkSimulation extends Simulation {
 						clone.addEdge(size,k,Integer.MAX_VALUE);
 						clone.addEdge(k+half,size+1,Integer.MAX_VALUE);
 					}
+					//sort most central nodes
+					Arrays.sort(nodes);
 					//remove most central nodes
 					for(int l = 0; l < nodes.length; l+=1){
-						clone.deleteNode(nodes[l]);
+						clone.deleteNode(nodes[l]-l);
 					}
 					//run Ford-Fulkerson from S to T (reduce their indices, since you removed nodes)
 					System.out.println("size = " + size + " failed Count = " + failedCount);
@@ -101,7 +104,7 @@ public class NetworkSimulation extends Simulation {
 					int s = size - failedCount;
 					int t = size - failedCount + 1;
 					System.out.print("FF ");
-					flow = fordFulkerson(this.network.getIntArrayMatrix(),s,t);
+					flow = fordFulkerson(clone.getIntArrayMatrix(),s,t);
 					System.out.print("Finished\n");
 				}
 				data[i][j]=flow;

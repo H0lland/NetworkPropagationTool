@@ -86,7 +86,7 @@ public class SimulationRunner implements Runnable {
 	}
 
     public void run() {
-        //try {
+        try {
             switch (simID) {
                 case 1:  simulation1();         break;
                 case 2:  simulation2();         break;
@@ -102,6 +102,7 @@ public class SimulationRunner implements Runnable {
         } catch (Exception e) {
             System.out.println("It's in SimulationRunner.run().");
             System.out.println(e.getStackTrace());
+			System.out.println(e);
         }
     }
 

@@ -371,7 +371,7 @@ public class Network extends AbstractNetwork {
     }
 
     public Network clone(){
-      Network clone = new Network(this.getMatrix());
+      Network clone = new Network(this.getIntArrayMatrix());
       return clone;
     }
 
