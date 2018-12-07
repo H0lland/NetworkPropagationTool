@@ -7,6 +7,8 @@ import catworks.phenomena.*;
 
 // Additional import statements.
 import java.io.IOException;
+import java.util.LinkedList;
+import java.lang.*;
 
 /**
  *
@@ -48,6 +50,7 @@ public class NetworkSimulation extends Simulation {
 		//centralities: [0, degree, closeness, betweenness, fT, fU]
 		Centrality[] cents = {new DegreeCentrality(), new ClosenessCentrality(), new BetweennessCentrality()};
 		int[][] data = new int[n][cents.length+1];
+		int flow;
 		for(int i =0; i< n; i+=1){
 			for(int j=0; j<cents.length+1; j+=1){
 				//construct a clone with the same adjacency matrix as network
@@ -66,6 +69,10 @@ public class NetworkSimulation extends Simulation {
 						clone.addEdge(k+half,size+1,Integer.MAX_VALUE);
 					}
 					//Run Ford-Fulkerson from S to T
+					int s = size; 
+					int t = size + 1;
+					flow= fordFulkerson(this.network.getIntArrayMatrix(),s,t);
+					
 				}
 				//use the appropriate centrality metric
 				else{
@@ -86,10 +93,78 @@ public class NetworkSimulation extends Simulation {
 						clone.deleteNode(nodes[l]);
 					}
 					//run Ford-Fulkerson from S to T (reduce their indices, since you removed nodes)
+					int s = size - failedCount;
+					int t = size - failedCount + 1;
+					flow= fordFulkerson(this.network.getIntArrayMatrix(),s,t);
 				}
-				//data[i][j]=flow;
+				data[i][j]=flow;
 			}
 		}	
 		return data;
 	}
+/*returns true if there is a path from source s to dest t in residual graph.  	Fills parent[] to store the path*/ 
+	boolean bfs(int rGraph[][], int V,int s, int t, int parent[]){
+		//create visited array and mark all vertices as not visited
+		boolean visited[] = new boolean[V];
+		for(int i =0; i< V; i+=1){
+			visited[i] = false;
+		}
+		//create a queue, enqueue source vertex and mark it as visited
+		LinkedList<Integer> queue = new LinkedList<Integer>();
+		queue.add(s);
+		visited[s] = true;
+		parent[s] = -1;
+		//standard BFS
+		while(queue.size()!=0){
+			int u = queue.poll();
+			for(int v = 0; v < V; v+=1){
+				if(visited[v] == false && rGraph[u][v] > 0){
+					queue.add(v);
+					parent[v] = u;
+					visited[v] = true;
+				}
+			}
+		}
+		//if we reached sink in BFS starting from source, return true
+		return (visited[t] == true);
+	}
+	
+	//returns the maximum flow from s to t in the given graph
+	int fordFulkerson(int graph[][], int s, int t){
+		int u,v; 
+		int V = graph.length;
+		//create residual graph and fill the residual graph with given
+		//capacities
+		//residual graph[i][j] indicates residual capacity of edge i to j
+		int rGraph[][] = new int[V][V];
+		for(u = 0; u < V; u+=1){
+			for(v = 0; v < V; v+=1){
+				rGraph[u][v] = graph[u][v];
+			}
+		}
+		//this array is filled by BFS to store the path
+		int parent[] = new int[V];
+		int max_flow = 0;
+		//Augment the flow while there is a path from source to sink with resi-
+		//dual capactiy
+		while(bfs(rGraph,V,s,t,parent)){
+			//find minimum residual capacity of the edges along the path
+			//found by BFS.  This equals maximum flow through that path
+			int path_flow = Integer.MAX_VALUE;
+			for(v=t; v!=s; v=parent[v]){
+				u = parent[v];
+				path_flow = Math.min(path_flow, rGraph[u][v]);
+			}
+			//update residual capacities of the edges and reverse edges
+			for(v = t; v != s; v=parent[v]){
+				u = parent[v];
+				rGraph[u][v] -= path_flow;
+				rGraph[v][u] += path_flow;
+			}
+			//add path flow to overall flow
+			max_flow += path_flow;
+		}
+		return max_flow;
+	}
+
 }
