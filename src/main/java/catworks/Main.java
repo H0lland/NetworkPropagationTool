@@ -17,14 +17,14 @@ public class Main {
         // Run the simulation threads.
         (new Thread(new SimulationRunner(1))).start();
         (new Thread(new SimulationRunner(2))).start();
-        (new Thread(new SimulationRunner(3))).start();
+        /*(new Thread(new SimulationRunner(3))).start();
         (new Thread(new SimulationRunner(4))).start();
         (new Thread(new SimulationRunner(5))).start();
         (new Thread(new SimulationRunner(6))).start();
         (new Thread(new SimulationRunner(7))).start();
         (new Thread(new SimulationRunner(8))).start();
         (new Thread(new SimulationRunner(9))).start();
-        (new Thread(new SimulationRunner(-1))).start();
+        (new Thread(new SimulationRunner(-1))).start();*/
     }
 
     public static void testCentrality(Centrality centrality1, Centrality centrality2) {

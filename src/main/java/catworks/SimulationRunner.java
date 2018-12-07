@@ -21,11 +21,11 @@ public class SimulationRunner implements Runnable {
     // Class-wide constants.
     private static final String slash = File.separator;
     private static final int    TIME = 300;
-    private static final int    NUM_OF_SIMULATIONS = 300;
+    private static final int    NUM_OF_SIMULATIONS = 10;
 
     // Network simulation variables to be modified.
     private static final int AVG_DEGREE = 4;
-    private static int nodes = 100, m0 = AVG_DEGREE, k = AVG_DEGREE;
+    private static int nodes = 50, m0 = AVG_DEGREE, k = AVG_DEGREE;
     private static int immune = 0, failed = 10, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
 
     private static double INTER_P = interEdgeNum/(double)(nodes*2);
@@ -65,8 +65,8 @@ public class SimulationRunner implements Runnable {
         simulation6();
         simulation7();
         simulation8();
-        simulation9();*/
-        simulationRealWorld();
+        simulation9();
+        simulationRealWorld();*/
     }
 
 
@@ -96,8 +96,8 @@ public class SimulationRunner implements Runnable {
                 case 6:  simulation6();         break;
                 case 7:  simulation7();         break;
                 case 8:  simulation8();         break;
-                case 9:  simulation9();         break;*/
-                case -1: simulationRealWorld(); break;
+                case 9:  simulation9();         break;
+                case -1: simulationRealWorld(); break;*/
             }
         } catch (Exception e) {
             System.out.println("It's in SimulationRunner.run().");
@@ -120,10 +120,10 @@ public class SimulationRunner implements Runnable {
 
         // Run the "bridged" and the "separate" simulations.
         //for (boolean isBridged : IS_BRIDGED) {
-            simulation = new IDNSimulation(idn, phe, TIME, immune, failed, true);
-            data = simulation.run(NUM_OF_SIMULATIONS);
+            NetworkSimulation sim1 = new NetworkSimulation(physical, phe, TIME, immune,failed); 
+            int[][] data1 = sim1.flowrun(NUM_OF_SIMULATIONS);
             path = getPath(filename, true);
-            outputData(data, path);
+            outputData(data1, path);
     }
 
 
@@ -141,10 +141,10 @@ public class SimulationRunner implements Runnable {
 
     	// Run the "bridged" and the "separate" simulations.
     	//for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed, true);
-    		data = simulation.run(NUM_OF_SIMULATIONS);
+    		NetworkSimulation sim2 = new NetworkSimulation(physical, phe, TIME, immune, failed);
+    		int[][] data2 = sim2.flowrun(NUM_OF_SIMULATIONS);
     		path = getPath(filename, true);
-    		outputData(data, path);
+    		outputData(data2, path);
     }
 
     /**
