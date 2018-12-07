@@ -82,12 +82,11 @@ public class SimulationRunner implements Runnable {
         sizes = new int[] { 0, nodes };
         threshMatrix = CATASTROPHIC_THRESH;
         probMatrix = new ProbabilityMatrix(sizes, probs);
-        phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
-    	System.out.println(simID);
+        phe = new ProbThreshPhenomena(probMatrix, threshMatrix); 
 	}
 
     public void run() {
-        try {
+        //try {
             switch (simID) {
                 case 1:  simulation1();         break;
                 case 2:  simulation2();         break;

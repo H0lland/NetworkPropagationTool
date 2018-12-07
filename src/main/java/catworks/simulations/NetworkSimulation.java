@@ -96,10 +96,12 @@ public class NetworkSimulation extends Simulation {
 						clone.deleteNode(nodes[l]);
 					}
 					//run Ford-Fulkerson from S to T (reduce their indices, since you removed nodes)
+					System.out.println("size = " + size + " failed Count = " + failedCount);
+					System.out.println("nodes = " + clone.getNumOfNodes());
 					int s = size - failedCount;
 					int t = size - failedCount + 1;
 					System.out.print("FF ");
-					flow= fordFulkerson(this.network.getIntArrayMatrix(),s,t);
+					flow = fordFulkerson(this.network.getIntArrayMatrix(),s,t);
 					System.out.print("Finished\n");
 				}
 				data[i][j]=flow;
