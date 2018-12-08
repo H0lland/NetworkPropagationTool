@@ -128,41 +128,28 @@ public class ERNetwork extends Network {
      * @param p Probability of adding an edge (0 < p <= 1).
      */
     private void initWeighted(int min, int max) {
-        // Check if `p` is valid; 0 <= p <= 1.
-        if (p <= 0 || 1 < p) {
-            throw new IllegalArgumentException("Value `p` must be in the range (0, 1].");
-        }
-
-        int[][] graph;
-        int weight;
-        do {
-            graph = new int[n][n];
-            for (int i = 0; i < n; i++) {
-                int connections = 0;
-                for (int j = 0; j < n; j++) {
-                    if (i == j) continue; // Avoid self-loops.
-                    if (Math.random() <= p/2) { // NOTE: This seems to hold for directed and undirected.
-                        weight = new Random().nextInt(max-min)+min;
-                        graph[i][j] = weight;
-                        if (!directed) graph[j][i] = weight;
-                        connections++;
-                    }
-                }
-
-                // If no connections have been made and we are set to prevent disconnected
-                // nodes, then createa random edge.
-                if (connections == 0 && PREVENT_DISCONNECTED_NODES) {
-                    int randomEdge = (int) (Math.random() * n);
-                    if (randomEdge == i) {
-                        if (i >= n-1) randomEdge--;
-                        else          randomEdge++;
-                    }
-                    weight = new Random().nextInt(max-min)+min;
-                    graph[i][randomEdge] = weight;
-                    if (!directed) graph[randomEdge][i] = weight;
-                }
-            }
-        } while (!isConnected(graph)); // If the graph is NOT connected, try again.
-        setIntArrayMatrix(graph);
+		init();
+		int[][] graph;
+		int weight;
+		graph = new int[n][n];
+		int[][] adj = this.getIntArrayMatrix();
+		for(int i =0; i<n; i++){
+			for(int j=0; j<n; j++){
+				if(adj[i][j] > 0){
+				weight = new Random().nextInt(max-min)+min;
+				graph[i][j] = weight;
+				if(!directed) graph[j][i] = weight;
+				}
+			}
+		}
+       	setIntArrayMatrix(graph);
     }
+
+	public int getN(){
+		return n;
+	}
+	
+	public double getP(){
+		return p;
+	}
 }

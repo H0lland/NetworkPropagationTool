@@ -121,12 +121,14 @@ public class SFNetwork extends Network {
                     }
                 }
             }
-
+System.out.println("Step 3:");
             // STEP 3: Connect new nodes to every pre-existing node_i with probability
             // with respect to preferential attachment bias.
             for (int i = m0; i < n; i++) {
+System.out.println("i=" + i);
                 int currDegree = 0;
                 while (currDegree < m) {
+System.out.println(currDegree);
                     // Grab the index of a node that node i has no edge to already.
                     int[] sample = getSample(graph, i);
                     int randIndex = (int)(Math.random() * sample.length);
@@ -208,7 +210,7 @@ public class SFNetwork extends Network {
             // with respect to preferential attachment bias.
             for (int i = m0; i < n; i++) {
                 int currDegree = 0;
-                while (currDegree < m) {
+                while (currDegree < m-1) {
                     // Grab the index of a node that node i has no edge to already.
                     int[] sample = getSample(graph, i);
                     int randIndex = (int)(Math.random() * sample.length);

@@ -3,6 +3,7 @@ package catworks.networks;
 import catworks.networks.metrics.*;
 
 import java.util.ArrayList;
+import java.util.Random;
 // import java.util.Arrays;
 
 /**
@@ -368,6 +369,24 @@ public class Network extends AbstractNetwork {
             }
         } while (!isConnected(graph));
         setIntArrayMatrix(graph);
+    }
+
+	public void weightedRewire(int min, int max){ 
+		int weight;
+        rewire();
+		int n = getNumOfNodes();
+		int[][] graph = new int[n][n];
+		int[][] adj = getIntArrayMatrix();
+		for(int i=0; i< n; i++){
+			for(int j=0; j<n; j++){
+				if(adj[i][j] > 0){
+					weight = new Random().nextInt(max-min)+min;
+					graph[i][j] = weight;
+					if(!directed) graph[j][i] = weight;
+				}
+			}
+		}
+		setIntArrayMatrix(graph);
     }
 
     public Network clone(){

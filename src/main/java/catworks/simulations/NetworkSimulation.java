@@ -47,18 +47,18 @@ public class NetworkSimulation extends Simulation {
 	* [runs iterations of the max-flow setup]
 	* @param n	[the number of max-flow runs]
 	**/
-	public int[][] flowrun(int n){
+	public int[][] flowrun(int n, double p){
 		//centralities: [0, degree, closeness, betweenness, fT, fU]
-		Centrality[] cents = {new DegreeCentrality(), new ClosenessCentrality(), new BetweennessCentrality()};
+		Centrality[] cents = {new DegreeCentrality(), new ClosenessCentrality(), new BetweennessCentrality(), new FlowWeightCentrality(), new FlowUtilizationCentrality()};
 		int[][] data = new int[n][cents.length+1];
 		int flow;
 		for(int i =0; i< n; i+=1){
 			System.out.println("i="+i);
-			for(int j=0; j<cents.length+1; j+=1){
-				//construct a clone with the same adjacency matrix as network
-				System.out.print("j=" +j);
-				Network clone = this.network.clone();
-				int size = clone.getNumOfNodes();
+			int size = this.network.getNumOfNodes();	
+			for(int j=0; j<cents.length+1; j+=1){	
+				//construct a clone with the same adjacency matrix as networa
+				System.out.print("j = " + j);
+				Network clone = this.network.clone();	
 				//get the normal max flow so we have a baseline reading
 				if(j==0){
 					//add nodes for S and T
@@ -74,9 +74,7 @@ public class NetworkSimulation extends Simulation {
 					//Run Ford-Fulkerson from S to T
 					int s = size; 
 					int t = size + 1;
-					System.out.print("FF ");
 					flow= fordFulkerson(clone.getIntArrayMatrix(),s,t);
-					System.out.print("Finished\n");
 				}
 				//use the appropriate centrality metric
 				else{
@@ -99,19 +97,19 @@ public class NetworkSimulation extends Simulation {
 						clone.deleteNode(nodes[l]-l);
 					}
 					//run Ford-Fulkerson from S to T (reduce their indices, since you removed nodes)
-					System.out.println("size = " + size + " failed Count = " + failedCount);
-					System.out.println("nodes = " + clone.getNumOfNodes());
 					int s = size - failedCount;
 					int t = size - failedCount + 1;
-					System.out.print("FF ");
 					flow = fordFulkerson(clone.getIntArrayMatrix(),s,t);
-					System.out.print("Finished\n");
 				}
 				data[i][j]=flow;
 			}
+			System.out.print("Rewiring...");
+			this.network = new ERNetwork(size, p, true, 1, 10);
+			System.out.println("Rewire Finishined!");
 		}	
 		return data;
 	}
+
 /*returns true if there is a path from source s to dest t in residual graph.  	Fills parent[] to store the path*/ 
 	boolean bfs(int rGraph[][], int V,int s, int t, int parent[]){
 		//create visited array and mark all vertices as not visited
@@ -138,11 +136,12 @@ public class NetworkSimulation extends Simulation {
 		//if we reached sink in BFS starting from source, return true
 		return (visited[t] == true);
 	}
-	
-	//returns the maximum flow from s to t in the given graph
+
+//returns the maximum flow from s to t in the given graph
 	int fordFulkerson(int graph[][], int s, int t){
 		int u,v; 
 		int V = graph.length;
+		System.out.print(" FF ");
 		//create residual graph and fill the residual graph with given
 		//capacities
 		//residual graph[i][j] indicates residual capacity of edge i to j
@@ -176,5 +175,4 @@ public class NetworkSimulation extends Simulation {
 		}
 		return max_flow;
 	}
-
 }
