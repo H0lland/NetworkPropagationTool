@@ -17,9 +17,9 @@ public class FlowUtilizationCentrality extends Centrality {
           inFlow += matrix[j][i];
           outFlow += matrix[i][j];
         }
-        centralities[i] = outFlow/inFlow;
+        centralities[i] = (outFlow+inFlow)*(outFlow/inFlow);
         //1 is the maximum accepted centrality value
-        if(centralities[i] > 1) centralities[1] = 1;
+        //if(centralities[i] > 1) centralities[1] = 1;
       }
       return centralities;
     }

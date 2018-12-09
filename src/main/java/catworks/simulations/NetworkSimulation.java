@@ -47,7 +47,7 @@ public class NetworkSimulation extends Simulation {
 	* [runs iterations of the max-flow setup]
 	* @param n	[the number of max-flow runs]
 	**/
-	public int[][] flowrun(int n, double p){
+	public int[][] flowrun(int n, double p, int min, int max){
 		//centralities: [0, degree, closeness, betweenness, fT, fU]
 		Centrality[] cents = {new DegreeCentrality(), new ClosenessCentrality(), new BetweennessCentrality(), new FlowWeightCentrality(), new FlowUtilizationCentrality()};
 		int[][] data = new int[n][cents.length+1];
@@ -104,7 +104,8 @@ public class NetworkSimulation extends Simulation {
 				data[i][j]=flow;
 			}
 			System.out.print("Rewiring...");
-			this.network = new ERNetwork(size, p, true, 1, 10);
+			this.network.weightedRewire(min,max);
+
 			System.out.println("Rewire Finishined!");
 		}	
 		return data;

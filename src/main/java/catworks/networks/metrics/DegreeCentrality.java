@@ -15,7 +15,9 @@ public class DegreeCentrality extends Centrality {
 		for (int i = 0; i < n; i++) {
 			double degree = 0;
 			for (int j = 0; j < n; j++) {
-				degree += (matrix[i][j] + matrix[j][i]);
+				if(matrix[i][j] > 0){
+					degree += 1;
+				}	
 			}
 			centralities[i] = degree;
 		}

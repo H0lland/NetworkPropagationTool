@@ -373,7 +373,7 @@ public class Network extends AbstractNetwork {
 
 	public void weightedRewire(int min, int max){ 
 		int weight;
-        rewire();
+        //rewire();
 		int n = getNumOfNodes();
 		int[][] graph = new int[n][n];
 		int[][] adj = getIntArrayMatrix();
@@ -388,7 +388,6 @@ public class Network extends AbstractNetwork {
 		}
 		setIntArrayMatrix(graph);
     }
-
     public Network clone(){
       Network clone = new Network(this.getIntArrayMatrix());
       return clone;

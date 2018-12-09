@@ -21,11 +21,11 @@ public class SimulationRunner implements Runnable {
     // Class-wide constants.
     private static final String slash = File.separator;
     private static final int    TIME = 300;
-    private static final int    NUM_OF_SIMULATIONS = 100;
+    private static final int    NUM_OF_SIMULATIONS = 300;
 
     // Network simulation variables to be modified.
     private static final int AVG_DEGREE = 4;
-    private static int nodes = 300, m0 = AVG_DEGREE + 1, k = AVG_DEGREE;
+    private static int nodes = 50, m0 = AVG_DEGREE + 1, k = AVG_DEGREE;
     private static int immune = 0, failed = 10, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
 
     private static double INTER_P = interEdgeNum/(double)(nodes*2);
@@ -57,9 +57,9 @@ public class SimulationRunner implements Runnable {
         probMatrix = new ProbabilityMatrix(sizes, probs);
         phe = new ProbThreshPhenomena(probMatrix, threshMatrix);
 
-        simulation1();
+        /*simulation1();
         simulation2();
-        /*simulation3();
+        simulation3();
         simulation4();
         simulation5();
         simulation6();
@@ -88,16 +88,16 @@ public class SimulationRunner implements Runnable {
     public void run() {
         try {
             switch (simID) {
-                case 1:  simulation1();         break;
+                //case 1:  simulation1();         break;
                 case 2:  simulation2();         break;
-                /*case 3:  simulation3();         break;
-                case 4:  simulation4();         break;
+                case 3:  simulation3();         break;
+                /*case 4:  simulation4();         break;
                 case 5:  simulation5();         break;
                 case 6:  simulation6();         break;
                 case 7:  simulation7();         break;
                 case 8:  simulation8();         break;
-                case 9:  simulation9();         break;
-                case -1: simulationRealWorld(); break;*/
+                case 9:  simulation9();         break;*/
+                case -1: simulationRealWorld(); break;
             }
         } catch (Exception e) {
             System.out.println("It's in SimulationRunner.run().");
@@ -120,15 +120,14 @@ public class SimulationRunner implements Runnable {
         //idn = new IDN(physical, cyber);  // Cyber network, physical network.
         //idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
         //idn.setToken(filename);
-
         // Run the "bridged" and the "separate" simulations.
         //for (boolean isBridged : IS_BRIDGED) {
-            NetworkSimulation sim1 = new NetworkSimulation(physical, phe, TIME, immune,failed); 
+        /*    NetworkSimulation sim1 = new NetworkSimulation(physical, phe, TIME, immune,failed); 
 			System.out.println("Starting SF flowrun");
             int[][] data1 = sim1.flowrun(NUM_OF_SIMULATIONS, p);
 			System.out.println("Flowrun SF finished");
             path = getPath(filename, true);
-            outputData(data1, path);
+            outputData(data1, path);*/
     }
 
 
@@ -137,68 +136,49 @@ public class SimulationRunner implements Runnable {
      */
     private void simulation2() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
-    	filename = "ER-300:1-10";
+    	filename = "ER-50:1-10";
 		System.out.println("Generating ER Network");
         physical = new ERNetwork(nodes, p, true, 1, 10);
 		System.out.println("Finished Generation");
-        //cyber    = new ERNetwork(nodes, p);
-    	//idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	//idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
-        //idn.setToken(filename);
-
-    	// Run the "bridged" and the "separate" simulations.
-    	//for (boolean isBridged : IS_BRIDGED) {
-    		NetworkSimulation sim2 = new NetworkSimulation(physical, phe, TIME, immune, failed);
-			System.out.println("Starting ER flowrun");
-    		int[][] data2 = sim2.flowrun(NUM_OF_SIMULATIONS, p);
-    		System.out.println("Flowrun ER finished");
-			path = getPath(filename, true);
-    		outputData(data2, path);
+        NetworkSimulation sim2 = new NetworkSimulation(physical, phe, TIME, immune,failed);
+		System.out.println("Starting ER flowrun");
+		int[][] data2 = sim2.flowrun(NUM_OF_SIMULATIONS, p,1,10);
+		System.out.println("Flowrun ER finished");
+		path = getPath(filename, true);
+		outputData(data2, path);
     }
 
     /**
      * Simulation 3.
      */
-/*    private void simulation3() throws IOException, Exception {
+    private void simulation3() throws IOException, Exception {
     	// Variables to change from simulation to simulation.
-    	filename = "ER-SW-300";
-    	physical = new SWNetwork(nodes, beta, k);
-    	//cyber    = new SFNetwork(nodes, m0);
-    	//idn = new IDN(physical, cyber);  // Cyber network, physical network.
-    	//idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
-        //idn.setToken(filename);
-
-    	// Run the "bridged" and the "separate" simulations.
-    	//for (boolean isBridged : IS_BRIDGED) {
-    		simulation = new IDNSimulation(idn, phe, TIME, immune, failed);
-    		data = simulation.run(NUM_OF_SIMULATIONS);
-    		path = getPath(filename);
-    		outputData(data, path);
-    	}
-
+    	filename = "ER-50:10-100";
+		System.out.println("Generating ER Network");
+        physical = new ERNetwork(nodes, p, true, 10, 100);
+		System.out.println("Finished Generation");
+        NetworkSimulation sim3 = new NetworkSimulation(physical, phe, TIME, immune,failed); 
+		System.out.println("Starting ER flowrun");
+		int[][] data3 = sim3.flowrun(NUM_OF_SIMULATIONS, p,10,100);
+		System.out.println("Flowrun ER finished");
+		path = getPath(filename, true);
+		outputData(data3, path);
     }
-*/
+
     private void simulationRealWorld() throws IOException, Exception {
         // Variables to change from simulation to simulation.
         // infect = 0.15; immune = 0.05;
-        filename = "IEEE-300";
-        physical = new Network(RealWorld.IEEE300());
-        //cyber    = new Network(RealWorld.IEEE300()); cyber.rewire(); // NOTE: This network is not guaranteed to be connected.
-        //idn = new IDN(physical, cyber);  // Cyber network, physical network.
-        //idn.randomInterEdges(INTER_P, true);   // Inter-edge probability.
-        idn.setToken(filename);
-
-        // Run the "bridged" and the "separate" simulations.
-        //for (boolean isBridged : IS_BRIDGED) {
-            simulation = new IDNSimulation(idn, phe, TIME, immune, failed, true);
-            data = simulation.run(NUM_OF_SIMULATIONS);
-            path = getPath(filename, true);
-            outputData(data, path);
-    }
+        filename = "IEEE-300:10-100";
+        physical = new Network(RealWorld.IEEE300W(10,100)); 
+		NetworkSimulation simr = new NetworkSimulation(physical, phe, TIME, immune, failed);	
+		int[][] datar = simr.flowrun(NUM_OF_SIMULATIONS, p, 10, 100);
+		path = getPath(filename, true);
+		outputData(datar, path);
+}
 
 
-    /**
-     * Return the entire path (directory and file extension) for a file given
+/**
+ * Return the entire path (directory and file extension) for a file given
      * just the name of the file, without the file extension.
      * @param  filename The name to be used to create the full path (don't include file extension).
      * @param  bridged  Is this file simulating a bridged or separate calculation of centralities.
