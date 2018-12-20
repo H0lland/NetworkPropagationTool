@@ -26,7 +26,7 @@ public class SimulationRunner implements Runnable {
     // Network simulation variables to be modified.
     private static final int AVG_DEGREE = 4;
     private static int nodes = 50, m0 = AVG_DEGREE + 1, k = AVG_DEGREE;
-    private static int immune = 0, failed = 10, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
+    private static int immune = 0, failed = 60, interEdgeNum = 10; // NOTE: Modify these values to choose the integer number of failed and immune nodes in the network simulations.
 
     private static double INTER_P = interEdgeNum/(double)(nodes*2);
     private static double p = AVG_DEGREE/((double) nodes), beta = 0.05;
@@ -168,10 +168,10 @@ public class SimulationRunner implements Runnable {
     private void simulationRealWorld() throws IOException, Exception {
         // Variables to change from simulation to simulation.
         // infect = 0.15; immune = 0.05;
-        filename = "IEEE-300:10-100";
-        physical = new Network(RealWorld.IEEE300W(10,100)); 
+        filename = "IEEE-300:1-10";
+        physical = new Network(RealWorld.IEEE300W(1,10)); 
 		NetworkSimulation simr = new NetworkSimulation(physical, phe, TIME, immune, failed);	
-		int[][] datar = simr.flowrun(NUM_OF_SIMULATIONS, p, 10, 100);
+		int[][] datar = simr.flowrun(NUM_OF_SIMULATIONS, p, 1, 10);
 		path = getPath(filename, true);
 		outputData(datar, path);
 }
